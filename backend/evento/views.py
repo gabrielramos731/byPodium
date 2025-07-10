@@ -1,5 +1,5 @@
 from rest_framework import generics
-from .models import evento, endereco, participante, organizador
+from .models import evento, localidade, participante, organizador
 from .serializers import eventoSerializer
 
 class ListEventos(generics.ListAPIView):

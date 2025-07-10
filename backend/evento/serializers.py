@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from .models import evento, endereco, participante, organizador
+from .models import evento, localidade, participante, organizador
 
 class eventoSerializer(serializers.ModelSerializer):
     class Meta():
         model = evento
         fields = '__all__'
 
-class enderecoSerializer(serializers.ModelSerializer):
+class localidadeSerializer(serializers.ModelSerializer):
     class Meta():
-        model = endereco
+        model = localidade
         fields = '__all__'
         
 class participanteSerializer(serializers.ModelSerializer):
