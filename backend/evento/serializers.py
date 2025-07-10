@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import evento, localidade, participante, organizador
+from .models import evento, localidade, participante, organizador, inscricao
 
 class eventoSerializer(serializers.ModelSerializer):
     class Meta():
@@ -20,3 +20,9 @@ class organizadorSerializer(serializers.ModelSerializer):
     class Meta():
         model = organizador
         fields = '__all__'
+
+class inscricaoSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = inscricao
+        fields = '__all__'
+    

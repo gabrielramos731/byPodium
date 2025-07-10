@@ -1,5 +1,6 @@
-from .models import evento, localidade, participante, organizador
+from .models import evento, localidade, participante, organizador, inscricao
 from django.contrib import admin
+
 
 class EventoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'dataIni', 'dataFim')
@@ -13,8 +14,11 @@ class ParticipanteAdmin(admin.ModelAdmin):
 class OrganizadorAdmin(admin.ModelAdmin):
     list_display = ('participante', 'valor')
 
+class InscricaoAdmin(admin.ModelAdmin):
+    list_display = ('dataInsc','status','evento','participante')
+
 admin.site.register(evento, EventoAdmin)
 admin.site.register(localidade, LocalidadeAdmin)
 admin.site.register(participante, ParticipanteAdmin)
 admin.site.register(organizador, OrganizadorAdmin)
-
+admin.site.register(inscricao,InscricaoAdmin)

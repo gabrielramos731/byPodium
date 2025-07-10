@@ -7,6 +7,31 @@ class MC:
         ('negado', 'Negado'),
         ('cancelado', 'Cancelado')
     )
+    metodo_pagamento = (
+        ('pix','Pix'),
+        ('boleto','Boleto'),
+        ('cartao','Cartão')
+    )
+    pagamento_status = (
+        ('pendente', 'Pendente'),
+        ('pago','Pago')
+    )
+    inscricao_status = (
+        ('pendente', 'Pendente'),
+        ('confirmada', 'Confirmada'),
+        ('cancelado', 'Cancelado')
+    )
+    sexo = (
+        ('M','Masculino'),
+        ('F','Feminino'),
+    )
+    tamanhos = (
+        ('pp','PP'),
+        ('p', 'P'),
+        ('m', 'M'),
+        ('g', 'G'),
+        ('gg', 'GG')
+    )
 
 class localidade(models.Model):
     cidade = models.CharField(max_length=100, blank=False, null=False)
@@ -41,3 +66,40 @@ class evento(models.Model):
     organizador = models.ForeignKey(organizador, on_delete=models.CASCADE, related_name='eventos')
     localidade = models.ForeignKey(localidade, on_delete=models.CASCADE, related_name='eventos', default=1)
     # imagens
+
+class inscricao(models.Model):
+    dataInsc = models.DateField(auto_now=True)
+    status = models.CharField(choices=MC().inscricao_status, default='Pendente')
+    evento = models.ForeignKey(evento, on_delete=models.CASCADE, related_name='inscricoes')
+    participante = models.ForeignKey(participante, on_delete=models.CASCADE, related_name='inscricoes')
+    # kit = models.ForeignKey(kit, on_delete=models.CASCADE, related_name='kit')
+    # categoria = models.ForeignKey(categoria, on_delete=models.CASCADE, related_name='inscricoes')
+    
+class pagamento(models.Model):
+    status = models.CharField(choices=MC().pagamento_status, max_length=10, default='Pendente')
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False, default=0)
+    metodoPagamento = models.CharField(choices=MC().metodo_pagamento, max_length=20, null=False, blank=False)
+    dataPagamento = models.DateField(auto_now=True)
+    inscricao = models.ForeignKey(inscricao, on_delete=models.CASCADE, related_name='pagamentos')
+    
+# class categoria(models.Model):
+#     nome = models.CharField(max_length=20, null=False, blank=True)
+#     sexo = models.CharField(choices=MC().sexo, max_length=10)
+#     idadeMin = models.IntegerField(null=False, blank=False, default=0)
+#     idadeMax = models.IntegerField(null=False, blank=False, default=0)
+#     evento = models.ForeignKey(evento, on_delete=models.CASCADE, related_name='categorias')
+
+# class kit(models.Model):
+#     nome = models.CharField(max_length=60, null=True, blank=True)
+#     precoExtra = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+#     evento = models.ForeignKey(evento, on_delete=models.CASCADE, related_name='kits')
+    
+# class item(models.Model):
+#     nome = models.CharField(max_length=30, null=True, blank=True)
+#     tamanho = models.CharField(choices=MC().tamanhos, null=True, blank= True)
+#     kit = models.ManyToManyField(kit)
+ 
+
+
+
+
