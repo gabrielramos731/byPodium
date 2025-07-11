@@ -55,6 +55,7 @@ class organizador(models.Model):
 class evento(models.Model):
     nome = models.CharField(max_length=100, blank=True, null=True)
     descricao = models.CharField(max_length=50000, null=False, blank=False)
+    horarioIni = models.TimeField(blank=False, null=False, default='00:00:00')
     dataIni = models.DateField(blank=False, null=False)
     dataFim = models.DateField(blank=False, null=False)
     dataIniInsc = models.DateField(blank=False, null=False)
