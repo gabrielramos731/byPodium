@@ -66,7 +66,7 @@ class evento(models.Model):
     status = models.CharField(choices=MC().evento_status, max_length=10, default='pendente')
     organizador = models.ForeignKey(organizador, on_delete=models.CASCADE, related_name='eventos')
     localidade = models.ForeignKey(localidade, on_delete=models.CASCADE, related_name='eventos', default=1)
-    # imagens
+    imagem = models.ImageField(upload_to='', null=True, blank=True)
 
 class categoria(models.Model):
     nome = models.CharField(max_length=20, null=False, blank=True)

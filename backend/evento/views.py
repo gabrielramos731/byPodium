@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework import generics
 from .models import evento, inscricao
 from .serializers import eventoSerializer, inscricaoSerializer, eventoSerializerList
