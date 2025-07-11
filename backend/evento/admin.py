@@ -1,4 +1,4 @@
-from .models import evento, localidade, participante, organizador, inscricao
+from .models import evento, localidade, participante, organizador, inscricao, categoria, kit, item, pagamento
 from django.contrib import admin
 
 
@@ -15,10 +15,27 @@ class OrganizadorAdmin(admin.ModelAdmin):
     list_display = ('participante', 'valor')
 
 class InscricaoAdmin(admin.ModelAdmin):
-    list_display = ('dataInsc','status','evento','participante')
+    list_display = ('dataInsc','status','evento','participante', 'categoria', 'kit')
+
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'sexo', 'idadeMin', 'idadeMax', 'evento')
+
+class KitAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'precoExtra', 'evento')
+    
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'tamanho')
+    filter_horizontal = ('kit',)
+
+class PagamentoAdmin(admin.ModelAdmin):
+    list_display = ('inscricao', 'status', 'valor', 'metodoPagamento', 'dataPagamento')
 
 admin.site.register(evento, EventoAdmin)
 admin.site.register(localidade, LocalidadeAdmin)
 admin.site.register(participante, ParticipanteAdmin)
 admin.site.register(organizador, OrganizadorAdmin)
-admin.site.register(inscricao,InscricaoAdmin)
+admin.site.register(inscricao, InscricaoAdmin)
+admin.site.register(categoria, CategoriaAdmin)
+admin.site.register(kit, KitAdmin)
+admin.site.register(item, ItemAdmin)
+admin.site.register(pagamento, PagamentoAdmin)
