@@ -110,7 +110,6 @@ class CriarInscricao(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['evento'] = evento_obj
 
-        # Validações adicionais
         if evento_obj.quantInscAtual >= evento_obj.limiteQuantInsc:
             return Response(
                 {'error': 'Evento lotado. Não há mais vagas disponíveis.'},
@@ -120,7 +119,18 @@ class CriarInscricao(generics.GenericAPIView):
         inscricao_obj = serializer.save()
         response_serializer = InscricaoResponseSerializer(inscricao_obj)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
+    
+    def delete(self, request, pk): 
+        participante_obj = participante.objects.get(pk=1)  # usuário teste para inscrição
+        inscricao_obj = inscricao.objects.get(participante=participante_obj, evento__id=pk)
+        inscricao_obj.delete()
+        evento_obj = inscricao_obj.evento
+        evento_obj.quantInscAtual -= 1
+        evento_obj.save()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
+           
 class DetalhesInscricao(generics.RetrieveAPIView):
     """
     Retorna detalhes de uma inscrição específica.
@@ -136,3 +146,14 @@ class DetalhesParticipante(generics.RetrieveAPIView):
     """
     queryset = participante.objects.all()
     serializer_class = DetalhesParticipanteSerializer
+
+class CancelarInscricao(generics.DestroyAPIView):
+    """
+    Cancela uma inscrição específica.
+    
+    Remove a inscrição do participante e atualiza o número de inscrições
+    atuais do evento.
+    """
+    queryset = inscricao.objects.all()
+    serializer_class = InscricaoResponseSerializer
+    

@@ -19,13 +19,18 @@ class localidadeSerializer(serializers.ModelSerializer):
 class eventoSerializer(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     organizador_email = serializers.SerializerMethodField()
-    # isInscrito = serializers.SerializerMethodField()
+    isInscrito = serializers.SerializerMethodField()
+
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
+    
+    def get_isInscrito(self, obj):
+        participante_id = 1  
+        return inscricao.objects.filter(evento=obj, participante_id=participante_id).exists()
 
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
