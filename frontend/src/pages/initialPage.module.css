@@ -1,0 +1,160 @@
+:root {
+  --black-color: #0d0d0d;
+  --background-black: #262626;
+  --yellow0: #f3e96d;
+  --yellow1: #d9a444;
+  --yellow3: #8c6d34;
+  --white: #F8F2ED;
+}
+
+.heroBanner {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bannerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.bannerContent {
+    margin-bottom: 2%;
+}
+
+.bannerOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+}
+
+/* Seções de Eventos */
+.eventsSection {
+  padding: 3rem 2rem;
+  padding-top: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  color: #eaeaea;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Cards de Eventos */
+.eventCard {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.eventImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.eventInfo {
+  padding: 1.5rem;
+}
+
+.eventTitle {
+  color: #b8860b;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.eventLocation {
+  color: #eaeaea;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.eventDate {
+  color: #eaeaea;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.eventStatus {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.statusOpen {
+  background-color: #2d5016;
+  color: #90ee90;
+}
+
+.statusClosed {
+  background-color: #4a3728;
+  color: #ffa500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .heroBanner {
+    height: 40vh;
+  }
+
+  .logo {
+    font-size: 2rem;
+  }
+
+  .logoIcon {
+    font-size: 2.5rem;
+  }
+
+  .mainNav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .eventsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventsSection {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroBanner {
+    height: 35vh;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .searchContainer {
+    margin: 0 0.5rem;
+  }
+}

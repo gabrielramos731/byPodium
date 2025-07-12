@@ -1,12 +1,12 @@
 /* Barra de Busca */
-.search-section {
+.searchSection {
   padding: 2rem 0;
   display: flex;
   justify-content: center;
   margin-top: 50px;
 }
 
-.search-container {
+.searchContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,14 +15,14 @@
   max-width: 500px;
 }
 
-.search-container form {
+.searchContainer form {
   position: relative;
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.leading-button {
+.leadingButton {
   position: absolute;
   height: 100%;
   width: 3.5rem;
@@ -36,7 +36,7 @@
   align-items: center;
 }
 
-.search-input {
+.searchInput {
   width: 100%;
   padding: 1rem 2rem 1rem 3.5rem;
   border: none;
@@ -48,17 +48,17 @@
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-.search-input:focus {
+.searchInput:focus {
   box-shadow: 
     inset 0 1px 1px rgba(0, 0, 0, 0.2),
     0 0 0 1px var(--yellow1);
 }
 
-.search-input::placeholder {
+.searchInput::placeholder {
   color: var(--yellow1);
 }
 
-.search-button {
+.searchButton {
   position: absolute;
   display: flex;
   right: 0;
@@ -71,44 +71,44 @@
 }
 
 /* Efeitos hover */
-.leading-button img,
-.search-button img {
+.leadingButton img,
+.searchButton img {
   transition: transform 0.3s ease;
 }
 
-.leading-button:hover img {
+.leadingButton:hover img {
   transform: scale(1.1);
 }
 
-.search-button:hover img {
+.searchButton:hover img {
   transform: scale(1.1);
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .search-section {
+  .searchSection {
     padding: 1.5rem 1rem;
     margin-top: 50px;
   }
   
-  .search-container {
+  .searchContainer {
     max-width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .search-section {
+  .searchSection {
     padding: 1rem 0.5rem;
     margin-top: 30px;
   }
   
-  .search-input {
+  .searchInput {
     padding: 0.8rem 2rem 0.8rem 3rem;
     font-size: 0.9rem;
   }
   
-  .leading-button,
-  .search-button {
+  .leadingButton,
+  .searchButton {
     padding: 0.3rem;
   }
 }

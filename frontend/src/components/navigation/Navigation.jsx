@@ -1,16 +1,16 @@
-import './Navigation.css'
+import styles from './Navigation.module.css'
 
 function Navigation() {
   return (
-    <section className="section-nav">
-      <nav className="main-nav">
-        <a href="#" className="nav-link active">
+    <section className={styles.sectionNav}>
+      <nav className={styles.mainNav}>
+        <a href="#" className={`${styles.navLink} ${styles.active}`}>
           Início
         </a>
-        <a href="#" className="nav-link">
+        <a href="#" className={styles.navLink}>
           Minhas Inscrições
         </a>
-        <a href="#" className="nav-link">
+        <a href="#" className={styles.navLink}>
           Meu Perfil
         </a>
       </nav>

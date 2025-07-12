@@ -3,35 +3,35 @@ import twitterLogo from "../../assets/twitter-icon.svg";
 import instagramLogo from "../../assets/instagram-icon.svg";
 import youtubeLogo from "../../assets/youtube-icon.svg";
 import linkedinLogo from "../../assets/linkedin-icon.svg";
-import './Footer.css';
+import styles from './Footer.module.css';
 
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-logo">
-          <span className="logo-icon"><img src={logoFooter} alt="logo-footer"/></span>
+    <footer className={styles.footer}>
+      <div className={styles.footerContent}>
+        <div className={styles.footerLogo}>
+          <img src={logoFooter} alt="logo-footer"/>
         </div>
-        <p className="footer-text">
+        <p className={styles.footerText}>
           Projeto de trabalho de conclusão de módulo de Análise e
           Desenvolvimento de Sistemas. O objetivo é aplicar os conceitos
           aprendidos.
         </p>
-        <div className="social-links">
-          <a href="#" className="social-link">
+        <div className={styles.socialLinks}>
+          <a href="#" className={styles.socialLink}>
             <img src={twitterLogo} alt="" />
           </a>
-          <a href="#" className="social-link">
+          <a href="#" className={styles.socialLink}>
             <img src={instagramLogo} alt="" />
           </a>
-          <a href="#" className="social-link">
+          <a href="#" className={styles.socialLink}>
             <img src={youtubeLogo} alt="" />
           </a>
-          <a href="#" className="social-link">
+          <a href="#" className={styles.socialLink}>
             <img src={linkedinLogo} alt="" />
           </a>
         </div>
-        <p className="footer-credits">ByPodium ©2025</p>
+        <p className={styles.footerCredits}>ByPodium ©2025</p>
       </div>
     </footer>
   );

@@ -5,29 +5,29 @@
   text-align: center;
 }
 
-.footer-content {
+.footerContent {
   max-width: 800px;
   margin: 0 auto;
 }
 
-.footer-logo {
+.footerLogo {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1.5rem;
 }
 
-.footer-logo img {
+.footerLogo img {
   max-height: 100px;
   width: auto;
 }
 
-.footer-logo img:hover {
+.footerLogo img:hover {
   transition: transform 0.5s ease;
   transform: scale(1.05);
 }
 
-.footer-text {
+.footerText {
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -37,14 +37,14 @@
   color: var(--black-color);
 }
 
-.social-links {
+.socialLinks {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.social-link {
+.socialLink {
   display: inline-block;
   width: 40px;
   height: 40px;
@@ -57,22 +57,22 @@
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.social-link:hover {
+.socialLink:hover {
   transform: scale(1.1);
   background-color: var(--yellow2);
 }
 
-.social-link img {
+.socialLink img {
   width: 20px;
   height: 20px;
   filter: brightness(0) invert(1); /* Torna os ícones brancos */
 }
 
-.social-link:hover img {
+.socialLink:hover img {
   filter: brightness(0); /* Torna os ícones pretos no hover */
 }
 
-.footer-credits {
+.footerCredits {
   font-size: 0.9rem;
   color: var(--yellow3);
   margin: 0;
@@ -84,22 +84,22 @@
     padding: 2rem 1rem 1.5rem;
   }
   
-  .footer-text {
+  .footerText {
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
   }
   
-  .social-links {
+  .socialLinks {
     gap: 0.8rem;
     margin-bottom: 1rem;
   }
   
-  .social-link {
+  .socialLink {
     width: 35px;
     height: 35px;
   }
   
-  .social-link img {
+  .socialLink img {
     width: 18px;
     height: 18px;
   }
@@ -110,29 +110,29 @@
     padding: 1.5rem 0.5rem 1rem;
   }
   
-  .footer-logo img {
+  .footerLogo img {
     max-height: 50px;
   }
   
-  .footer-text {
+  .footerText {
     font-size: 0.8rem;
   }
   
-  .social-links {
+  .socialLinks {
     gap: 0.6rem;
   }
   
-  .social-link {
+  .socialLink {
     width: 32px;
     height: 32px;
   }
   
-  .social-link img {
+  .socialLink img {
     width: 16px;
     height: 16px;
   }
   
-  .footer-credits {
+  .footerCredits {
     font-size: 0.8rem;
   }
 }

@@ -3,15 +3,15 @@ import mainLogo from "../assets/logo-main.svg";
 import Navigation from "../components/navigation/Navigation";
 import SearchBar from "../components/searchBar/SearchBar";
 import Footer from "../components/footer/Footer";
-import "./initialPage.css";
+import styles from "./initialPage.module.css";
 
 function InitialPage() {
   return (
     <>
-      <section className="hero-banner">
-        <img src={mainImage} alt="ByPodium Banner" className="banner-image" />
-        <div className="banner-overlay">
-          <div className="banner-content">
+      <section className={styles.heroBanner}>
+        <img src={mainImage} alt="ByPodium Banner" className={styles.bannerImage} />
+        <div className={styles.bannerOverlay}>
+          <div className={styles.bannerContent}>
             <img src={mainLogo} alt="main-logo" />
           </div>
           <Navigation />
@@ -20,17 +20,17 @@ function InitialPage() {
 
       <SearchBar />
 
-      <section className="events-section">
-        <h2 className="section-title">Todos os Eventos</h2>
-        <div className="events-grid">
+      <section className={styles.eventsSection}>
+        <h2 className={styles.sectionTitle}>Todos os Eventos</h2>
+        <div className={styles.eventsGrid}>
           {[1, 2, 3, 4, 5, 6].map((item) => (
-            <div key={item} className="event-card">
-              <img src={mainImage} alt="Evento" className="event-image" />
-              <div className="event-info">
-                <h3 className="event-title">Nome do evento</h3>
-                <p className="event-location">Montes Claros - MG</p>
-                <p className="event-date">10/08/2025 - 06:30</p>
-                <span className="event-status status-open">
+            <div key={item} className={styles.eventCard}>
+              <img src={mainImage} alt="Evento" className={styles.eventImage} />
+              <div className={styles.eventInfo}>
+                <h3 className={styles.eventTitle}>Nome do evento</h3>
+                <p className={styles.eventLocation}>Montes Claros - MG</p>
+                <p className={styles.eventDate}>10/08/2025 - 06:30</p>
+                <span className={`${styles.eventStatus} ${styles.statusOpen}`}>
                   Inscrições abertas
                 </span>
               </div>
@@ -40,17 +40,17 @@ function InitialPage() {
       </section>
 
       {/* Eventos Encerrados */}
-      <section className="events-section">
-        <h2 className="section-title">Eventos Encerrados</h2>
-        <div className="events-grid">
+      <section className={styles.eventsSection}>
+        <h2 className={styles.sectionTitle}>Eventos Encerrados</h2>
+        <div className={styles.eventsGrid}>
           {[1, 2, 3].map((item) => (
-            <div key={item} className="event-card">
-              <img src={mainImage} alt="Evento" className="event-image" />
-              <div className="event-info">
-                <h3 className="event-title">Nome do evento</h3>
-                <p className="event-location">Montes Claros - MG</p>
-                <p className="event-date">10/08/2025 - 06:30</p>
-                <span className="event-status status-closed">
+            <div key={item} className={styles.eventCard}>
+              <img src={mainImage} alt="Evento" className={styles.eventImage} />
+              <div className={styles.eventInfo}>
+                <h3 className={styles.eventTitle}>Nome do evento</h3>
+                <p className={styles.eventLocation}>Montes Claros - MG</p>
+                <p className={styles.eventDate}>10/08/2025 - 06:30</p>
+                <span className={`${styles.eventStatus} ${styles.statusClosed}`}>
                   Evento encerrado
                 </span>
               </div>
