@@ -1,8 +1,7 @@
 import mainImage from "../assets/main-image.jpg";
 import mainLogo from "../assets/logo-main.svg";
 import Navigation from "../components/Navigation";
-import searchIcon from "../assets/search-icon.svg";
-import leadingIcon from "../assets/Leading-icon.svg"
+import SearchBar from "../components/SearchBar";
 import "./initialPage.css";
 
 function InitialPage() {
@@ -18,21 +17,7 @@ function InitialPage() {
         </div>
       </section>
 
-      <section className="search-section">
-        <div className="search-container">
-          <button className="leading-button">
-            <img src={leadingIcon} alt="leading-icon" />
-          </button>
-          <input
-            type="text"
-            placeholder="Buscar evento..."
-            className="search-input"
-          />
-          <button className="search-button">
-            <img src={searchIcon} alt="search-icon" />
-          </button>
-        </div>
-      </section>
+      <SearchBar />
 
       {/* Todos os Eventos */}
       <section className="events-section">
