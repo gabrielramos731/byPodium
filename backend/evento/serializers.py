@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import evento, localidade, participante, organizador, inscricao
+from .models import evento, localidade, participante, organizador, inscricao, categoria, kit, item
 
 class participanteSerializer(serializers.ModelSerializer):
     class Meta():
@@ -19,9 +19,10 @@ class localidadeSerializer(serializers.ModelSerializer):
 class eventoSerializer(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     organizador_email = serializers.SerializerMethodField()
+    # isInscrito = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -46,4 +47,38 @@ class inscricaoSerializer(serializers.ModelSerializer):
     class Meta():
         model = inscricao
         fields = '__all__'
+
+class InscricaoCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = inscricao
+        fields = ('categoria', 'kit')
     
+    def create(self, validated_data):
+        # DESENVOLVIMENTO: Sempre usar participante pk=1
+        participante_obj = participante.objects.get(pk=1)
+        
+        inscricao_obj = inscricao.objects.create(
+            participante=participante_obj,
+            **validated_data
+        )
+
+        evento_obj = validated_data['evento']
+        evento_obj.quantInscAtual += 1
+        evento_obj.save()
+        
+        return inscricao_obj
+
+class InscricaoResponseSerializer(serializers.ModelSerializer):
+    participante_nome = serializers.CharField(source='participante.nome', read_only=True)
+    evento_nome = serializers.CharField(source='evento.nome', read_only=True)
+    categoria_nome = serializers.CharField(source='categoria.nome', read_only=True)
+    kit_nome = serializers.CharField(source='kit.nome', read_only=True)
+    
+    class Meta:
+        model = inscricao
+        fields = ('id', 'dataInsc', 'status', 'participante_nome', 'evento_nome', 'categoria_nome', 'kit_nome')
+
+class DetalhesParticipanteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = participante
+        fields = '__all__'
