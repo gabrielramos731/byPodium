@@ -1,7 +1,8 @@
 import mainImage from "../assets/main-image.jpg";
 import mainLogo from "../assets/logo-main.svg";
-import Navigation from "../components/Navigation";
-import SearchBar from "../components/SearchBar";
+import Navigation from "../components/navigation/Navigation";
+import SearchBar from "../components/searchBar/SearchBar";
+import Footer from "../components/footer/Footer";
 import "./initialPage.css";
 
 function InitialPage() {
@@ -19,7 +20,6 @@ function InitialPage() {
 
       <SearchBar />
 
-      {/* Todos os Eventos */}
       <section className="events-section">
         <h2 className="section-title">Todos os Eventos</h2>
         <div className="events-grid">
@@ -59,35 +59,7 @@ function InitialPage() {
         </div>
       </section>
 
-      {/* Rodapé */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-logo">
-            <span className="logo-icon">🏆</span>
-            <span className="logo-text">ByPodium</span>
-          </div>
-          <p className="footer-text">
-            Projeto de trabalho de conclusão de módulo de Análise e
-            Desenvolvimento de Sistemas. O objetivo é aplicar os conceitos
-            aprendidos.
-          </p>
-          <div className="social-links">
-            <a href="#" className="social-link">
-              𝕏
-            </a>
-            <a href="#" className="social-link">
-              📷
-            </a>
-            <a href="#" className="social-link">
-              📺
-            </a>
-            <a href="#" className="social-link">
-              💼
-            </a>
-          </div>
-          <p className="footer-credits">ByPodium ©2024</p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

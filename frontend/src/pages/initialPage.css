@@ -39,6 +39,7 @@
 /* Seções de Eventos */
 .events-section {
   padding: 3rem 2rem;
+  padding-top: 0;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -114,70 +115,6 @@
 .status-closed {
   background-color: #4a3728;
   color: #ffa500;
-}
-
-/* Rodapé */
-.footer {
-  background-color: #ffd700;
-  color: #333;
-  padding: 3rem 2rem 2rem;
-  text-align: center;
-}
-
-.footer-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.footer-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-.footer-text {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.social-links {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.social-link {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  background-color: #333;
-  color: #ffd700;
-  border-radius: 50%;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
-}
-
-.social-link:hover {
-  transform: scale(1.1);
-}
-
-.footer-credits {
-  font-size: 0.9rem;
-  color: #666;
 }
 
 /* Responsividade */
