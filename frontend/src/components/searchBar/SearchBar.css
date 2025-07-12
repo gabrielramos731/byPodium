@@ -3,7 +3,7 @@
   padding: 2rem 0;
   display: flex;
   justify-content: center;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .search-container {
@@ -40,7 +40,7 @@
   width: 100%;
   padding: 1rem 2rem 1rem 3.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--yellow1);
   background-color: #202020;
   font-size: 1rem;

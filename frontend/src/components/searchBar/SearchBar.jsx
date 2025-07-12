@@ -1,5 +1,5 @@
-import searchIcon from "../assets/search-icon.svg";
-import leadingIcon from "../assets/Leading-icon.svg";
+import searchIcon from "../../assets/search-icon.svg";
+import leadingIcon from "../../assets/Leading-icon.svg";
 import './SearchBar.css';
 
 function SearchBar({ placeholder = "Buscar evento...", onSearch, className = "" }) {
