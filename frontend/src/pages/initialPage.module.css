@@ -36,7 +36,6 @@
   align-items: center;
 }
 
-/* Seções de Eventos */
 .eventsSection {
   padding: 3rem 2rem;
   padding-top: 0;
@@ -56,6 +55,23 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #eaeaea;
+}
+
+.error {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 500px;
 }
 
 /* Responsividade */

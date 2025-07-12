@@ -22,10 +22,10 @@
 }
 
 .eventTitle {
-  color: #b8860b;
+  color: var(--yellow1);
   font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin: 0;
   font-family: 'Poppins', sans-serif;
 }
 

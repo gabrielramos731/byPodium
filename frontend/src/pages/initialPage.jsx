@@ -3,10 +3,12 @@ import mainLogo from "../assets/logo-main.svg";
 import Navigation from "../components/navigation/Navigation";
 import SearchBar from "../components/searchBar/SearchBar";
 import Footer from "../components/footer/Footer";
-import Event from "../components/event/Event";
+import EventList from "../components/event/EventList";
+import { useEvents } from "../utils/hooks/useEvents";
 import styles from "./initialPage.module.css";
 
 function InitialPage() {
+  const { events, loading, error } = useEvents();
   return (
     <>
       <section className={styles.heroBanner}>
@@ -21,42 +23,24 @@ function InitialPage() {
 
       <SearchBar />
 
-      <section className={styles.eventsSection}>
-        <h2 className={styles.sectionTitle}>Todos os Eventos</h2>
-        <div className={styles.eventsGrid}>
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <Event
-              key={item}
-              title="Nome do evento"
-              location="Montes Claros - MG"
-              date="10/08/2025 - 06:30"
-              status="open"
-              statusText="Inscrições abertas"
-              image={mainImage}
-              onClick={() => console.log(`Evento ${item} clicado`)}
-            />
-          ))}
-        </div>
-      </section>
+      {loading && <div className={styles.loading}>Carregando eventos...</div>}
+      {error && <div className={styles.error}>Erro: {error}</div>}
 
-      {/* Eventos Encerrados */}
-      <section className={styles.eventsSection}>
-        <h2 className={styles.sectionTitle}>Eventos Encerrados</h2>
-        <div className={styles.eventsGrid}>
-          {[1, 2, 3].map((item) => (
-            <Event
-              key={item}
-              title="Nome do evento"
-              location="Montes Claros - MG"
-              date="10/08/2025 - 06:30"
-              status="closed"
-              statusText="Evento encerrado"
-              image={mainImage}
-              onClick={() => console.log(`Evento encerrado ${item} clicado`)}
-            />
-          ))}
-        </div>
-      </section>
+      {!loading && !error && (
+        <>
+          <EventList 
+            events={events} 
+            title="Todos os Eventos" 
+            type="open" 
+          />
+          
+          <EventList 
+            events={events} 
+            title="Eventos Encerrados" 
+            type="closed" 
+          />
+        </>
+      )}
 
       <Footer />
     </>

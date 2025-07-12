@@ -32,7 +32,7 @@ class eventoSerializerList(serializers.ModelSerializer):
     photo_url = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url') 
+        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')
