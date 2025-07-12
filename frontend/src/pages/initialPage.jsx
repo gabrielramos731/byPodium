@@ -1,6 +1,8 @@
 import mainImage from "../assets/main-image.jpg";
 import mainLogo from "../assets/logo-main.svg";
-
+import Navigation from "../components/Navigation";
+import searchIcon from "../assets/search-icon.svg";
+import leadingIcon from "../assets/Leading-icon.svg"
 import "./initialPage.css";
 
 function InitialPage() {
@@ -12,30 +14,23 @@ function InitialPage() {
           <div className="banner-content">
             <img src={mainLogo} alt="main-logo" />
           </div>
-          <section className="section-nav">
-            <nav className="main-nav">
-              <a href="#" className="nav-link active">
-                Início
-              </a>
-              <a href="#" className="nav-link">
-                Minhas Inscrições
-              </a>
-              <a href="#" className="nav-link">
-                Meu Perfil
-              </a>
-            </nav>
-          </section>
+          <Navigation />
         </div>
       </section>
 
       <section className="search-section">
         <div className="search-container">
-          <input 
-            type="text" 
-            placeholder="Buscar evento..." 
+          <button className="leading-button">
+            <img src={leadingIcon} alt="leading-icon" />
+          </button>
+          <input
+            type="text"
+            placeholder="Buscar evento..."
             className="search-input"
           />
-          <button className="search-button">🔍</button>
+          <button className="search-button">
+            <img src={searchIcon} alt="search-icon" />
+          </button>
         </div>
       </section>
 
