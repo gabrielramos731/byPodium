@@ -1,19 +1,31 @@
 import styles from './Event.module.css';
-import imagem from '../../assets/main-image.jpg'
+import imagem from '../../assets/main-image.jpg';
+import { useNavigate } from 'react-router-dom';
+
 function Event({ 
+  id,
   title = "Nome do evento", 
   location = "Montes Claros - MG", 
   date = "10/08/2025 - 06:30", 
   status = "open", 
   statusText = "Inscrições abertas",
-  // image,
+  image,
   onClick 
 }) {
+  const navigate = useNavigate();
   const statusClass = status === "open" ? styles.statusOpen : styles.statusClosed;
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (id) {
+      navigate(`/evento/${id}`);
+    }
+  };
+
   return (
-    <div className={styles.eventCard} onClick={onClick}>
-      <img src={imagem} alt="Evento" className={styles.eventImage} />
+    <div className={styles.eventCard} onClick={handleClick}>
+      <img src={image || imagem} alt="Evento" className={styles.eventImage} />
       <div className={styles.eventInfo}>
         <h3 className={styles.eventTitle}>{title}</h3>
         <p className={styles.eventLocation}>{location}</p>

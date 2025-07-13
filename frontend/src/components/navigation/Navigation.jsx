@@ -4,7 +4,7 @@ function Navigation() {
   return (
     <section className={styles.sectionNav}>
       <nav className={styles.mainNav}>
-        <a href="#" className={`${styles.navLink} ${styles.active}`}>
+        <a href="/" className={`${styles.navLink} ${styles.active}`}>
           Início
         </a>
         <a href="#" className={styles.navLink}>

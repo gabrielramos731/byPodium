@@ -26,13 +26,13 @@ function EventList({ events, title, type = "open" }) {
           filteredEvents.map((event) => (
             <Event
               key={event.id}
+              id={event.id}
               title={event.nome || "Nome do evento"}
               location={event.localidade ? `${event.localidade.cidade} - ${event.localidade.uf}` : "Local não informado"}
               date={new Date(event.dataIni).toLocaleDateString('pt-BR') + " - " + event.horarioIni}
               status={type}
               statusText={getStatusText(type)}
               image={event.photo_url || mainImage}
-              onClick={() => console.log(`Evento ${event.id} clicado`)}
             />
           ))
         ) : (
