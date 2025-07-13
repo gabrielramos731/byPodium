@@ -1,3 +1,4 @@
+from datetime import date
 from rest_framework import serializers
 from .models import evento, localidade, participante, organizador, inscricao, categoria, kit, item
 
@@ -20,10 +21,10 @@ class eventoSerializer(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     organizador_email = serializers.SerializerMethodField()
     isInscrito = serializers.SerializerMethodField()
-
+    isInscricaoAberta = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -31,13 +32,17 @@ class eventoSerializer(serializers.ModelSerializer):
     def get_isInscrito(self, obj):
         participante_id = 1  
         return inscricao.objects.filter(evento=obj, participante_id=participante_id).exists()
+    
+    def get_isInscricaoAberta(self, obj):
+        return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
 
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     photo_url = serializers.SerializerMethodField()
+    isInscricaoAberta = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url') 
+        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url','isInscricaoAberta') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')
@@ -47,6 +52,9 @@ class eventoSerializerList(serializers.ModelSerializer):
                 return request.build_absolute_uri(url)
             return url
         return None
+    
+    def get_isInscricaoAberta(self, obj):
+        return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
     
 class inscricaoSerializer(serializers.ModelSerializer):
     class Meta():
