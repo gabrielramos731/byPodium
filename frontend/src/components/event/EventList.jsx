@@ -1,5 +1,4 @@
 import Event from "./Event";
-import mainImage from "../../assets/main-image.jpg";
 import styles from "./EventList.module.css";
 
 function EventList({ events, title, type = "open" }) {
@@ -32,7 +31,7 @@ function EventList({ events, title, type = "open" }) {
               date={new Date(event.dataIni).toLocaleDateString('pt-BR') + " - " + event.horarioIni}
               status={type}
               statusText={getStatusText(type)}
-              image={event.photo_url || mainImage}
+              image={event.photo_url}
             />
           ))
         ) : (

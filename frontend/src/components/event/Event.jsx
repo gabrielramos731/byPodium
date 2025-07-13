@@ -1,5 +1,5 @@
 import styles from './Event.module.css';
-import imagem from '../../assets/main-image.jpg';
+import imagem from '../../assets/NO-PHOTO.png';
 import { useNavigate } from 'react-router-dom';
 
 function Event({ 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Footer from '../components/footer/Footer';
 import Navigation from '../components/navigation/Navigation';
-import mainImage from '../assets/main-image.jpg';
+import mainImage from '../assets/NO-PHOTO.png';
 import { useEvent } from '../utils/hooks/useEvent';
 import styles from './EventView.module.css';
 

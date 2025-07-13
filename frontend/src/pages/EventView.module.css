@@ -64,7 +64,7 @@
   padding: 2rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   flex-wrap: wrap;
   gap: 2rem;
 }
