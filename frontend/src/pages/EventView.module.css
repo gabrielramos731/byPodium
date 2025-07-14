@@ -110,6 +110,27 @@
   white-space: nowrap;
 }
 
+/* Classes de status com cores específicas */
+.statusOpen {
+  background-color: #2d5016;
+  color: #90ee90;
+}
+
+.statusClosed {
+  background-color: #D03D3D;
+  color: #F8F2ED;
+}
+
+.statusPending {
+  background-color: #8b5a00;
+  color: #ffa726;
+}
+
+.statusDefault {
+  background-color: #555;
+  color: #ccc;
+}
+
 .eventLocation {
   color: #eaeaea;
   font-family: 'Montserrat', sans-serif;

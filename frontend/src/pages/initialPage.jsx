@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import mainImage from "../assets/main-image.jpg";
 import mainLogo from "../assets/logo-main.svg";
 import Navigation from "../components/navigation/Navigation";
@@ -9,6 +10,12 @@ import styles from "./initialPage.module.css";
 
 function InitialPage() {
   const { events, loading, error } = useEvents();
+  
+  // Scroll para o topo quando a página carrega
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   return (
     <>
       <section className={styles.heroBanner}>

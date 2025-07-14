@@ -28,6 +28,11 @@ const MyProfile = () => {
 
     const itemsPerPage = 3;
 
+    // Scroll para o topo quando a página carrega
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     useEffect(() => {
         const fetchData = async () => {
             try {

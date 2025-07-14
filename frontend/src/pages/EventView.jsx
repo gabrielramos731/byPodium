@@ -10,10 +10,10 @@ function EventView() {
   const { id } = useParams();
   const { event, loading, error } = useEvent(id);
 
+  // Scroll para o topo quando a página carrega
   useEffect(() => {
-    console.log("Event data loaded:", event);
-    console.log("Status do evento:", event?.isInscricaoAberta);
-  }, [event]);
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return (
@@ -80,6 +80,20 @@ function EventView() {
     }
   };
 
+  const getStatusClass = (statusText) => {
+    const status = statusText?.toLowerCase() || '';
+    
+    if (status.includes('abertas') || status.includes('aberto')) {
+      return styles.statusOpen; // Verde
+    } else if (status.includes('encerradas') || status.includes('encerrado')) {
+      return styles.statusClosed; // Vermelho
+    } else if (status.includes('fechadas') || status.includes('fechado')) {
+      return styles.statusPending; // Laranja
+    }
+    
+    return styles.statusDefault; // Cor padrão
+  };
+
   return (
     <div className={styles.eventViewContainer}>
       <Navigation />
@@ -99,7 +113,7 @@ function EventView() {
               </p>
             </div>
             <div className={styles.eventDetails}>
-              <span className={styles.eventStatus}>
+              <span className={`${styles.eventStatus} ${getStatusClass(event.inscricaoEvento)}`}>
                 {event.inscricaoEvento}
               </span>
               <p className={styles.eventLocation}>
