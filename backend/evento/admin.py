@@ -3,7 +3,11 @@ from django.contrib import admin
 
 
 class EventoAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'dataIni', 'dataFim')
+    list_display = ('nome', 'dataIni', 'dataFim', 'get_organizador_nome')
+
+    def get_organizador_nome(self, obj):
+        return obj.organizador.participante.nome
+    get_organizador_nome.short_description = 'Organizador'
 
 class LocalidadeAdmin(admin.ModelAdmin):
     list_display = ('cidade', 'uf')

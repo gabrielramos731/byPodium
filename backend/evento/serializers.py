@@ -40,9 +40,10 @@ class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     photo_url = serializers.SerializerMethodField()
     isInscricaoAberta = serializers.SerializerMethodField()
+    isEncerrado = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url','isInscricaoAberta') 
+        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url','isInscricaoAberta', 'isEncerrado') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')
@@ -55,6 +56,9 @@ class eventoSerializerList(serializers.ModelSerializer):
     
     def get_isInscricaoAberta(self, obj):
         return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
+    
+    def get_isEncerrado(self, obj):
+        return date.today() > obj.dataFim
     
 class inscricaoSerializer(serializers.ModelSerializer):
     class Meta():
@@ -92,6 +96,13 @@ class InscricaoResponseSerializer(serializers.ModelSerializer):
         fields = ('id', 'dataInsc', 'status', 'participante_nome', 'evento_nome', 'categoria_nome', 'kit_nome')
 
 class DetalhesParticipanteSerializer(serializers.ModelSerializer):
+    localidade = localidadeSerializer(read_only=True)
+    eventos_organizados = serializers.SerializerMethodField()
     class Meta:
         model = participante
         fields = '__all__'
+
+    def get_eventos_organizados(self, obj):
+        participante_dummy = participante.objects.get(pk=1) # PARA DESENVOLVIMENTO
+        eventos = evento.objects.filter(organizador__participante=participante_dummy)
+        return eventoSerializerList(eventos, many=True, context=self.context).data
