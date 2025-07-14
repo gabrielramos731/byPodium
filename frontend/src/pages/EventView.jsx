@@ -12,6 +12,7 @@ function EventView() {
 
   useEffect(() => {
     console.log("Event data loaded:", event);
+    console.log("Status do evento:", event?.isInscricaoAberta);
   }, [event]);
 
   if (loading) {
@@ -56,7 +57,6 @@ function EventView() {
     );
   }
 
-  // Função para formatar data se necessário
   const formatDate = (dateString, timeString) => {
     if (!dateString) return "Data não definida";
     try {
@@ -69,23 +69,6 @@ function EventView() {
     }
   };
 
-  // Função para formatar o status do evento
-  const getStatusText = (status) => {
-    switch(status) {
-      case 'ativo':
-        return 'Inscrições abertas';
-      case 'pendente':
-        return 'Aguardando aprovação';
-      case 'negado':
-        return 'Evento negado';
-      case 'cancelado':
-        return 'Evento cancelado';
-      default:
-        return 'Status não definido';
-    }
-  };
-
-  // Função para formatar período de inscrições
   const formatRegistrationPeriod = (start, end) => {
     if (!start || !end) return "Consulte o organizador";
     try {
@@ -117,7 +100,7 @@ function EventView() {
             </div>
             <div className={styles.eventDetails}>
               <span className={styles.eventStatus}>
-                {getStatusText(event.status)}
+                {event.inscricaoEvento}
               </span>
               <p className={styles.eventLocation}>
                 {event.localidade?.cidade ? `${event.localidade.cidade} - ${event.localidade.uf}` : "Local não definido"}

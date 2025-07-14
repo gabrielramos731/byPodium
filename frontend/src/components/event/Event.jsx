@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 function Event({ 
   id,
-  title = "Nome do evento", 
-  location = "Montes Claros - MG", 
-  date = "10/08/2025 - 06:30", 
+  title, 
+  location, 
+  date, 
   status = "open", 
-  statusText = "Inscrições abertas",
+  statusText,
   image,
   onClick 
 }) {
