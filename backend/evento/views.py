@@ -1,7 +1,9 @@
 from urllib import request
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import evento, inscricao, categoria, kit, participante
+from .models import evento, categoria, kit
+from inscricoes.models import inscricao
+from usuarios.models import participante
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 

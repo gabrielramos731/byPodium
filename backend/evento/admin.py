@@ -1,4 +1,7 @@
-from .models import evento, localidade, participante, organizador, inscricao, categoria, kit, item, pagamento
+from .models import evento, categoria, kit, item
+from localidades.models import localidade
+from usuarios.models import participante, organizador
+from inscricoes.models import inscricao, pagamento
 from django.contrib import admin
 
 

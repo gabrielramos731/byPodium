@@ -1,6 +1,9 @@
 from datetime import date
 from rest_framework import serializers
-from .models import evento, localidade, participante, organizador, inscricao, categoria, kit, item
+from .models import evento, categoria, kit, item
+from localidades.models import localidade
+from usuarios.models import participante, organizador
+from inscricoes.models import inscricao
 
 class participanteSerializer(serializers.ModelSerializer):
     class Meta():

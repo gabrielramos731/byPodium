@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     
     #local
     'evento.apps.EventoConfig',
+    'usuarios.apps.UsuariosConfig',
+    'inscricoes.apps.InscricoesConfig',
+    'localidades.apps.LocalidadesConfig',
     
     #third party
     'rest_framework',
