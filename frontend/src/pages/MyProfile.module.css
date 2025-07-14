@@ -1,0 +1,243 @@
+.myEventsPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #262626;
+    color: #eaeaea;
+}
+
+.mainContent {
+    flex-grow: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.pageTitle {
+    font-size: 2.5rem;
+    color: #eaeaea;
+    margin-bottom: 2rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.loadingMessage {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #eaeaea;
+    padding: 2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.error {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 2rem auto;
+    max-width: 500px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Container principal do carrossel */
+.carouselContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    margin: 2rem 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.carouselWrapper {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    padding: 0;
+}
+
+.carouselTrack {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    gap: 1.5rem;
+    padding: 0 1.5rem 0 0;
+    width: 100%;
+}
+
+.carouselItem {
+    flex: 0 0 calc(33.333% - 1rem);
+    min-width: 0;
+    max-width: calc(33.333% - 1rem);
+}
+
+.carouselBtn {
+    background: linear-gradient(135deg, #d9a444, #f3e96d);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2;
+    padding: 0;
+    line-height: 1;
+}
+
+.carouselBtn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #f3e96d, #d9a444);
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(217, 164, 68, 0.4);
+}
+
+.carouselBtn:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.prevBtn {
+    margin-right: 1rem;
+}
+
+.nextBtn {
+    margin-left: 1rem;
+}
+
+.carouselIndicators {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
+    border-radius: 50%;
+    border: none;
+    background-color: #555;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.indicator:hover {
+    background-color: #888;
+}
+
+.indicatorActive {
+    background-color: #d9a444;
+    transform: scale(1.2);
+}
+
+.noEventsContainer {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.noEventsMessage {
+    font-size: 1.2rem;
+    color: #eaeaea;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        padding: 1rem;
+    }
+
+    .pageTitle {
+        font-size: 2rem;
+    }
+
+    .carouselItem {
+        flex: 0 0 calc(50% - 0.75rem);
+        max-width: calc(50% - 0.75rem);
+    }
+
+    .carouselBtn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 1.2rem;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .prevBtn {
+        margin-right: 0.5rem;
+    }
+
+    .nextBtn {
+        margin-left: 0.5rem;
+    }
+
+    .carouselTrack {
+        padding: 0 1.25rem 0 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .carouselItem {
+        flex: 0 0 calc(100% - 0.5rem);
+        max-width: calc(100% - 0.5rem);
+    }
+
+    .carouselWrapper {
+        padding: 0;
+    }
+
+    .carouselTrack {
+        padding: 0 1rem 0 0;
+    }
+
+    .carouselContainer {
+        gap: 0.5rem;
+    }
+
+    .carouselBtn {
+        width: 35px;
+        height: 35px;
+        min-width: 35px;
+        min-height: 35px;
+        font-size: 1rem;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .noEventsContainer {
+        padding: 2rem 1rem;
+    }
+
+    .noEventsMessage {
+        font-size: 1rem;
+    }
+}

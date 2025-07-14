@@ -10,7 +10,7 @@ function Navigation() {
         <a href="#" className={styles.navLink}>
           Minhas Inscrições
         </a>
-        <a href="#" className={styles.navLink}>
+        <a href="/meu-perfil" className={styles.navLink}>
           Meu Perfil
         </a>
       </nav>

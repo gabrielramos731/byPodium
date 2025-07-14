@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import InitialPage from './pages/initialPage.jsx'
 import EventView from './pages/EventView.jsx'
-import MyEventsPage from './pages/MyEventsPage.jsx';
+import MyProfile from './pages/myProfile.jsx';
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 
 const router = createBrowserRouter([
@@ -16,8 +16,8 @@ const router = createBrowserRouter([
     element: <EventView/>,
   }, 
   {
-    path: "/meus-eventos",
-    element: <MyEventsPage />,
+    path: "/meu-perfil",
+    element: <MyProfile />,
   }
 ])
 
