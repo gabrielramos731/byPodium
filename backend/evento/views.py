@@ -141,13 +141,14 @@ class DetalhesInscricao(generics.RetrieveAPIView):
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
     
-class DetalhesParticipante(generics.RetrieveAPIView):
+class DetalhesParticipante(generics.ListAPIView):
     """
     Retorna os detalhes completos de um participante específico.
     
     Inclui informações pessoais, endereço e localidade associada.
     """
-    queryset = participante.objects.all()
+    # queryset = participante.objects.all()
+    queryset = participante.objects.filter(pk=1)  # PARA DESENVOLVIMENTO
     serializer_class = DetalhesParticipanteSerializer
 
 class CancelarInscricao(generics.DestroyAPIView):

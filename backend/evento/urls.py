@@ -7,6 +7,6 @@ urlpatterns = [
     path('inscricoes/', ListInscricoes.as_view(), name='list-inscricoes'),
     path('eventos/<int:pk>/criar', CriarInscricao.as_view(), name='criar-inscricao'),
     path('inscricoes/<int:pk>/', DetalhesInscricao.as_view(), name='detalhe-inscricao'),
-    path('participante/<int:pk>/', DetalhesParticipante.as_view(), name='detalhe-participante'),
+    path('perfil/', DetalhesParticipante.as_view(), name='detalhe-participante'),
 ]
 
