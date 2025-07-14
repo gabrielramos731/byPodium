@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import api from '../utils/api/apiTaskManager';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import Event from '../components/event/Event';
 import styles from './MyEventsPage.module.css';
-import eventListStyles from '../components/event/EventList.module.css'; 
 import { getUserInscriptions }  from '../utils/api/apiTaskManager';
 
 const MyEventsPage = () => {
@@ -35,7 +33,7 @@ const MyEventsPage = () => {
                 {loading && <p>Carregando...</p>}
                 {error && <p className={styles.error}>{error}</p>}
                 {!loading && !error && (
-                    <div className={eventListStyles.eventList}>
+                <div className={styles.eventList}>
                         {inscricoes.length > 0 ? (
                             inscricoes.map(inscricao => (
                                 <Event key={inscricao.id} event={inscricao.evento} />
