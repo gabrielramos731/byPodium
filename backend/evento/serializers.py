@@ -25,17 +25,25 @@ class eventoSerializer(serializers.ModelSerializer):
     organizador_email = serializers.SerializerMethodField()
     isInscrito = serializers.SerializerMethodField()
     isInscricaoAberta = serializers.SerializerMethodField()
+    inscricaoEvento = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
     
     def get_isInscrito(self, obj):
-        participante_id = 1  
+        participante_id = 1  # DESENVOLVIMENTO: Usar participante autenticado
         return inscricao.objects.filter(evento=obj, participante_id=participante_id).exists()
     
+    def get_inscricaoEvento(self, obj):
+        if obj.dataIniInsc <= date.today() <= obj.dataFimInsc:
+            return 'Inscrições Abertas'
+        elif date.today() > obj.dataFimInsc:
+            return 'Inscrições Encerradas'
+        return 'Inscrições Fechadas'
+
     def get_isInscricaoAberta(self, obj):
         return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
 
