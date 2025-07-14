@@ -41,7 +41,7 @@
 
 .cardTitle {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 600;
     margin: 0 0 1.5rem 0;
     color: #0d0d0d;
@@ -73,6 +73,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-bottom: 10px;
 }
 
 .label {
@@ -149,6 +150,7 @@
     background-color: #1a1a1a;
     padding: 2rem;
     border-radius: 16px;
+    overflow: visible;
 }
 
 .searchContainer {
@@ -234,11 +236,13 @@
     margin: 2rem 0;
     width: 100%;
     max-width: 100%;
+    padding: 1rem 0;
+    overflow: visible;
 }
 
 .carouselWrapper {
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 12px;
     padding: 0;
 }
@@ -249,12 +253,19 @@
     gap: 1.5rem;
     padding: 0 1.5rem 0 0;
     width: 100%;
+    overflow: visible;
 }
 
 .carouselItem {
     flex: 0 0 calc(33.333% - 1rem);
     min-width: 0;
     max-width: calc(33.333% - 1rem);
+    position: relative;
+    z-index: 1;
+}
+
+.carouselItem:hover {
+    z-index: 10;
 }
 
 .carouselBtn {
@@ -279,7 +290,7 @@
 
 .carouselBtn:hover:not(:disabled) {
     background: linear-gradient(135deg, #f3e96d, #d9a444);
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
     box-shadow: 0 5px 15px rgba(217, 164, 68, 0.4);
 }
 

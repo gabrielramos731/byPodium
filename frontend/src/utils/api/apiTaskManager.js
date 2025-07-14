@@ -30,6 +30,17 @@ async function getUserInscriptions(){
   }
 }
 
+async function getUserProfile(){
+  try{
+    const response = await api.get("/perfil/");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar perfil do usuário:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
+export { getUserProfile };

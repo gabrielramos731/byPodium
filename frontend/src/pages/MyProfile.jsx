@@ -3,7 +3,7 @@ import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import Event from '../components/event/Event';
 import styles from './MyProfile.module.css';
-import { getUserInscriptions }  from '../utils/api/apiTaskManager';
+import { getUserProfile }  from '../utils/api/apiTaskManager';
 
 const MyProfile = () => {
     const [inscricoes, setInscricoes] = useState([]);
@@ -11,33 +11,61 @@ const MyProfile = () => {
     const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     
+    // Estado para dados do perfil - inicializado vazio, será preenchido pela API
     const [userData, setUserData] = useState({
-        nome: 'Texto da Silva Moreira',
-        cpf: '000.000.000-00',
-        dataNascimento: '13/03/2007',
-        email: 'email@email.com',
-        senha: '••••••••••••••••••••',
-        logradouro: 'Texto',
-        numero: '304',
-        bairro: 'Texto',
-        telefone: '(99)9 9999-9999'
+        nome: '',
+        cpf: '',
+        dataNascimento: '',
+        email: '',
+        senha: '',
+        logradouro: '',
+        numero: '',
+        bairro: '',
+        telefone: ''
     });
+    const [profileLoading, setProfileLoading] = useState(true);
+    const [profileError, setProfileError] = useState(null);
 
     const itemsPerPage = 3;
 
     useEffect(() => {
-        const fetchMyEvents = async () => {
+        const fetchData = async () => {
             try {
-                const data = await getUserInscriptions();
-                setInscricoes(data);
+                // Buscar apenas dados do perfil que já inclui eventos organizados
+                const profileResponse = await getUserProfile();
+                
+                // Como o backend retorna uma lista com um item, pegamos o primeiro elemento
+                const profileData = Array.isArray(profileResponse) ? profileResponse[0] : profileResponse;
+                
+                // Atualizar dados do perfil
+                setUserData({
+                    nome: profileData.nome || '',
+                    cpf: profileData.cpf || '',
+                    dataNascimento: profileData.data_nascimento ? 
+                        new Date(profileData.data_nascimento).toLocaleDateString('pt-BR') : '',
+                    email: profileData.email || '',
+                    senha: '••••••••••••••••••••', // Senha sempre mascarada
+                    logradouro: profileData.rua || '', // Backend usa 'rua' ao invés de 'logradouro'
+                    numero: profileData.numero || '',
+                    bairro: profileData.bairro || '',
+                    telefone: profileData.telefone || ''
+                });
+                
+                // Atualizar dados dos eventos organizados
+                setInscricoes(profileData.eventos_organizados || []);
+                
                 setLoading(false);
+                setProfileLoading(false);
             } catch (err) {
+                console.error('Erro ao carregar dados:', err);
+                setProfileError('Não foi possível carregar seus dados pessoais.');
                 setError('Não foi possível carregar seus eventos. Tente novamente mais tarde.');
                 setLoading(false);
-                console.error(err);
+                setProfileLoading(false);
             }
         };
-        fetchMyEvents();
+        
+        fetchData();
     }, []);
 
     const nextSlide = () => {
@@ -64,7 +92,12 @@ const MyProfile = () => {
             <main className={styles.mainContent}>
                 
                 <section className={styles.profileSection}>
-                    <div className={styles.profileGrid}>
+                    {profileLoading ? (
+                        <div className={styles.loadingMessage}>Carregando dados do perfil...</div>
+                    ) : profileError ? (
+                        <div className={styles.error}>{profileError}</div>
+                    ) : (
+                        <div className={styles.profileGrid}>
                         <div className={styles.profileCard}>
                             <h2 className={styles.cardTitle}>Dados Pessoais</h2>
                             <div className={styles.inputGroup}>
@@ -98,7 +131,7 @@ const MyProfile = () => {
                                 </div>
                             </div>
                             
-                            <h3 className={styles.subTitle}>Endereço e contato</h3>
+                            <h2 className={styles.cardTitle}>Endereço e contato</h2>
                             <div className={styles.formGridTwo}>
                                 <div className={styles.inputGroup}>
                                     <label className={styles.label}>Logradouro</label>
@@ -180,12 +213,14 @@ const MyProfile = () => {
                             </div>
                         </div>
                     </div>
+                    )}
                 </section>
 
                 <section className={styles.eventsSection}>
                     <h1 className={styles.pageTitle}>Meus eventos</h1>
                     
-                    <div className={styles.searchContainer}>
+                    {/* barra de busca nao será implementada agora */}
+                    {/* <div className={styles.searchContainer}>
                         <div className={styles.searchBar}>
                             <span className={styles.searchIcon}>🔍</span>
                             <input 
@@ -194,7 +229,7 @@ const MyProfile = () => {
                                 className={styles.searchInput}
                             />
                         </div>
-                    </div>
+                    </div> */}
 
                     {loading && <div className={styles.loadingMessage}>Carregando...</div>}
                     {error && <p className={styles.error}>{error}</p>}
@@ -217,19 +252,19 @@ const MyProfile = () => {
                                                 transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`
                                             }}
                                         >
-                                            {inscricoes.map(inscricao => (
-                                                <div key={inscricao.id} className={styles.carouselItem}>
+                                            {inscricoes.map(evento => (
+                                                <div key={evento.id} className={styles.carouselItem}>
                                                     <Event 
-                                                        id={inscricao.evento.id}
-                                                        title={inscricao.evento.nome}
-                                                        location={inscricao.evento.localidade ? 
-                                                            `${inscricao.evento.localidade.cidade} - ${inscricao.evento.localidade.uf}` : 
+                                                        id={evento.id}
+                                                        title={evento.nome}
+                                                        location={evento.localidade ? 
+                                                            `${evento.localidade.cidade} - ${evento.localidade.uf}` : 
                                                             "Local não informado"
                                                         }
-                                                        date={new Date(inscricao.evento.dataIni).toLocaleDateString('pt-BR')}
-                                                        status={inscricao.evento.status === 'ativo' ? 'open' : 'closed'}
-                                                        statusText={inscricao.evento.status === 'ativo' ? 'Inscrições abertas' : 'Evento encerrado'}
-                                                        image={inscricao.evento.imagem}
+                                                        date={new Date(evento.dataIni).toLocaleDateString('pt-BR')}
+                                                        status={evento.status === 'ativo' ? 'open' : 'closed'}
+                                                        statusText={evento.status === 'ativo' ? 'Inscrições abertas' : 'Evento encerrado'}
+                                                        image={evento.imagem}
                                                     />
                                                 </div>
                                             ))}
@@ -247,7 +282,7 @@ const MyProfile = () => {
                             ) : (
                                 <div className={styles.noEventsContainer}>
                                     <p className={styles.noEventsMessage}>
-                                        Você ainda não se inscreveu em nenhum evento.
+                                        Você ainda não organizou nenhum evento.
                                     </p>
                                 </div>
                             )}
