@@ -20,5 +20,16 @@ async function getEventById(id) {
   }
 }
 
+async function getUserInscriptions(){
+  try{
+    const response = await api.get("/inscricoes/");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar inscrições do usuário:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
+export { getUserInscriptions };

@@ -37,6 +37,9 @@ class ListInscricoes(generics.ListAPIView):
     Retorna informações completas das inscrições incluindo
     participante, evento, categoria e kit selecionados.
     """
+    def get_queryset(self):
+        return inscricao.objects.filter(participante__id=1)  #user teste para inscrição
+    
     queryset = inscricao.objects.all()
     serializer_class = inscricaoSerializer
 
