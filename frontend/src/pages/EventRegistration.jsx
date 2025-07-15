@@ -52,7 +52,7 @@ function EventRegistration() {
   const handleNext = () => {
     if (currentStep === 1) {
       setCurrentStep(2);
-    } else if (currentStep === 2 && selectedCategory && selectedKit) {
+    } else if (currentStep === 2 && selectedCategory && (selectedKit || !eventInfo?.kits?.length)) {
       setCurrentStep(3);
     }
   };
@@ -71,7 +71,7 @@ function EventRegistration() {
       
       const registrationData = {
         categoria: selectedCategory?.id,
-        kit: selectedKit?.id
+        ...(selectedKit && { kit: selectedKit.id })
       };
 
       await createEventRegistration(id, registrationData);
@@ -174,26 +174,29 @@ function EventRegistration() {
                       ))}
                     </select>
                   </div>
-                  <div className={styles.kitGroup}>
-                    <label>Kit</label>
-                    <select 
-                      className={styles.kitSelect}
-                      value={selectedKit?.id || ''}
-                      onChange={(e) => {
-                        const kitId = parseInt(e.target.value);
-                        const kit = eventInfo?.kits?.find(k => k.id === kitId);
-                        setSelectedKit(kit);
-                      }}
-                      disabled={!selectedCategory}
-                    >
-                      <option value="">Escolha seu kit</option>
-                      {eventInfo?.kits?.map((kit) => (
-                        <option key={kit.id} value={kit.id}>
-                          {kit.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  
+                  {eventInfo?.kits?.length > 0 && (
+                    <div className={styles.kitGroup}>
+                      <label>Kit</label>
+                      <select 
+                        className={styles.kitSelect}
+                        value={selectedKit?.id || ''}
+                        onChange={(e) => {
+                          const kitId = parseInt(e.target.value);
+                          const kit = eventInfo?.kits?.find(k => k.id === kitId);
+                          setSelectedKit(kit);
+                        }}
+                        disabled={!selectedCategory}
+                      >
+                        <option value="">Escolha seu kit</option>
+                        {eventInfo?.kits?.map((kit) => (
+                          <option key={kit.id} value={kit.id}>
+                            {kit.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -219,7 +222,7 @@ function EventRegistration() {
                 <button 
                   className={styles.nextButton}
                   onClick={handleNext}
-                  disabled={currentStep === 2 && (!selectedCategory || !selectedKit)}
+                  disabled={currentStep === 2 && (!selectedCategory || (eventInfo?.kits?.length > 0 && !selectedKit))}
                 >
                   Avançar
                 </button>
