@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Footer from '../components/footer/Footer';
 import Navigation from '../components/navigation/Navigation';
 import mainImage from '../assets/NO-PHOTO.png';
 import { useEvent } from '../utils/hooks/useEvent';
+import { cancelEventInscription } from '../utils/api/apiTaskManager';
 import styles from './EventView.module.css';
 
 function EventView() {
   const { id } = useParams();
-  const { event, loading, error } = useEvent(id);
+  const { event, loading, error, refetch } = useEvent(id);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -93,6 +96,61 @@ function EventView() {
     return styles.statusDefault;
   };
 
+  const handleButtonClick = () => {
+    if (event.isInscrito) {
+      setShowCancelModal(true);
+    }
+  };
+
+  const handleCancelInscription = async () => {
+    try {
+      setCancelLoading(true);
+      
+      await cancelEventInscription(id);
+      
+      setShowCancelModal(false);
+      await refetch();
+      
+      alert('Inscrição cancelada com sucesso!');
+      
+    } catch (error) {
+      console.error('Erro detalhado ao cancelar inscrição:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        isStatus500: error.isStatus500,
+        fullError: error
+      });
+      
+      if (error.response?.status === 204) {
+        setShowCancelModal(false);
+        await refetch();
+        alert('Inscrição cancelada com sucesso!');
+        return;
+      }
+      
+      if (error.response?.status === 500 || error.isStatus500) {
+        setShowCancelModal(false);
+        
+        try {
+          await refetch();
+          alert('Inscrição cancelada com sucesso!');
+          return;
+        } catch (refetchError) {
+          console.error('Erro no refetch após status 500:', refetchError);
+        }
+      }
+      
+      alert(`Erro ao cancelar inscrição: ${error.response?.data?.message || error.message || 'Erro desconhecido'}`);
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowCancelModal(false);
+  };
+
   return (
     <div className={styles.eventViewContainer}>
       <Navigation />
@@ -146,11 +204,42 @@ function EventView() {
             </p>
           </div>
 
-          <button className={styles.registerButton}>
-            Inscreva-se
+          <button 
+            className={`${styles.registerButton} ${event.isInscrito ? styles.cancelButton : ''}`}
+            onClick={handleButtonClick}
+          >
+            {event.isInscrito ? 'Cancelar Inscrição' : 'Inscreva-se'}
           </button>
         </section>
       </main>
+
+      {showCancelModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalTitle}>
+              Tem certeza que deseja cancelar a inscrição?
+            </h3>
+            <p className={styles.modalSubtitle}>
+              Cancelamentos fora do prazo não serão estornados.
+            </p>
+            <div className={styles.modalButtons}>
+              <button 
+                className={styles.modalButtonSecondary}
+                onClick={handleCloseModal}
+              >
+                Voltar
+              </button>
+              <button 
+                className={styles.modalButtonPrimary}
+                onClick={handleCancelInscription}
+                disabled={cancelLoading}
+              >
+                {cancelLoading ? 'Cancelando...' : 'Cancelar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

@@ -220,8 +220,102 @@
   background: linear-gradient(135deg, var(--yellow0), var(--yellow1));
 }
 
+.cancelButton {
+  background: linear-gradient(135deg, #dc3545, #c82333) !important;
+  color: white !important;
+}
+
+.cancelButton:hover {
+  background: linear-gradient(135deg, #c82333, #a71e2a) !important;
+  box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4) !important;
+}
+
 .registerButton:active {
   transform: translateY(0);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: var(--yellow1);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+
+.modalTitle {
+  color: var(--black-color);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.modalSubtitle {
+  color: var(--black-color);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  margin: 0 0 2rem 0;
+  opacity: 0.8;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.modalButtonSecondary {
+  background: var(--black-color);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.modalButtonSecondary:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+
+.modalButtonPrimary {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.modalButtonPrimary:hover {
+  background: linear-gradient(135deg, #c82333, #a71e2a);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {

@@ -40,7 +40,33 @@ async function getUserProfile(){
   }
 }
 
+async function cancelEventInscription(eventId) {
+  try {
+    const response = await api.delete(`/eventos/${eventId}/criar`);
+    
+    if (response.status === 204 || response.status === 200) {
+      return { success: true, message: 'Inscrição cancelada com sucesso' };
+    }
+    
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 204) {
+      return { success: true, message: 'Inscrição cancelada com sucesso' };
+    }
+    
+    if (error.response?.status === 500) {
+      const customError = new Error('Status 500 - verificar se operação foi bem-sucedida');
+      customError.response = error.response;
+      customError.isStatus500 = true;
+      throw customError;
+    }
+    
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
 export { getUserProfile };
+export { cancelEventInscription };
