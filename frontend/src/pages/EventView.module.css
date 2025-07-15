@@ -1,0 +1,316 @@
+:root {
+  --black-color: #0d0d0d;
+  --background-black: #262626;
+  --yellow0: #f3e96d;
+  --yellow1: #d9a444;
+  --yellow3: #8c6d34;
+  --white: #F8F2ED;
+}
+
+.eventViewContainer {
+  min-height: 100vh;
+  background-color: var(--background-black);
+  color: #eaeaea;
+}
+
+.mainContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.loading {
+  color: #eaeaea;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.error {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  text-align: center;
+  max-width: 500px;
+}
+
+.eventHero {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.eventImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.eventHeader {
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.eventTitleSection {
+  flex: 1;
+  min-width: 250px;
+}
+
+.eventTitle {
+  color: var(--yellow1);
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.eventPrice {
+  color: var(--yellow0);
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.5rem;
+}
+
+.eventStatus {
+  background-color: #2d5016;
+  color: #90ee90;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusOpen {
+  background-color: #2d5016;
+  color: #90ee90;
+}
+
+.statusClosed {
+  background-color: #D03D3D;
+  color: #F8F2ED;
+}
+
+.statusPending {
+  background-color: #8b5a00;
+  color: #ffa726;
+}
+
+.statusDefault {
+  background-color: #555;
+  color: #ccc;
+}
+
+.eventLocation {
+  color: #eaeaea;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.eventDateTime {
+  color: #eaeaea;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.eventDescription {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.sectionTitle {
+  color: #eaeaea;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.descriptionContent {
+  margin-bottom: 2rem;
+}
+
+.descriptionParagraph {
+  color: #eaeaea;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.eventInfo {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: rgba(217, 164, 68, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(217, 164, 68, 0.2);
+}
+
+.contactInfo,
+.registrationInfo {
+  color: #eaeaea;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.contactInfo strong,
+.registrationInfo strong {
+  color: var(--yellow1);
+  font-weight: 600;
+}
+
+.registerButton {
+  background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+  color: var(--black-color);
+  border: none;
+  border-radius: 30px;
+  padding: 1rem 3rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 2rem auto 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.registerButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(217, 164, 68, 0.4);
+  background: linear-gradient(135deg, var(--yellow0), var(--yellow1));
+}
+
+.registerButton:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .eventHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .eventDetails {
+    align-items: center;
+    text-align: center;
+  }
+
+  .eventTitle {
+    font-size: 2rem;
+  }
+
+  .eventPrice {
+    font-size: 1.5rem;
+  }
+
+  .eventImage {
+    height: 300px;
+  }
+
+  .eventDescription {
+    padding: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .descriptionParagraph {
+    font-size: 0.95rem;
+  }
+
+  .registerButton {
+    padding: 0.8rem 2.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 0.5rem;
+  }
+
+  .eventHero {
+    margin-bottom: 2rem;
+  }
+
+  .eventHeader {
+    padding: 1.5rem;
+  }
+
+  .eventTitle {
+    font-size: 1.7rem;
+  }
+
+  .eventPrice {
+    font-size: 1.3rem;
+  }
+
+  .eventImage {
+    height: 250px;
+  }
+
+  .eventDescription {
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .eventInfo {
+    padding: 1rem;
+  }
+
+  .registerButton {
+    padding: 0.7rem 2rem;
+    font-size: 0.95rem;
+  }
+}

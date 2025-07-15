@@ -1,0 +1,63 @@
+.eventCard {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.eventImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.eventInfo {
+  padding: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.eventTitle {
+  color: var(--yellow1);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.eventLocation {
+  color: #eaeaea;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.eventDate {
+  color: #eaeaea;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.eventStatus {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+}
+
+.statusOpen {
+  background-color: #2d5016;
+  color: #90ee90;
+}
+
+.statusClosed {
+  background-color: #4a3728;
+  color: #ffa500;
+}
