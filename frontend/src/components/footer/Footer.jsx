@@ -1,8 +1,8 @@
 import logoFooter from "../../assets/logo-footer.svg";
-import twitterLogo from "../../assets/twitter-icon.svg";
-import instagramLogo from "../../assets/instagram-icon.svg";
-import youtubeLogo from "../../assets/youtube-icon.svg";
-import linkedinLogo from "../../assets/linkedin-icon.svg";
+import twitterLogo from "../../assets/twitter-Icon.svg";
+import instagramLogo from "../../assets/instagram-Icon.svg";
+import youtubeLogo from "../../assets/youtube-Icon.svg";
+import linkedinLogo from "../../assets/linkedin-Icon.svg";
 import styles from './Footer.module.css';
 
 function Footer() {

@@ -208,8 +208,15 @@ function EventView() {
           </div>
 
           <button 
-            className={`${styles.registerButton} ${event.isInscrito ? styles.cancelButton : ''}`}
+            className={`${styles.registerButton} ${event.isInscrito ? styles.cancelButton : ''} ${!event.isInscricaoAberta ? styles.disabledButton : ''}`}
             onClick={handleButtonClick}
+            disabled={!event.isInscricaoAberta}
+            style={!event.isInscricaoAberta ? {
+              backgroundColor: '#ccc',
+              color: '#666',
+              cursor: 'not-allowed',
+              opacity: 0.6
+            } : {}}
           >
             {event.isInscrito ? 'Cancelar Inscrição' : 'Inscreva-se'}
           </button>

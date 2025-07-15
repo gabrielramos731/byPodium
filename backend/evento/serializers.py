@@ -26,9 +26,11 @@ class eventoSerializer(serializers.ModelSerializer):
     isInscrito = serializers.SerializerMethodField()
     isInscricaoAberta = serializers.SerializerMethodField()
     inscricaoEvento = serializers.SerializerMethodField()
+    isOrganizador = serializers.SerializerMethodField()
+    
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -46,6 +48,10 @@ class eventoSerializer(serializers.ModelSerializer):
 
     def get_isInscricaoAberta(self, obj):
         return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
+
+    def get_isOrganizador(self, obj):
+        participante_dummy = participante.objects.get(pk=1)  # PARA DESENVOLVIMENTO
+        return obj.organizador.participante == participante_dummy
 
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
