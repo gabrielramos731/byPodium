@@ -220,6 +220,23 @@ function EventView() {
           >
             {event.isInscrito ? 'Cancelar Inscrição' : 'Inscreva-se'}
           </button>
+
+          {event.isOrganizador && (
+            <div className={styles.organizerActions}>
+              <button 
+                className={styles.editEventButton}
+                onClick={() => alert('Funcionalidade de Editar Evento em desenvolvimento')}
+              >
+                Editar Evento
+              </button>
+              <button 
+                className={styles.cancelEventButton}
+                onClick={() => alert('Funcionalidade de Cancelar Evento em desenvolvimento')}
+              >
+                Cancelar Evento
+              </button>
+            </div>
+          )}
         </section>
       </main>
 
