@@ -65,8 +65,30 @@ async function cancelEventInscription(eventId) {
   }
 }
 
+async function getEventRegistrationInfo(eventId) {
+  try {
+    const response = await api.get(`/eventos/${eventId}/criar`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar informações de inscrição:", error);
+    throw error;
+  }
+}
+
+async function createEventRegistration(eventId, registrationData) {
+  try {
+    const response = await api.post(`/eventos/${eventId}/criar`, registrationData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao criar inscrição:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
 export { getUserProfile };
 export { cancelEventInscription };
+export { getEventRegistrationInfo };
+export { createEventRegistration };

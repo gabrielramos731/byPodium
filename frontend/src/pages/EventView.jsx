@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../components/footer/Footer';
 import Navigation from '../components/navigation/Navigation';
 import mainImage from '../assets/NO-PHOTO.png';
@@ -9,6 +9,7 @@ import styles from './EventView.module.css';
 
 function EventView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { event, loading, error, refetch } = useEvent(id);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -99,6 +100,8 @@ function EventView() {
   const handleButtonClick = () => {
     if (event.isInscrito) {
       setShowCancelModal(true);
+    } else {
+      navigate(`/evento/${id}/inscricao`);
     }
   };
 

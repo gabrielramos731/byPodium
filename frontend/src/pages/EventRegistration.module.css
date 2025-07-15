@@ -1,0 +1,242 @@
+.registrationContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modalTitle {
+  text-align: center;
+  color: #2c2c2c;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #ccc;
+  transition: all 0.3s ease;
+}
+
+.stepActive {
+  background: #d4a574;
+}
+
+.stepIcon {
+  font-size: 1.5rem;
+}
+
+.stepLine {
+  width: 100px;
+  height: 2px;
+  background: #ccc;
+  margin: 0 10px;
+}
+
+.stepContent {
+  margin-bottom: 2rem;
+}
+
+.userInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.infoGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoGroup label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.infoValue {
+  background: #666;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.kitSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kitGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.kitGroup label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.kitSelect {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+  color: #333;
+}
+
+.kitSelect:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.paymentSimulation {
+  text-align: center;
+  padding: 2rem;
+}
+
+.paymentSimulation h3 {
+  color: #333;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.backButton,
+.nextButton,
+.confirmButton {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.backButton {
+  background: #666;
+  color: white;
+}
+
+.backButton:hover:not(:disabled) {
+  background: #555;
+}
+
+.nextButton,
+.confirmButton {
+  background: #d4a574;
+  color: white;
+}
+
+.nextButton:hover:not(:disabled),
+.confirmButton:hover:not(:disabled) {
+  background: #c19660;
+}
+
+.backButton:disabled,
+.nextButton:disabled,
+.confirmButton:disabled {
+  background: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading {
+  color: white;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .modalContent {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-height: 90vh;
+  }
+
+  .userInfoGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stepIndicator {
+    margin-bottom: 2rem;
+  }
+
+  .stepLine {
+    width: 60px;
+  }
+
+  .modalButtons {
+    flex-direction: column;
+  }
+
+  .modalTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
