@@ -65,11 +65,11 @@
 .socialLink img {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1); /* Torna os ícones brancos */
+  filter: brightness(0) invert(1);
 }
 
 .socialLink:hover img {
-  filter: brightness(0); /* Torna os ícones pretos no hover */
+  filter: brightness(0);
 }
 
 .footerCredits {
@@ -78,7 +78,6 @@
   margin: 0;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .footer {
     padding: 2rem 1rem 1.5rem;

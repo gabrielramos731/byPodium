@@ -227,7 +227,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* Container principal do carrossel */
 .carouselContainer {
     display: flex;
     align-items: center;
@@ -261,11 +260,23 @@
     min-width: 0;
     max-width: calc(33.333% - 1rem);
     position: relative;
-    z-index: 1;
+    z-index: 0;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 .carouselItem:hover {
     z-index: 10;
+}
+
+.carouselItem.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.carouselItem.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .carouselBtn {
@@ -290,7 +301,6 @@
 
 .carouselBtn:hover:not(:disabled) {
     background: linear-gradient(135deg, #f3e96d, #d9a444);
-    /* transform: scale(1.1); */
     box-shadow: 0 5px 15px rgba(217, 164, 68, 0.4);
 }
 

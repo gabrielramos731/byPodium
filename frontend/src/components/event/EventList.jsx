@@ -2,19 +2,16 @@ import Event from "./Event";
 import styles from "./EventList.module.css";
 
 function EventList({ events, title, type = "open" }) {
-  const currentDate = new Date();
-  
   const filteredEvents = events.filter(event => {
-    const eventDate = new Date(event.dataIni);
     if (type === "open") {
-      return eventDate >= currentDate;
+      return event.isInscricaoAberta === true;
     } else {
-      return eventDate < currentDate;
+      return event.isInscricaoAberta === false;
     }
   });
 
-  const getStatusText = (type) => {
-    return type === "open" ? "Inscrições abertas" : "Evento encerrado";
+  const getStatusText = (isInscricaoAberta) => {
+    return isInscricaoAberta === true ? "Evento disponível" : "Evento Indisponível";
   };
 
   return (
@@ -29,8 +26,8 @@ function EventList({ events, title, type = "open" }) {
               title={event.nome || "Nome do evento"}
               location={event.localidade ? `${event.localidade.cidade} - ${event.localidade.uf}` : "Local não informado"}
               date={new Date(event.dataIni).toLocaleDateString('pt-BR') + " - " + event.horarioIni}
-              status={type}
-              statusText={getStatusText(type)}
+              statusText={getStatusText(event.isInscricaoAberta)}
+              isInscricaoAberta={event.isInscricaoAberta}
               image={event.photo_url}
             />
           ))

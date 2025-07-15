@@ -11,7 +11,6 @@ import styles from "./initialPage.module.css";
 function InitialPage() {
   const { events, loading, error } = useEvents();
   
-  // Scroll para o topo quando a página carrega
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -43,7 +42,7 @@ function InitialPage() {
           
           <EventList 
             events={events} 
-            title="Eventos Encerrados" 
+            title="Eventos Indisponíveis" 
             type="closed" 
           />
         </>

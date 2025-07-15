@@ -11,7 +11,6 @@ const MyProfile = () => {
     const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     
-    // Estado para dados do perfil - inicializado vazio, será preenchido pela API
     const [userData, setUserData] = useState({
         nome: '',
         cpf: '',
@@ -28,7 +27,6 @@ const MyProfile = () => {
 
     const itemsPerPage = 3;
 
-    // Scroll para o topo quando a página carrega
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -36,28 +34,29 @@ const MyProfile = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Buscar apenas dados do perfil que já inclui eventos organizados
                 const profileResponse = await getUserProfile();
                 
-                // Como o backend retorna uma lista com um item, pegamos o primeiro elemento
                 const profileData = Array.isArray(profileResponse) ? profileResponse[0] : profileResponse;
                 
-                // Atualizar dados do perfil
                 setUserData({
                     nome: profileData.nome || '',
                     cpf: profileData.cpf || '',
                     dataNascimento: profileData.data_nascimento ? 
                         new Date(profileData.data_nascimento).toLocaleDateString('pt-BR') : '',
                     email: profileData.email || '',
-                    senha: '••••••••••••••••••••', // Senha sempre mascarada
-                    logradouro: profileData.rua || '', // Backend usa 'rua' ao invés de 'logradouro'
+                    senha: '••••••••••••••••••••',
+                    logradouro: profileData.rua || '',
                     numero: profileData.numero || '',
                     bairro: profileData.bairro || '',
                     telefone: profileData.telefone || ''
                 });
                 
-                // Atualizar dados dos eventos organizados
-                setInscricoes(profileData.eventos_organizados || []);
+                const eventosOrdenados = (profileData.eventos_organizados || []).sort((a, b) => {
+                    if (a.isInscricaoAberta === true && b.isInscricaoAberta === false) return -1;
+                    if (a.isInscricaoAberta === false && b.isInscricaoAberta === true) return 1;
+                    return 0;
+                });
+                setInscricoes(eventosOrdenados);
                 
                 setLoading(false);
                 setProfileLoading(false);
@@ -224,18 +223,6 @@ const MyProfile = () => {
                 <section className={styles.eventsSection}>
                     <h1 className={styles.pageTitle}>Meus eventos</h1>
                     
-                    {/* barra de busca nao será implementada agora */}
-                    {/* <div className={styles.searchContainer}>
-                        <div className={styles.searchBar}>
-                            <span className={styles.searchIcon}>🔍</span>
-                            <input 
-                                type="text" 
-                                placeholder="Buscar evento..."
-                                className={styles.searchInput}
-                            />
-                        </div>
-                    </div> */}
-
                     {loading && <div className={styles.loadingMessage}>Carregando...</div>}
                     {error && <p className={styles.error}>{error}</p>}
                     {!loading && !error && (
@@ -257,22 +244,29 @@ const MyProfile = () => {
                                                 transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`
                                             }}
                                         >
-                                            {inscricoes.map(evento => (
-                                                <div key={evento.id} className={styles.carouselItem}>
-                                                    <Event 
-                                                        id={evento.id}
-                                                        title={evento.nome}
-                                                        location={evento.localidade ? 
-                                                            `${evento.localidade.cidade} - ${evento.localidade.uf}` : 
-                                                            "Local não informado"
-                                                        }
-                                                        date={new Date(evento.dataIni).toLocaleDateString('pt-BR')}
-                                                        status={evento.status === 'ativo' ? 'open' : 'closed'}
-                                                        statusText={evento.status === 'ativo' ? 'Inscrições abertas' : 'Evento encerrado'}
-                                                        image={evento.imagem}
-                                                    />
-                                                </div>
-                                            ))}
+                                            {inscricoes.map((evento, index) => {
+                                                const isVisible = index >= currentIndex && index < currentIndex + itemsPerPage;
+                                                
+                                                return (
+                                                    <div 
+                                                        key={evento.id} 
+                                                        className={`${styles.carouselItem} ${isVisible ? styles.visible : styles.hidden}`}
+                                                    >
+                                                        <Event 
+                                                            id={evento.id}
+                                                            title={evento.nome}
+                                                            location={evento.localidade ? 
+                                                                `${evento.localidade.cidade} - ${evento.localidade.uf}` : 
+                                                                "Local não informado"
+                                                            }
+                                                            date={new Date(evento.dataIni).toLocaleDateString('pt-BR')}
+                                                            statusText={evento.isInscricaoAberta === true ? 'Evento Disponível' : 'Evento Indisponível'}
+                                                            isInscricaoAberta={evento.isInscricaoAberta}
+                                                            image={evento.imagem}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 

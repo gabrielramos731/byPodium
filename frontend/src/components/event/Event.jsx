@@ -7,13 +7,31 @@ function Event({
   title, 
   location, 
   date, 
-  status = "open", 
   statusText,
+  isInscricaoAberta,
   image,
   onClick 
 }) {
   const navigate = useNavigate();
-  const statusClass = status === "open" ? styles.statusOpen : styles.statusClosed;
+
+  const getStatusStyle = () => {
+    if (isInscricaoAberta === true) {
+      return {
+        backgroundColor: '#2d5016',
+        color: '#90ee90'
+      };
+    } else if (isInscricaoAberta === false) {
+      return {
+        backgroundColor: '#4a3728',
+        color: '#ffa500'
+      };
+    }
+    
+    return {
+      backgroundColor: '#555',
+      color: '#ccc'
+    };
+  };
 
   const handleClick = () => {
     if (onClick) {
@@ -30,7 +48,10 @@ function Event({
         <h3 className={styles.eventTitle}>{title}</h3>
         <p className={styles.eventLocation}>{location}</p>
         <p className={styles.eventDate}>{date}</p>
-        <span className={`${styles.eventStatus} ${statusClass}`}>
+        <span 
+          className={styles.eventStatus}
+          style={getStatusStyle()}
+        >
           {statusText}
         </span>
       </div>

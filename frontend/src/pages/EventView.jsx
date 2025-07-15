@@ -10,7 +10,6 @@ function EventView() {
   const { id } = useParams();
   const { event, loading, error } = useEvent(id);
 
-  // Scroll para o topo quando a página carrega
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -84,14 +83,14 @@ function EventView() {
     const status = statusText?.toLowerCase() || '';
     
     if (status.includes('abertas') || status.includes('aberto')) {
-      return styles.statusOpen; // Verde
+      return styles.statusOpen;
     } else if (status.includes('encerradas') || status.includes('encerrado')) {
-      return styles.statusClosed; // Vermelho
+      return styles.statusClosed;
     } else if (status.includes('fechadas') || status.includes('fechado')) {
-      return styles.statusPending; // Laranja
+      return styles.statusPending;
     }
     
-    return styles.statusDefault; // Cor padrão
+    return styles.statusDefault;
   };
 
   return (

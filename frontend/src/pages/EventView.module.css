@@ -110,7 +110,6 @@
   white-space: nowrap;
 }
 
-/* Classes de status com cores específicas */
 .statusOpen {
   background-color: #2d5016;
   color: #90ee90;
@@ -225,7 +224,6 @@
   transform: translateY(0);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .mainContent {
     padding: 1rem;

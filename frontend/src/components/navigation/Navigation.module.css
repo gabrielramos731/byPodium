@@ -26,7 +26,6 @@
   color: var(--yellow0);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .sectionNav {
     height: 80px;
