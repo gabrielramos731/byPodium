@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import InitialPage from './pages/initialPage.jsx'
 import EventView from './pages/EventView.jsx'
-import MyProfile from './pages/myProfile.jsx';
+import MyProfile from './pages/MyProfile.jsx';
+import EventRegistration from './pages/EventRegistration.jsx';
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 
 const router = createBrowserRouter([
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
     path: "/evento/:id",
     element: <EventView/>,
   }, 
+  {
+    path: "/evento/:id/inscricao",
+    element: <EventRegistration/>,
+  },
   {
     path: "/meu-perfil",
     element: <MyProfile />,
