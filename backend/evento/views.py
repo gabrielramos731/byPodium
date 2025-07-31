@@ -1,5 +1,4 @@
-from urllib import request
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
@@ -11,26 +10,30 @@ from .serializers import (
 )
 from datetime import date
 
+def get_current_participante(request):
+    """Retorna o participante atual ou fallback para pk=1"""
+    if request.user.is_authenticated:
+        try:
+            return participante.objects.get(user=request.user)
+        except participante.DoesNotExist:
+            return participante.objects.get(pk=1)
+    else:
+        return participante.objects.get(pk=1)
+
+
 class ListEventos(generics.ListAPIView):
-    """
-    Lista todos os eventos disponíveis no sistema.
-    
-    Retorna uma lista simplificada dos eventos com informações básicas
-    como nome, data de início, localidade e horário.
-    """
+    """Lista todos os eventos disponíveis"""
     queryset = evento.objects.all()
     serializer_class = eventoSerializerList
+    permission_classes = [permissions.AllowAny]
 
 
 class DetailEvento(generics.RetrieveAPIView):
-    """
-    Retorna os detalhes completos de um evento específico.
-    
-    Inclui todas as informações do evento, dados da localidade
-    e email do organizador responsável.
-    """
+    """Detalhes completos de um evento específico"""
     queryset = evento.objects.all()
     serializer_class = eventoSerializer
+    permission_classes = [permissions.AllowAny]
+
 
 class ListInscricoes(generics.ListAPIView):
     """
@@ -39,30 +42,33 @@ class ListInscricoes(generics.ListAPIView):
     Retorna informações completas das inscrições incluindo
     participante, evento, categoria e kit selecionados.
     """
-    def get_queryset(self):
-        return inscricao.objects.filter(participante__id=1)  #user teste para inscrição
-    
-    queryset = inscricao.objects.all()
     serializer_class = inscricaoSerializer
+    permission_classes = [permissions.AllowAny]  # Temporário para desenvolvimento
+    
+    def get_queryset(self):
+        current_participante = get_current_participante(self.request)
+        return inscricao.objects.filter(participante=current_participante)
+
 
 class CriarInscricao(generics.GenericAPIView):
-    """
-    GET: Retorna categorias e kits disponíveis para o evento.
-    POST: Cria uma nova inscrição no evento.
-    """
+    """GET: Categorias e kits do evento. POST: Cria inscrição"""
     serializer_class = InscricaoCreateSerializer
+    permission_classes = [permissions.AllowAny]
     
     def get(self, request, pk):
         """Retorna dados para inscrição: Evento, categorias e kits e usuário"""
         
-        user_dummy = {  # usuário teste para inscrição
-            'nome': participante.objects.get(pk=1).nome,
-            'dataNascimento': participante.objects.get(pk=1).data_nascimento,
-            'cpf': participante.objects.get(pk=1).cpf,
-            'email': participante.objects.get(pk=1).email,
+        current_participante = get_current_participante(request)
+        
+        user_data = {
+            'nome': current_participante.nome,
+            'dataNascimento': current_participante.data_nascimento,
+            'cpf': current_participante.cpf,
+            'email': current_participante.email,
         }
+        
         evento_obj = evento.objects.get(pk=pk)
-        nascimento = user_dummy.get('dataNascimento')
+        nascimento = user_data.get('dataNascimento')
         hoje = date.today()
         user_idade = hoje.year - nascimento.year - ((hoje.month, hoje.day) < (nascimento.month, nascimento.day))
         categorias = categoria.objects.filter(evento=evento_obj)
@@ -75,9 +81,7 @@ class CriarInscricao(generics.GenericAPIView):
                 'nome': evento_obj.nome,
                 }
             ],
-            'usuario': [
-                user_dummy
-            ],
+            'usuario': [user_data],
             'categorias': [
                 {
                     'id': cat.id,
@@ -111,7 +115,7 @@ class CriarInscricao(generics.GenericAPIView):
         evento_obj = evento.objects.get(pk=pk)
         data = request.data.copy()
         
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['evento'] = evento_obj
 
@@ -126,40 +130,35 @@ class CriarInscricao(generics.GenericAPIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     
     def delete(self, request, pk): 
-        participante_obj = participante.objects.get(pk=1)  # usuário teste para inscrição
-        inscricao_obj = inscricao.objects.get(participante=participante_obj, evento__id=pk)
+        current_participante = get_current_participante(request)
+        inscricao_obj = inscricao.objects.get(participante=current_participante, evento__id=pk)
         inscricao_obj.delete()
         evento_obj = inscricao_obj.evento
         evento_obj.quantInscAtual -= 1
         evento_obj.save()
-        return Response(
-            status=status.HTTP_204_NO_CONTENT
-        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
            
+
 class DetalhesInscricao(generics.RetrieveAPIView):
-    """
-    Retorna detalhes de uma inscrição específica.
-    """
+    """Detalhes de uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
+    permission_classes = [permissions.AllowAny]
     
+
 class DetalhesParticipante(generics.ListAPIView):
-    """
-    Retorna os detalhes completos de um participante específico.
-    
-    Inclui informações pessoais, endereço e localidade associada.
-    """
-    # queryset = participante.objects.all()
-    queryset = participante.objects.filter(pk=1)  # PARA DESENVOLVIMENTO
+    """Detalhes completos do participante"""
     serializer_class = DetalhesParticipanteSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        current_participante = get_current_participante(self.request)
+        return participante.objects.filter(pk=current_participante.pk)
+
 
 class CancelarInscricao(generics.DestroyAPIView):
-    """
-    Cancela uma inscrição específica.
-    
-    Remove a inscrição do participante e atualiza o número de inscrições
-    atuais do evento.
-    """
+    """Cancela uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
+    permission_classes = [permissions.AllowAny]
     
