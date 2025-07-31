@@ -5,6 +5,9 @@ import InitialPage from './pages/initialPage.jsx'
 import EventView from './pages/EventView.jsx'
 import MyProfile from './pages/MyProfile.jsx';
 import EventRegistration from './pages/EventRegistration.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 
 const router = createBrowserRouter([
@@ -18,11 +21,27 @@ const router = createBrowserRouter([
   }, 
   {
     path: "/evento/:id/inscricao",
-    element: <EventRegistration/>,
+    element: (
+      <ProtectedRoute>
+        <EventRegistration/>
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/meu-perfil",
-    element: <MyProfile />,
+    element: (
+      <ProtectedRoute>
+        <MyProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/registro",
+    element: <Register />,
   }
 ])
 

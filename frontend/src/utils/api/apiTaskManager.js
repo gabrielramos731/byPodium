@@ -85,6 +85,26 @@ async function createEventRegistration(eventId, registrationData) {
   }
 }
 
+async function loginUser(credentials) {
+  try {
+    const response = await api.post("/auth/login/", credentials);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao fazer login:", error);
+    throw error;
+  }
+}
+
+async function registerUser(userData) {
+  try {
+    const response = await api.post("/auth/register/", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao registrar usuário:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
@@ -92,3 +112,5 @@ export { getUserProfile };
 export { cancelEventInscription };
 export { getEventRegistrationInfo };
 export { createEventRegistration };
+export { loginUser };
+export { registerUser };
