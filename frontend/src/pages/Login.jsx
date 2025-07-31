@@ -6,7 +6,7 @@ import styles from './Login.module.css';
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
@@ -24,8 +24,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.username || !formData.password) {
-      setError('Por favor, preencha todos os campos.');
+    if (!formData.email || !formData.password) {
+      setError('Campos obrigatórios não preenchidos.');
       return;
     }
 
@@ -35,8 +35,9 @@ function Login() {
       
       const response = await loginUser(formData);
       
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('userId', response.user_id);
+      localStorage.setItem('authToken', response.tokens.access);
+      localStorage.setItem('refreshToken', response.tokens.refresh);
+      localStorage.setItem('userId', response.user.id);
       
       navigate('/');
       
@@ -44,9 +45,9 @@ function Login() {
       console.error('Erro no login:', error);
       
       if (error.response?.status === 400) {
-        setError('Credenciais inválidas. Verifique seu usuário e senha.');
+        setError('E-mail ou senha incorretos.');
       } else if (error.response?.status === 401) {
-        setError('Usuário ou senha incorretos.');
+        setError('E-mail ou senha incorretos.');
       } else {
         setError('Erro ao fazer login. Tente novamente.');
       }
@@ -78,17 +79,17 @@ function Login() {
           )}
 
           <div className={styles.inputGroup}>
-            <label htmlFor="username" className={styles.label}>
-              Usuário
+            <label htmlFor="email" className={styles.label}>
+              Email
             </label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               className={styles.input}
-              placeholder="Digite seu usuário"
+              placeholder="Digite seu email"
               disabled={loading}
             />
           </div>
@@ -109,13 +110,24 @@ function Login() {
             />
           </div>
 
-          <button 
-            type="submit" 
-            className={styles.loginButton}
-            disabled={loading}
-          >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+          <div className={styles.buttonGroup}>
+            <button 
+              type="button" 
+              className={styles.cancelButton}
+              onClick={() => navigate('/')}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            
+            <button 
+              type="submit" 
+              className={styles.loginButton}
+              disabled={loading}
+            >
+              {loading ? 'Fazendo login...' : 'Fazer Login'}
+            </button>
+          </div>
 
           <div className={styles.registerSection}>
             <p className={styles.registerText}>
@@ -126,7 +138,7 @@ function Login() {
                 className={styles.registerLink}
                 disabled={loading}
               >
-                Cadastre-se
+                Registrar
               </button>
             </p>
           </div>

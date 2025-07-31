@@ -12,7 +12,12 @@ function Register() {
     confirmPassword: '',
     nome: '',
     cpf: '',
-    data_nascimento: ''
+    data_nascimento: '',
+    telefone: '',
+    rua: '',
+    numero: '',
+    bairro: '',
+    localidade: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +35,7 @@ function Register() {
     e.preventDefault();
     
     if (!formData.username || !formData.email || !formData.password || !formData.nome) {
-      setError('Por favor, preencha todos os campos obrigatórios.');
+      setError('Campos obrigatórios não preenchidos.');
       return;
     }
 
@@ -54,12 +59,17 @@ function Register() {
         password: formData.password,
         nome: formData.nome,
         cpf: formData.cpf,
-        data_nascimento: formData.data_nascimento
+        data_nascimento: formData.data_nascimento,
+        telefone: formData.telefone,
+        rua: formData.rua,
+        numero: formData.numero,
+        bairro: formData.bairro,
+        localidade: formData.localidade
       };
       
       await registerUser(registrationData);
       
-      alert('Conta criada com sucesso! Faça login para continuar.');
+      alert('Usuário cadastrado com sucesso!');
       navigate('/login');
       
     } catch (error) {
@@ -184,6 +194,86 @@ function Register() {
           </div>
 
           <div className={styles.inputGroup}>
+            <label htmlFor="telefone" className={styles.label}>
+              Telefone
+            </label>
+            <input
+              type="tel"
+              id="telefone"
+              name="telefone"
+              value={formData.telefone}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Digite seu telefone"
+              disabled={loading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="rua" className={styles.label}>
+              Rua
+            </label>
+            <input
+              type="text"
+              id="rua"
+              name="rua"
+              value={formData.rua}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Digite sua rua"
+              disabled={loading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="numero" className={styles.label}>
+              Número
+            </label>
+            <input
+              type="text"
+              id="numero"
+              name="numero"
+              value={formData.numero}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Digite o número"
+              disabled={loading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="bairro" className={styles.label}>
+              Bairro
+            </label>
+            <input
+              type="text"
+              id="bairro"
+              name="bairro"
+              value={formData.bairro}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Digite seu bairro"
+              disabled={loading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="localidade" className={styles.label}>
+              Localidade
+            </label>
+            <input
+              type="text"
+              id="localidade"
+              name="localidade"
+              value={formData.localidade}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Digite sua localidade"
+              disabled={loading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
             <label htmlFor="password" className={styles.label}>
               Senha *
             </label>
@@ -215,13 +305,24 @@ function Register() {
             />
           </div>
 
-          <button 
-            type="submit" 
-            className={styles.registerButton}
-            disabled={loading}
-          >
-            {loading ? 'Criando conta...' : 'Criar conta'}
-          </button>
+          <div className={styles.buttonGroup}>
+            <button 
+              type="button" 
+              className={styles.cancelButton}
+              onClick={() => navigate('/')}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            
+            <button 
+              type="submit" 
+              className={styles.registerButton}
+              disabled={loading}
+            >
+              {loading ? 'Criando conta...' : 'Registrar'}
+            </button>
+          </div>
 
           <div className={styles.loginSection}>
             <p className={styles.loginText}>

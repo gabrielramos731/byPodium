@@ -116,6 +116,39 @@
   color: #888;
 }
 
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.cancelButton {
+  background: #666;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  flex: 1;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .loginButton {
   background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
   border: none;
@@ -126,8 +159,8 @@
   padding: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 0.5rem;
   font-family: 'Poppins', sans-serif;
+  flex: 1;
 }
 
 .loginButton:hover:not(:disabled) {

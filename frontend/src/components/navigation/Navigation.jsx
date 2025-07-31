@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Navigation.module.css'
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./Navigation.module.css";
 
 function Navigation() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     setIsLoggedIn(!!token);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userId');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
     setIsLoggedIn(false);
-    navigate('/');
+    navigate("/");
   };
 
   const handleLogin = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -38,19 +39,18 @@ function Navigation() {
             </a>
           </>
         )}
+        <div className={styles.authSection}>
+          {isLoggedIn ? (
+            <button onClick={handleLogout} className={styles.authButton}>
+              Sair
+            </button>
+          ) : (
+            <button onClick={handleLogin} className={styles.authButton}>
+              Fazer Login
+            </button>
+          )}
+        </div>
       </nav>
-      
-      <div className={styles.authSection}>
-        {isLoggedIn ? (
-          <button onClick={handleLogout} className={styles.authButton}>
-            Sair
-          </button>
-        ) : (
-          <button onClick={handleLogin} className={styles.authButton}>
-            Entrar
-          </button>
-        )}
-      </div>
     </section>
   );
 }
