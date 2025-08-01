@@ -116,6 +116,20 @@
   color: #888;
 }
 
+.inputError {
+  border-color: #ff6b6b !important;
+  background: rgba(255, 107, 107, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+}
+
+.fieldError {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+  font-weight: 500;
+}
+
 .buttonGroup {
   display: flex;
   gap: 1rem;

@@ -21,6 +21,7 @@ function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +30,13 @@ function Register() {
       [name]: value
     }));
     setError('');
+    // Limpa o erro do campo específico quando o usuário digita
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -52,6 +60,7 @@ function Register() {
     try {
       setLoading(true);
       setError('');
+      setFieldErrors({});
       
       const registrationData = {
         username: formData.username,
@@ -77,12 +86,32 @@ function Register() {
       
       if (error.response?.status === 400) {
         const errorData = error.response.data;
-        if (errorData.username) {
-          setError('Este nome de usuário já está em uso.');
-        } else if (errorData.email) {
-          setError('Este email já está cadastrado.');
+        
+        // Processa erros específicos dos campos
+        if (errorData.details) {
+          const newFieldErrors = {};
+          
+          Object.keys(errorData.details).forEach(field => {
+            if (Array.isArray(errorData.details[field])) {
+              newFieldErrors[field] = errorData.details[field][0];
+            } else {
+              newFieldErrors[field] = errorData.details[field];
+            }
+          });
+          
+          setFieldErrors(newFieldErrors);
+          setError('Campos obrigatórios não preenchidos.');
         } else {
-          setError('Dados inválidos. Verifique as informações.');
+          // Fallback para erros gerais
+          if (errorData.username) {
+            setFieldErrors({ username: 'Este nome de usuário já está em uso.' });
+          } else if (errorData.email) {
+            setFieldErrors({ email: 'Este email já está cadastrado.' });
+          } else if (errorData.cpf) {
+            setFieldErrors({ cpf: 'Este CPF já está cadastrado.' });
+          }
+          
+          setError('Verifique os campos destacados.');
         }
       } else {
         setError('Erro ao criar conta. Tente novamente.');
@@ -124,10 +153,13 @@ function Register() {
               name="nome"
               value={formData.nome}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.nome ? styles.inputError : ''}`}
               placeholder="Digite seu nome completo"
               disabled={loading}
             />
+            {fieldErrors.nome && (
+              <span className={styles.fieldError}>{fieldErrors.nome}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -140,10 +172,13 @@ function Register() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.username ? styles.inputError : ''}`}
               placeholder="Escolha um nome de usuário"
               disabled={loading}
             />
+            {fieldErrors.username && (
+              <span className={styles.fieldError}>{fieldErrors.username}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -156,10 +191,13 @@ function Register() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`}
               placeholder="Digite seu email"
               disabled={loading}
             />
+            {fieldErrors.email && (
+              <span className={styles.fieldError}>{fieldErrors.email}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -172,10 +210,13 @@ function Register() {
               name="cpf"
               value={formData.cpf}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.cpf ? styles.inputError : ''}`}
               placeholder="Digite seu CPF"
               disabled={loading}
             />
+            {fieldErrors.cpf && (
+              <span className={styles.fieldError}>{fieldErrors.cpf}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -188,9 +229,12 @@ function Register() {
               name="data_nascimento"
               value={formData.data_nascimento}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.data_nascimento ? styles.inputError : ''}`}
               disabled={loading}
             />
+            {fieldErrors.data_nascimento && (
+              <span className={styles.fieldError}>{fieldErrors.data_nascimento}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -203,10 +247,13 @@ function Register() {
               name="telefone"
               value={formData.telefone}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.telefone ? styles.inputError : ''}`}
               placeholder="Digite seu telefone"
               disabled={loading}
             />
+            {fieldErrors.telefone && (
+              <span className={styles.fieldError}>{fieldErrors.telefone}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -219,10 +266,13 @@ function Register() {
               name="rua"
               value={formData.rua}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.rua ? styles.inputError : ''}`}
               placeholder="Digite sua rua"
               disabled={loading}
             />
+            {fieldErrors.rua && (
+              <span className={styles.fieldError}>{fieldErrors.rua}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -235,10 +285,13 @@ function Register() {
               name="numero"
               value={formData.numero}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.numero ? styles.inputError : ''}`}
               placeholder="Digite o número"
               disabled={loading}
             />
+            {fieldErrors.numero && (
+              <span className={styles.fieldError}>{fieldErrors.numero}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -251,10 +304,13 @@ function Register() {
               name="bairro"
               value={formData.bairro}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.bairro ? styles.inputError : ''}`}
               placeholder="Digite seu bairro"
               disabled={loading}
             />
+            {fieldErrors.bairro && (
+              <span className={styles.fieldError}>{fieldErrors.bairro}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -267,10 +323,13 @@ function Register() {
               name="localidade"
               value={formData.localidade}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.localidade ? styles.inputError : ''}`}
               placeholder="Digite sua localidade"
               disabled={loading}
             />
+            {fieldErrors.localidade && (
+              <span className={styles.fieldError}>{fieldErrors.localidade}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -283,10 +342,13 @@ function Register() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`}
               placeholder="Digite sua senha"
               disabled={loading}
             />
+            {fieldErrors.password && (
+              <span className={styles.fieldError}>{fieldErrors.password}</span>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -299,10 +361,13 @@ function Register() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.confirmPassword ? styles.inputError : ''}`}
               placeholder="Confirme sua senha"
               disabled={loading}
             />
+            {fieldErrors.confirmPassword && (
+              <span className={styles.fieldError}>{fieldErrors.confirmPassword}</span>
+            )}
           </div>
 
           <div className={styles.buttonGroup}>
