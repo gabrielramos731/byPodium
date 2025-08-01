@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from usuarios.models import participante
+from localidades.models import localidade
 
 from .serializers import (
     CompleteRegistrationSerializer,
@@ -154,4 +155,60 @@ def check_cpf(request):
     exists = participante.objects.filter(cpf=cpf).exists()
     return Response({
         'exists': exists
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def list_estados(request):
+    """Lista todos os estados disponíveis"""
+    estados = localidade.objects.values_list('uf', flat=True).distinct().order_by('uf')
+    return Response({
+        'estados': list(estados)
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def list_cidades(request):
+    """Lista cidades de um estado específico"""
+    estado = request.GET.get('estado')
+    if not estado:
+        return Response({
+            'error': 'Estado não fornecido'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    cidades = localidade.objects.filter(uf=estado.upper()).values_list('cidade', flat=True).order_by('cidade')
+    return Response({
+        'cidades': list(cidades)
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_estados(request):
+    """Retorna lista de estados únicos"""
+    from localidades.models import localidade
+    
+    estados = localidade.objects.values_list('uf', flat=True).distinct().order_by('uf')
+    return Response({
+        'estados': list(estados)
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_cidades(request):
+    """Retorna cidades filtradas por estado"""
+    estado = request.GET.get('estado')
+    if not estado:
+        return Response({
+            'error': 'Estado não fornecido'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    from localidades.models import localidade
+    
+    cidades = localidade.objects.filter(uf=estado.upper()).values_list('cidade', flat=True).order_by('cidade')
+    return Response({
+        'cidades': list(cidades)
     })

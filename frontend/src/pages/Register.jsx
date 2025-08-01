@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../utils/api/apiTaskManager';
+import { registerUser, getEstados, getCidades } from '../utils/api/apiTaskManager';
 import styles from './Register.module.css';
 
 function Register() {
@@ -17,18 +17,78 @@ function Register() {
     rua: '',
     numero: '',
     bairro: '',
-    localidade: ''
+    estado: '',
+    cidade: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [estados, setEstados] = useState([]);
+  const [cidades, setCidades] = useState([]);
+  const [loadingEstados, setLoadingEstados] = useState(true);
+  const [loadingCidades, setLoadingCidades] = useState(false);
+
+  // Carregar estados ao montar o componente
+  useEffect(() => {
+    const fetchEstados = async () => {
+      try {
+        setLoadingEstados(true);
+        const estadosData = await getEstados();
+        // Garantir que seja um array
+        setEstados(Array.isArray(estadosData) ? estadosData : []);
+      } catch (error) {
+        console.error('Erro ao carregar estados:', error);
+        setError('Erro ao carregar estados. Tente recarregar a página.');
+        setEstados([]); // Fallback para array vazio
+      } finally {
+        setLoadingEstados(false);
+      }
+    };
+
+    fetchEstados();
+  }, []);
+
+  // Carregar cidades quando estado mudar
+  useEffect(() => {
+    const fetchCidades = async () => {
+      if (!formData.estado) {
+        setCidades([]);
+        return;
+      }
+
+      try {
+        setLoadingCidades(true);
+        const cidadesData = await getCidades(formData.estado);
+        // Garantir que seja um array
+        setCidades(Array.isArray(cidadesData) ? cidadesData : []);
+      } catch (error) {
+        console.error('Erro ao carregar cidades:', error);
+        setCidades([]); // Fallback para array vazio
+      } finally {
+        setLoadingCidades(false);
+      }
+    };
+
+    fetchCidades();
+  }, [formData.estado]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Se mudou o estado, limpar a cidade selecionada
+    if (name === 'estado') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        cidade: '' // Limpar cidade quando estado mudar
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
     setError('');
     // Limpa o erro do campo específico quando o usuário digita
     if (fieldErrors[name]) {
@@ -73,7 +133,8 @@ function Register() {
         rua: formData.rua,
         numero: formData.numero,
         bairro: formData.bairro,
-        localidade: formData.localidade
+        estado: formData.estado,
+        cidade: formData.cidade
       };
       
       await registerUser(registrationData);
@@ -314,21 +375,59 @@ function Register() {
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="localidade" className={styles.label}>
-              Localidade
+            <label htmlFor="estado" className={styles.label}>
+              Estado
             </label>
-            <input
-              type="text"
-              id="localidade"
-              name="localidade"
-              value={formData.localidade}
+            <select
+              id="estado"
+              name="estado"
+              value={formData.estado}
               onChange={handleChange}
-              className={`${styles.input} ${fieldErrors.localidade ? styles.inputError : ''}`}
-              placeholder="Digite sua localidade"
-              disabled={loading}
-            />
-            {fieldErrors.localidade && (
-              <span className={styles.fieldError}>{fieldErrors.localidade}</span>
+              className={`${styles.input} ${fieldErrors.estado ? styles.inputError : ''}`}
+              disabled={loading || loadingEstados}
+            >
+              <option value="">
+                {loadingEstados ? 'Carregando estados...' : 'Selecione um estado'}
+              </option>
+              {estados.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.estado && (
+              <span className={styles.fieldError}>{fieldErrors.estado}</span>
+            )}
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="cidade" className={styles.label}>
+              Cidade
+            </label>
+            <select
+              id="cidade"
+              name="cidade"
+              value={formData.cidade}
+              onChange={handleChange}
+              className={`${styles.input} ${fieldErrors.cidade ? styles.inputError : ''}`}
+              disabled={loading || !formData.estado || loadingCidades}
+            >
+              <option value="">
+                {!formData.estado 
+                  ? 'Selecione um estado primeiro'
+                  : loadingCidades 
+                    ? 'Carregando cidades...' 
+                    : 'Selecione uma cidade'
+                }
+              </option>
+              {cidades.map((cidade) => (
+                <option key={cidade} value={cidade}>
+                  {cidade}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.cidade && (
+              <span className={styles.fieldError}>{fieldErrors.cidade}</span>
             )}
           </div>
 

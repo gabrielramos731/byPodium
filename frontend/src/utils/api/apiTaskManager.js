@@ -105,6 +105,27 @@ async function registerUser(userData) {
   }
 }
 
+async function getEstados() {
+  try {
+    const response = await api.get("/auth/estados/");
+    return response.data.estados; // Retornar apenas o array de estados
+  } catch (error) {
+    console.error("Erro ao buscar estados:", error);
+    throw error;
+  }
+}
+
+async function getCidades(estado = null) {
+  try {
+    const url = estado ? `/auth/cidades/?estado=${estado}` : "/auth/cidades/";
+    const response = await api.get(url);
+    return response.data.cidades; // Retornar apenas o array de cidades
+  } catch (error) {
+    console.error("Erro ao buscar cidades:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
@@ -114,3 +135,5 @@ export { getEventRegistrationInfo };
 export { createEventRegistration };
 export { loginUser };
 export { registerUser };
+export { getEstados };
+export { getCidades };

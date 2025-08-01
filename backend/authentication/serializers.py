@@ -60,7 +60,8 @@ class CompleteRegistrationSerializer(serializers.Serializer):
     rua = serializers.CharField(max_length=200)
     numero = serializers.CharField(max_length=10)
     bairro = serializers.CharField(max_length=100)
-    localidade = serializers.PrimaryKeyRelatedField(queryset=localidade.objects.all())
+    estado = serializers.CharField(max_length=2)
+    cidade = serializers.CharField(max_length=100)
     
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -72,7 +73,28 @@ class CompleteRegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Este CPF já está cadastrado.")
         return value
     
+    def validate(self, data):
+        # Validar se a combinação estado/cidade existe
+        estado = data.get('estado')
+        cidade = data.get('cidade')
+        
+        if estado and cidade:
+            try:
+                localidade_obj = localidade.objects.get(uf=estado.upper(), cidade=cidade)
+                data['localidade'] = localidade_obj
+            except localidade.DoesNotExist:
+                raise serializers.ValidationError({
+                    'cidade': f'Cidade "{cidade}" não encontrada no estado "{estado}"'
+                })
+        
+        return data
+    
     def create(self, validated_data):
+        # Remover campos estado e cidade dos dados validados
+        localidade_obj = validated_data.pop('localidade')
+        validated_data.pop('estado', None)
+        validated_data.pop('cidade', None)
+        
         user_data = {
             'email': validated_data['email'],
             'password': validated_data['password'],
@@ -87,7 +109,7 @@ class CompleteRegistrationSerializer(serializers.Serializer):
             'rua': validated_data['rua'],
             'numero': validated_data['numero'],
             'bairro': validated_data['bairro'],
-            'localidade': validated_data['localidade'],
+            'localidade': localidade_obj,
             'email': validated_data['email']
         }
         
