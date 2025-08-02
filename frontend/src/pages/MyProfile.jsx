@@ -206,11 +206,9 @@ const MyProfile = () => {
                                 <h2 className={styles.cardTitle}>Configurações</h2>
                                 <div className={styles.buttonGroup}>
                                     <button className={styles.editButton}>
-                                        <span className={styles.buttonIcon}>✏️</span>
                                         Editar dados
                                     </button>
                                     <button className={styles.deleteButton}>
-                                        <span className={styles.buttonIcon}>🗑️</span>
                                         Apagar conta
                                     </button>
                                 </div>

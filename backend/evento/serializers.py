@@ -5,6 +5,17 @@ from localidades.models import localidade
 from usuarios.models import participante, organizador
 from inscricoes.models import inscricao
 
+def get_current_participante_from_context(context):
+    """Obtém o participante atual do contexto ou fallback para pk=1"""
+    request = context.get('request')
+    if request and request.user.is_authenticated:
+        try:
+            return participante.objects.get(user=request.user)
+        except participante.DoesNotExist:
+            return participante.objects.get(pk=1)
+    else:
+        return participante.objects.get(pk=1)
+
 class participanteSerializer(serializers.ModelSerializer):
     class Meta():
         model = participante
@@ -36,8 +47,8 @@ class eventoSerializer(serializers.ModelSerializer):
         return obj.organizador.participante.email
     
     def get_isInscrito(self, obj):
-        participante_id = 1  # DESENVOLVIMENTO: Usar participante autenticado
-        return inscricao.objects.filter(evento=obj, participante_id=participante_id).exists()
+        current_participante = get_current_participante_from_context(self.context)
+        return inscricao.objects.filter(evento=obj, participante=current_participante).exists()
     
     def get_inscricaoEvento(self, obj):
         if obj.dataIniInsc <= date.today() <= obj.dataFimInsc:
@@ -50,8 +61,8 @@ class eventoSerializer(serializers.ModelSerializer):
         return obj.dataIniInsc <= date.today() <= obj.dataFimInsc
 
     def get_isOrganizador(self, obj):
-        participante_dummy = participante.objects.get(pk=1)  # PARA DESENVOLVIMENTO
-        return obj.organizador.participante == participante_dummy
+        current_participante = get_current_participante_from_context(self.context)
+        return obj.organizador.participante == current_participante
 
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
@@ -78,21 +89,43 @@ class eventoSerializerList(serializers.ModelSerializer):
         return date.today() > obj.dataFim
     
 class inscricaoSerializer(serializers.ModelSerializer):
+    evento = eventoSerializerList(read_only=True)
+    categoria = serializers.SerializerMethodField()
+    kit = serializers.SerializerMethodField()
+    
     class Meta():
         model = inscricao
         fields = '__all__'
+    
+    def get_categoria(self, obj):
+        if obj.categoria:
+            return {
+                'id': obj.categoria.id,
+                'nome': obj.categoria.nome,
+            }
+        return None
+    
+    def get_kit(self, obj):
+        if obj.kit:
+            return {
+                'id': obj.kit.id,
+                'nome': obj.kit.nome,
+            }
+        return None
 
 class InscricaoCreateSerializer(serializers.ModelSerializer):
+    kit = serializers.PrimaryKeyRelatedField(queryset=kit.objects.all(), required=False, allow_null=True)
+    
     class Meta:
         model = inscricao
         fields = ('categoria', 'kit')
     
     def create(self, validated_data):
-        # DESENVOLVIMENTO: Sempre usar participante pk=1
-        participante_obj = participante.objects.get(pk=1)
+        # Usar participante do contexto atual
+        current_participante = get_current_participante_from_context(self.context)
         
         inscricao_obj = inscricao.objects.create(
-            participante=participante_obj,
+            participante=current_participante,
             **validated_data
         )
 
@@ -120,6 +153,6 @@ class DetalhesParticipanteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_eventos_organizados(self, obj):
-        participante_dummy = participante.objects.get(pk=1) # PARA DESENVOLVIMENTO
-        eventos = evento.objects.filter(organizador__participante=participante_dummy)
+        current_participante = get_current_participante_from_context(self.context)
+        eventos = evento.objects.filter(organizador__participante=current_participante)
         return eventoSerializerList(eventos, many=True, context=self.context).data

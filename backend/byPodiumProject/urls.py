@@ -21,6 +21,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('api/', include('evento.urls')),
+    path('api/auth/', include('authentication.urls')),
     path('admin/', admin.site.urls),
     
     # Swagger URLs

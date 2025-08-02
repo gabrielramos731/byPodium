@@ -1,0 +1,263 @@
+:root {
+  --black-color: #0d0d0d;
+  --background-black: #262626;
+  --yellow0: #f3e96d;
+  --yellow1: #d9a444;
+  --yellow3: #8c6d34;
+  --white: #F8F2ED;
+}
+
+.loginContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.loginCard {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logoSection {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.logo {
+  margin-bottom: 1.5rem;
+}
+
+.logoText {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title {
+  color: var(--white);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  color: #b3b3b3;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.errorMessage {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  color: var(--white);
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.input {
+  background: #2a2a2a;
+  border: 2px solid #404040;
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 1rem;
+  padding: 0.875rem 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--yellow1);
+  box-shadow: 0 0 0 3px rgba(217, 164, 68, 0.1);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: #888;
+}
+
+.inputError {
+  border-color: #ff6b6b !important;
+  background: rgba(255, 107, 107, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+}
+
+.fieldError {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+  font-weight: 500;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.cancelButton {
+  background: #666;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  flex: 1;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loginButton {
+  background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+  border: none;
+  border-radius: 8px;
+  color: var(--black-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  flex: 1;
+}
+
+.loginButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--yellow0), var(--yellow1));
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(217, 164, 68, 0.3);
+}
+
+.loginButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.registerSection {
+  text-align: center;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #404040;
+}
+
+.registerText {
+  color: #b3b3b3;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.registerLink {
+  background: none;
+  border: none;
+  color: var(--yellow1);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  padding: 0;
+}
+
+.registerLink:hover:not(:disabled) {
+  color: var(--yellow0);
+}
+
+.registerLink:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .loginContainer {
+    padding: 1rem;
+  }
+
+  .loginCard {
+    padding: 2rem;
+    max-width: 100%;
+  }
+
+  .logoText {
+    font-size: 2rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 1.5rem;
+  }
+
+  .logoText {
+    font-size: 1.8rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+}
