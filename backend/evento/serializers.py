@@ -89,9 +89,29 @@ class eventoSerializerList(serializers.ModelSerializer):
         return date.today() > obj.dataFim
     
 class inscricaoSerializer(serializers.ModelSerializer):
+    evento = eventoSerializerList(read_only=True)
+    categoria = serializers.SerializerMethodField()
+    kit = serializers.SerializerMethodField()
+    
     class Meta():
         model = inscricao
         fields = '__all__'
+    
+    def get_categoria(self, obj):
+        if obj.categoria:
+            return {
+                'id': obj.categoria.id,
+                'nome': obj.categoria.nome,
+            }
+        return None
+    
+    def get_kit(self, obj):
+        if obj.kit:
+            return {
+                'id': obj.kit.id,
+                'nome': obj.kit.nome,
+            }
+        return None
 
 class InscricaoCreateSerializer(serializers.ModelSerializer):
     kit = serializers.PrimaryKeyRelatedField(queryset=kit.objects.all(), required=False, allow_null=True)
