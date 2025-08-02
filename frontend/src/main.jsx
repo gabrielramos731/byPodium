@@ -4,6 +4,7 @@ import './index.css'
 import InitialPage from './pages/initialPage.jsx'
 import EventView from './pages/EventView.jsx'
 import MyProfile from './pages/MyProfile.jsx';
+import MyInscriptions from './pages/MyInscriptions.jsx';
 import EventRegistration from './pages/EventRegistration.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <MyProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/minhas-inscricoes",
+    element: (
+      <ProtectedRoute>
+        <MyInscriptions />
       </ProtectedRoute>
     ),
   },

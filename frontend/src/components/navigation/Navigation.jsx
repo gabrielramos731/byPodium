@@ -31,7 +31,7 @@ function Navigation() {
         </a>
         {isLoggedIn && (
           <>
-            <a href="#" className={styles.navLink}>
+            <a href="/minhas-inscricoes" className={styles.navLink}>
               Minhas Inscrições
             </a>
             <a href="/meu-perfil" className={styles.navLink}>
