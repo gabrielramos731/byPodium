@@ -41,7 +41,7 @@ class eventoSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
+        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email

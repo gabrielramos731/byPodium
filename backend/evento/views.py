@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
-from usuarios.models import participante
+from usuarios.models import participante, organizador
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
@@ -43,7 +43,7 @@ class ListInscricoes(generics.ListAPIView):
     participante, evento, categoria e kit selecionados.
     """
     serializer_class = inscricaoSerializer
-    permission_classes = [permissions.AllowAny]  # Temporário para desenvolvimento
+    permission_classes = [permissions.AllowAny]  
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -53,6 +53,7 @@ class ListInscricoes(generics.ListAPIView):
 class CriarInscricao(generics.GenericAPIView):
     """GET: Categorias e kits do evento. POST: Cria inscrição"""
     serializer_class = InscricaoCreateSerializer
+    queryset = inscricao.objects.all()
     permission_classes = [permissions.AllowAny]
     
     def get(self, request, pk):
@@ -161,4 +162,80 @@ class CancelarInscricao(generics.DestroyAPIView):
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
     permission_classes = [permissions.AllowAny]
+
+class CriarEvento(generics.GenericAPIView):
+    """Cria evento"""
+    serializer_class = eventoSerializer
+    queryset = evento.objects.all() 
+    permission_classes = [permissions.IsAuthenticated]
     
+    def post(self, request):
+        current_participante = get_current_participante(request)
+
+        try:
+            organizador_obj = current_participante.organizadores
+        except organizador.DoesNotExist:
+            organizador_obj = organizador.objects.create(
+                participante=current_participante,
+                valor=0.00
+            )
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        evento_obj = serializer.save(organizador=organizador_obj)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class GerenciarEvento(generics.GenericAPIView):
+    """GET: Dados para edição. PATCH: Edita evento. DELETE: Cancela evento"""
+    serializer_class = eventoSerializer
+    queryset = evento.objects.all() 
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        """Retorna dados do evento para edição"""
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+        
+        if evento_obj.organizador.participante != current_participante:
+            return Response(
+                {'error': 'Você não tem permissão para editar este evento.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = self.get_serializer(evento_obj)
+        return Response(serializer.data)
+        
+    def patch(self, request, pk):
+        """Edita parcialmente um evento existente"""
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+
+        if evento_obj.organizador.participante != current_participante:
+            return Response(
+                {'error': 'Você não tem permissão para editar este evento.'},
+                status=status.HTTP_403_FORBIDDEN
+                )
+        
+        serializer = self.get_serializer(evento_obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def delete(self, request, pk):
+        """Cancela/deleta um evento"""
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+
+        if evento_obj.organizador.participante != current_participante:
+                return Response(
+                    {'error': 'Você não tem permissão para cancelar este evento.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+         
+        evento_obj.delete()
+        return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
+
+
