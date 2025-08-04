@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
 from usuarios.models import participante, organizador
+from localidades.models import localidade
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
@@ -163,14 +164,14 @@ class CancelarInscricao(generics.DestroyAPIView):
     serializer_class = InscricaoResponseSerializer
     permission_classes = [permissions.AllowAny]
 
-class CriarEvento(generics.GenericAPIView):
+class CriarEvento(generics.CreateAPIView):
     """Cria evento"""
     serializer_class = eventoSerializer
-    queryset = evento.objects.all() 
+    queryset = evento.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     
-    def post(self, request):
-        current_participante = get_current_participante(request)
+    def perform_create(self, serializer):
+        current_participante = get_current_participante(self.request)
 
         try:
             organizador_obj = current_participante.organizadores
@@ -180,11 +181,19 @@ class CriarEvento(generics.GenericAPIView):
                 valor=0.00
             )
         
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        evento_obj = serializer.save(organizador=organizador_obj)
+        # Buscar localidade baseada em UF e cidade enviadas
+        uf = self.request.data.get('uf')
+        cidade = self.request.data.get('cidade')
         
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if uf and cidade:
+            try:
+                localidade_obj = localidade.objects.get(uf=uf.upper(), cidade=cidade)
+            except localidade.DoesNotExist:
+                localidade_obj = localidade.objects.get(pk=1)
+        else:
+            localidade_obj = localidade.objects.get(pk=1)
+        
+        serializer.save(organizador=organizador_obj, localidade=localidade_obj)
 
 
 class GerenciarEvento(generics.GenericAPIView):
