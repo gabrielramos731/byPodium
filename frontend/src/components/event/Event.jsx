@@ -36,8 +36,10 @@ function Event({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else if (id) {
+    } else if (id && id !== undefined && id !== null) {
       navigate(`/evento/${id}`);
+    } else {
+      console.warn('Event ID is undefined, navigation prevented');
     }
   };
 
