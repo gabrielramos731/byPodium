@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
-import { getEventToManage, updateEvent, getEstados, getCidades } from '../utils/api/apiTaskManager';
+import { getEventToManage, updateEvent } from '../utils/api/apiTaskManager';
 import styles from './EditEvent.module.css';
 
 function EditEvent() {
@@ -11,8 +11,6 @@ function EditEvent() {
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [estados, setEstados] = useState([]);
-  const [cidades, setCidades] = useState([]);
   const [errors, setErrors] = useState({});
   const [originalData, setOriginalData] = useState({});
   
@@ -21,11 +19,9 @@ function EditEvent() {
     descricao: '',
     data_inicio: '',
     data_fim: '',
+    data_inicio_inscricao: '',
+    data_fim_inscricao: '',
     horario_inicio: '',
-    horario_fim: '',
-    uf: '',
-    cidade: '',
-    endereco: '',
     valor_inscricao: '',
     limite_participantes: '',
     imagem: null
@@ -42,25 +38,18 @@ function EditEvent() {
         const formattedData = {
           nome: eventData.nome || '',
           descricao: eventData.descricao || '',
-          data_inicio: eventData.data_inicio || '',
-          data_fim: eventData.data_fim || '',
-          horario_inicio: eventData.horario_inicio || '',
-          horario_fim: eventData.horario_fim || '',
-          uf: eventData.localidade.uf || '',
-          cidade: eventData.localidade.cidade || '',
-          endereco: eventData.endereco || '',
-          valor_inscricao: eventData.valor_inscricao || '',
-          limite_participantes: eventData.limite_participantes || '',
+          data_inicio: eventData.dataIni || '',
+          data_fim: eventData.dataFim || '',
+          data_inicio_inscricao: eventData.dataIniInsc || '',
+          data_fim_inscricao: eventData.dataFimInsc || '',
+          horario_inicio: eventData.horarioIni || '',
+          valor_inscricao: eventData.valorInsc || '',
+          limite_participantes: eventData.limiteQuantInsc || '',
           imagem: null
         };
         
         setFormData(formattedData);
         setOriginalData(formattedData);
-        
-        // Carregar cidades do estado selecionado
-        if (formattedData.uf) {
-          await loadCidades(formattedData.uf);
-        }
         
       } catch (error) {
         console.error('Erro ao carregar dados do evento:', error);
@@ -71,31 +60,8 @@ function EditEvent() {
       }
     };
 
-    const loadEstadosData = async () => {
-      try {
-        const estadosData = await getEstados();
-        setEstados(estadosData);
-      } catch (error) {
-        console.error('Erro ao carregar estados:', error);
-      }
-    };
-    
-    const fetchData = async () => {
-      await loadEstadosData();
-      await loadEventData();
-    };
-    
-    fetchData();
+    loadEventData();
   }, [id, navigate]);
-
-  const loadCidades = async (estado) => {
-    try {
-      const cidadesData = await getCidades(estado);
-      setCidades(cidadesData);
-    } catch (error) {
-      console.error('Erro ao carregar cidades:', error);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -117,15 +83,6 @@ function EditEvent() {
       setErrors(prev => ({
         ...prev,
         [name]: null
-      }));
-    }
-
-    // Carregar cidades quando estado for selecionado
-    if (name === 'uf' && value) {
-      loadCidades(value);
-      setFormData(prev => ({
-        ...prev,
-        cidade: '' // Limpar cidade selecionada
       }));
     }
   };
@@ -153,24 +110,24 @@ function EditEvent() {
       newErrors.data_fim = 'Data de fim deve ser posterior à data de início';
     }
 
+    if (!formData.data_inicio_inscricao) {
+      newErrors.data_inicio_inscricao = 'Data de início das inscrições é obrigatória';
+    }
+
+    if (!formData.data_fim_inscricao) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições é obrigatória';
+    }
+
+    if (formData.data_inicio_inscricao && formData.data_fim_inscricao && formData.data_inicio_inscricao > formData.data_fim_inscricao) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições deve ser posterior à data de início das inscrições';
+    }
+
+    if (formData.data_fim_inscricao && formData.data_inicio && formData.data_fim_inscricao > formData.data_inicio) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições deve ser anterior ou igual à data do evento';
+    }
+
     if (!formData.horario_inicio) {
       newErrors.horario_inicio = 'Horário de início é obrigatório';
-    }
-
-    if (!formData.horario_fim) {
-      newErrors.horario_fim = 'Horário de fim é obrigatório';
-    }
-
-    if (!formData.uf) {
-      newErrors.uf = 'Estado é obrigatório';
-    }
-
-    if (!formData.cidade) {
-      newErrors.cidade = 'Cidade é obrigatória';
-    }
-
-    if (!formData.endereco.trim()) {
-      newErrors.endereco = 'Endereço é obrigatório';
     }
 
     if (!formData.valor_inscricao) {
@@ -224,11 +181,22 @@ function EditEvent() {
     setSubmitting(true);
     
     try {
+      // Preparar dados para envio (mapeando para os nomes corretos do backend)
       const eventData = new FormData();
       
       Object.keys(changedFields).forEach(key => {
         if (changedFields[key] !== '' && changedFields[key] !== null) {
-          eventData.append(key, changedFields[key]);
+          // Mapear nomes dos campos para o backend
+          let backendKey = key;
+          if (key === 'data_inicio') backendKey = 'dataIni';
+          else if (key === 'data_fim') backendKey = 'dataFim';
+          else if (key === 'data_inicio_inscricao') backendKey = 'dataIniInsc';
+          else if (key === 'data_fim_inscricao') backendKey = 'dataFimInsc';
+          else if (key === 'horario_inicio') backendKey = 'horarioIni';
+          else if (key === 'valor_inscricao') backendKey = 'valorInsc';
+          else if (key === 'limite_participantes') backendKey = 'limiteQuantInsc';
+          
+          eventData.append(backendKey, changedFields[key]);
         }
       });
 
@@ -325,7 +293,7 @@ function EditEvent() {
               
               <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="data_inicio" className={styles.label}>Data de Início *</label>
+                  <label htmlFor="data_inicio" className={styles.label}>Data de Início do Evento*</label>
                   <input
                     id="data_inicio"
                     name="data_inicio"
@@ -338,7 +306,7 @@ function EditEvent() {
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label htmlFor="data_fim" className={styles.label}>Data de Fim *</label>
+                  <label htmlFor="data_fim" className={styles.label}>Data de Fim do Evento*</label>
                   <input
                     id="data_fim"
                     name="data_fim"
@@ -353,7 +321,7 @@ function EditEvent() {
 
               <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="horario_inicio" className={styles.label}>Horário de Início *</label>
+                  <label htmlFor="horario_inicio" className={styles.label}>Horário de Início do Evento*</label>
                   <input
                     id="horario_inicio"
                     name="horario_inicio"
@@ -365,75 +333,37 @@ function EditEvent() {
                   {errors.horario_inicio && <span className={styles.errorMessage}>{errors.horario_inicio}</span>}
                 </div>
 
-                <div className={styles.inputGroup}>
-                  <label htmlFor="horario_fim" className={styles.label}>Horário de Fim *</label>
-                  <input
-                    id="horario_fim"
-                    name="horario_fim"
-                    type="time"
-                    value={formData.horario_fim}
-                    onChange={handleInputChange}
-                    className={`${styles.input} ${errors.horario_fim ? styles.inputError : ''}`}
-                  />
-                  {errors.horario_fim && <span className={styles.errorMessage}>{errors.horario_fim}</span>}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Localização</h2>
-              
               <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="uf" className={styles.label}>Estado *</label>
-                  <select
-                    id="uf"
-                    name="uf"
-                    value={formData.uf}
+                  <label htmlFor="data_inicio_inscricao" className={styles.label}>Início das Inscrições *</label>
+                  <input
+                    id="data_inicio_inscricao"
+                    name="data_inicio_inscricao"
+                    type="date"
+                    value={formData.data_inicio_inscricao}
                     onChange={handleInputChange}
-                    className={`${styles.select} ${errors.uf ? styles.inputError : ''}`}
-                  >
-                    <option value="">Selecione o estado</option>
-                    {estados.map(estado => (
-                      <option key={estado} value={estado}>{estado}</option>
-                    ))}
-                  </select>
-                  {errors.uf && <span className={styles.errorMessage}>{errors.uf}</span>}
+                    className={`${styles.input} ${errors.data_inicio_inscricao ? styles.inputError : ''}`}
+                  />
+                  {errors.data_inicio_inscricao && <span className={styles.errorMessage}>{errors.data_inicio_inscricao}</span>}
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label htmlFor="cidade" className={styles.label}>Cidade *</label>
-                  <select
-                    id="cidade"
-                    name="cidade"
-                    value={formData.cidade}
+                  <label htmlFor="data_fim_inscricao" className={styles.label}>Fim das Inscrições *</label>
+                  <input
+                    id="data_fim_inscricao"
+                    name="data_fim_inscricao"
+                    type="date"
+                    value={formData.data_fim_inscricao}
                     onChange={handleInputChange}
-                    className={`${styles.select} ${errors.cidade ? styles.inputError : ''}`}
-                    disabled={!formData.uf}
-                  >
-                    <option value="">Selecione a cidade</option>
-                    {cidades.map(cidade => (
-                      <option key={cidade} value={cidade}>{cidade}</option>
-                    ))}
-                  </select>
-                  {errors.cidade && <span className={styles.errorMessage}>{errors.cidade}</span>}
+                    className={`${styles.input} ${errors.data_fim_inscricao ? styles.inputError : ''}`}
+                  />
+                  {errors.data_fim_inscricao && <span className={styles.errorMessage}>{errors.data_fim_inscricao}</span>}
                 </div>
               </div>
-
-              <div className={styles.inputGroup}>
-                <label htmlFor="endereco" className={styles.label}>Endereço *</label>
-                <input
-                  id="endereco"
-                  name="endereco"
-                  type="text"
-                  value={formData.endereco}
-                  onChange={handleInputChange}
-                  className={`${styles.input} ${errors.endereco ? styles.inputError : ''}`}
-                  placeholder="Digite o endereço completo"
-                />
-                {errors.endereco && <span className={styles.errorMessage}>{errors.endereco}</span>}
               </div>
             </div>
+
+
 
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Configurações</h2>
