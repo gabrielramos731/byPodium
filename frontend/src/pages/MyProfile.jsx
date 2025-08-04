@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import Event from '../components/event/Event';
@@ -6,6 +7,7 @@ import styles from './MyProfile.module.css';
 import { getUserProfile }  from '../utils/api/apiTaskManager';
 
 const MyProfile = () => {
+    const navigate = useNavigate();
     const [inscricoes, setInscricoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -219,7 +221,15 @@ const MyProfile = () => {
                 </section>
 
                 <section className={styles.eventsSection}>
-                    <h1 className={styles.pageTitle}>Meus eventos</h1>
+                    <div className={styles.eventsSectionHeader}>
+                        <h1 className={styles.pageTitle}>Meus eventos</h1>
+                        <button 
+                            className={styles.createEventButton}
+                            onClick={() => navigate('/evento/criar')}
+                        >
+                            + Criar Evento
+                        </button>
+                    </div>
                     
                     {loading && <div className={styles.loadingMessage}>Carregando...</div>}
                     {error && <p className={styles.error}>{error}</p>}

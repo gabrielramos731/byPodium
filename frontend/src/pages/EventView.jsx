@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../components/footer/Footer';
 import Navigation from '../components/navigation/Navigation';
+import CancelEventModal from '../components/cancelEventModal/CancelEventModal';
 import mainImage from '../assets/NO-PHOTO.png';
 import { useEvent } from '../utils/hooks/useEvent';
 import { cancelEventInscription } from '../utils/api/apiTaskManager';
@@ -13,6 +14,7 @@ function EventView() {
   const { event, loading, error, refetch } = useEvent(id);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [showCancelEventModal, setShowCancelEventModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -154,6 +156,19 @@ function EventView() {
     setShowCancelModal(false);
   };
 
+  const handleEditEvent = () => {
+    navigate(`/evento/${id}/editar`);
+  };
+
+  const handleCancelEvent = () => {
+    setShowCancelEventModal(true);
+  };
+
+  const handleEventCanceled = () => {
+    // Redirecionar para a página inicial após cancelar o evento
+    navigate('/');
+  };
+
   return (
     <div className={styles.eventViewContainer}>
       <Navigation />
@@ -225,13 +240,13 @@ function EventView() {
             <div className={styles.organizerActions}>
               <button 
                 className={styles.editEventButton}
-                onClick={() => alert('Funcionalidade de Editar Evento em desenvolvimento')}
+                onClick={handleEditEvent}
               >
                 Editar Evento
               </button>
               <button 
                 className={styles.cancelEventButton}
-                onClick={() => alert('Funcionalidade de Cancelar Evento em desenvolvimento')}
+                onClick={handleCancelEvent}
               >
                 Cancelar Evento
               </button>
@@ -267,6 +282,14 @@ function EventView() {
           </div>
         </div>
       )}
+
+      <CancelEventModal
+        isOpen={showCancelEventModal}
+        onClose={() => setShowCancelEventModal(false)}
+        eventId={id}
+        eventName={event?.nome || "Evento"}
+        onEventCanceled={handleEventCanceled}
+      />
 
       <Footer />
     </div>

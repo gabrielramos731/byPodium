@@ -126,6 +126,49 @@ async function getCidades(estado = null) {
   }
 }
 
+// Funções para gerenciamento de eventos
+async function createEvent(eventData) {
+  try {
+    const response = await api.post("/eventos/criar/", eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao criar evento:", error);
+    throw error;
+  }
+}
+
+async function updateEvent(eventId, eventData) {
+  try {
+    const response = await api.patch(`/eventos/gerenciar/${eventId}/`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar evento:", error);
+    throw error;
+  }
+}
+
+async function cancelEvent(eventId, justificativa) {
+  try {
+    const response = await api.delete(`/eventos/gerenciar/${eventId}/`, {
+      data: { justificativa }
+    });
+    return { success: true, message: 'Evento cancelado com sucesso' };
+  } catch (error) {
+    console.error("Erro ao cancelar evento:", error);
+    throw error;
+  }
+}
+
+async function getEventToManage(eventId) {
+  try {
+    const response = await api.get(`/eventos/gerenciar/${eventId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do evento para gerenciar:", error);
+    throw error;
+  }
+}
+
 export default getAllEvents;
 export { getEventById };
 export { getUserInscriptions };
@@ -137,3 +180,7 @@ export { loginUser };
 export { registerUser };
 export { getEstados };
 export { getCidades };
+export { createEvent };
+export { updateEvent };
+export { cancelEvent };
+export { getEventToManage };
