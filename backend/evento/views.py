@@ -181,7 +181,6 @@ class CriarEvento(generics.CreateAPIView):
                 valor=0.00
             )
         
-        # Buscar localidade baseada em UF e cidade enviadas
         uf = self.request.data.get('uf')
         cidade = self.request.data.get('cidade')
         
