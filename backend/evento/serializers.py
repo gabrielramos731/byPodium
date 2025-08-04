@@ -60,7 +60,7 @@ class eventoSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'localidade', 'kits', 'categorias', 'organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
+        fields = ('id', 'nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'localidade', 'kits', 'categorias', 'organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -104,11 +104,12 @@ class eventoSerializer(serializers.ModelSerializer):
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     photo_url = serializers.SerializerMethodField()
+    imagem = serializers.ImageField(read_only=True)
     isInscricaoAberta = serializers.SerializerMethodField()
     isEncerrado = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url','isInscricaoAberta', 'isEncerrado') 
+        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url', 'imagem', 'isInscricaoAberta', 'isEncerrado') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')

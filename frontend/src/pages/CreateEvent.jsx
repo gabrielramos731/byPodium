@@ -18,17 +18,22 @@ function CreateEvent() {
     descricao: '',
     data_inicio: '',
     data_fim: '',
+    data_inicio_inscricao: '',
+    data_fim_inscricao: '',
     horario_inicio: '',
-    horario_fim: '',
     uf: '',
     cidade: '',
-    endereco: '',
     valor_inscricao: '',
     limite_participantes: '',
     imagem: null
   });
 
-  const [categorias, setCategorias] = useState([]);
+  const [categorias, setCategorias] = useState([{
+    nome: '',
+    sexo: '',
+    idadeMin: '',
+    idadeMax: ''
+  }]);
   const [kits, setKits] = useState([]);
 
   useEffect(() => {
@@ -62,10 +67,21 @@ function CreateEvent() {
       idadeMin: '',
       idadeMax: ''
     }]);
+    
+    // Limpar erro de categorias
+    if (errors.categorias) {
+      setErrors(prev => ({
+        ...prev,
+        categorias: null
+      }));
+    }
   };
 
   const removeCategoria = (index) => {
-    setCategorias(categorias.filter((_, i) => i !== index));
+    // Não permite remover se há apenas uma categoria
+    if (categorias.length > 1) {
+      setCategorias(categorias.filter((_, i) => i !== index));
+    }
   };
 
   const updateCategoria = (index, field, value) => {
@@ -73,6 +89,14 @@ function CreateEvent() {
       i === index ? { ...categoria, [field]: value } : categoria
     );
     setCategorias(updatedCategorias);
+    
+    // Limpar erro de categorias quando usuário estiver preenchendo
+    if (errors.categorias) {
+      setErrors(prev => ({
+        ...prev,
+        categorias: null
+      }));
+    }
   };
 
   // Funções para gerenciar kits
@@ -183,12 +207,24 @@ function CreateEvent() {
       newErrors.data_fim = 'Data de fim deve ser posterior à data de início';
     }
 
-    if (!formData.horario_inicio) {
-      newErrors.horario_inicio = 'Horário de início é obrigatório';
+    if (!formData.data_inicio_inscricao) {
+      newErrors.data_inicio_inscricao = 'Data de início das inscrições é obrigatória';
     }
 
-    if (!formData.horario_fim) {
-      newErrors.horario_fim = 'Horário de fim é obrigatório';
+    if (!formData.data_fim_inscricao) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições é obrigatória';
+    }
+
+    if (formData.data_inicio_inscricao && formData.data_fim_inscricao && formData.data_inicio_inscricao > formData.data_fim_inscricao) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições deve ser posterior à data de início das inscrições';
+    }
+
+    if (formData.data_fim_inscricao && formData.data_inicio && formData.data_fim_inscricao > formData.data_inicio) {
+      newErrors.data_fim_inscricao = 'Data de fim das inscrições deve ser anterior ou igual à data do evento';
+    }
+
+    if (!formData.horario_inicio) {
+      newErrors.horario_inicio = 'Horário de início é obrigatório';
     }
 
     if (!formData.uf) {
@@ -197,10 +233,6 @@ function CreateEvent() {
 
     if (!formData.cidade) {
       newErrors.cidade = 'Cidade é obrigatória';
-    }
-
-    if (!formData.endereco.trim()) {
-      newErrors.endereco = 'Endereço é obrigatório';
     }
 
     if (!formData.valor_inscricao) {
@@ -213,6 +245,18 @@ function CreateEvent() {
       newErrors.limite_participantes = 'Limite de participantes é obrigatório';
     } else if (parseInt(formData.limite_participantes) <= 0) {
       newErrors.limite_participantes = 'Limite deve ser maior que zero';
+    }
+
+    // Validação de categorias - obrigatório
+    if (categorias.length === 0) {
+      newErrors.categorias = 'Pelo menos uma categoria deve ser adicionada';
+    } else {
+      const categoriasValidas = categorias.filter(cat => 
+        cat.nome && cat.sexo && cat.idadeMin !== '' && cat.idadeMax !== ''
+      );
+      if (categoriasValidas.length === 0) {
+        newErrors.categorias = 'Pelo menos uma categoria deve estar completamente preenchida';
+      }
     }
 
     return newErrors;
@@ -237,13 +281,12 @@ function CreateEvent() {
         dataIni: formData.data_inicio,
         dataFim: formData.data_fim,
         horarioIni: formData.horario_inicio,
-        dataIniInsc: formData.data_inicio, // Por padrão, inscrições começam no mesmo dia
-        dataFimInsc: formData.data_fim, // Por padrão, inscrições terminam no mesmo dia
+        dataIniInsc: formData.data_inicio_inscricao,
+        dataFimInsc: formData.data_fim_inscricao,
         limiteQuantInsc: parseInt(formData.limite_participantes),
         valorInsc: parseFloat(formData.valor_inscricao),
         uf: formData.uf,
-        cidade: formData.cidade,
-        endereco: formData.endereco
+        cidade: formData.cidade
       };
 
       // Adicionar categorias se existirem
@@ -365,7 +408,7 @@ function CreateEvent() {
               
               <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="data_inicio" className={styles.label}>Data de Início *</label>
+                  <label htmlFor="data_inicio" className={styles.label}>Data de Início do Evento*</label>
                   <input
                     id="data_inicio"
                     name="data_inicio"
@@ -378,7 +421,7 @@ function CreateEvent() {
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label htmlFor="data_fim" className={styles.label}>Data de Fim *</label>
+                  <label htmlFor="data_fim" className={styles.label}>Data de Fim do Evento*</label>
                   <input
                     id="data_fim"
                     name="data_fim"
@@ -393,7 +436,7 @@ function CreateEvent() {
 
               <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="horario_inicio" className={styles.label}>Horário de Início *</label>
+                  <label htmlFor="horario_inicio" className={styles.label}>Horário de Início do Evento*</label>
                   <input
                     id="horario_inicio"
                     name="horario_inicio"
@@ -405,18 +448,33 @@ function CreateEvent() {
                   {errors.horario_inicio && <span className={styles.errorMessage}>{errors.horario_inicio}</span>}
                 </div>
 
+              <div className={styles.row}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="horario_fim" className={styles.label}>Horário de Fim *</label>
+                  <label htmlFor="data_inicio_inscricao" className={styles.label}>Início das Inscrições *</label>
                   <input
-                    id="horario_fim"
-                    name="horario_fim"
-                    type="time"
-                    value={formData.horario_fim}
+                    id="data_inicio_inscricao"
+                    name="data_inicio_inscricao"
+                    type="date"
+                    value={formData.data_inicio_inscricao}
                     onChange={handleInputChange}
-                    className={`${styles.input} ${errors.horario_fim ? styles.inputError : ''}`}
+                    className={`${styles.input} ${errors.data_inicio_inscricao ? styles.inputError : ''}`}
                   />
-                  {errors.horario_fim && <span className={styles.errorMessage}>{errors.horario_fim}</span>}
+                  {errors.data_inicio_inscricao && <span className={styles.errorMessage}>{errors.data_inicio_inscricao}</span>}
                 </div>
+
+                <div className={styles.inputGroup}>
+                  <label htmlFor="data_fim_inscricao" className={styles.label}>Fim das Inscrições *</label>
+                  <input
+                    id="data_fim_inscricao"
+                    name="data_fim_inscricao"
+                    type="date"
+                    value={formData.data_fim_inscricao}
+                    onChange={handleInputChange}
+                    className={`${styles.input} ${errors.data_fim_inscricao ? styles.inputError : ''}`}
+                  />
+                  {errors.data_fim_inscricao && <span className={styles.errorMessage}>{errors.data_fim_inscricao}</span>}
+                </div>
+              </div>
               </div>
             </div>
 
@@ -459,20 +517,6 @@ function CreateEvent() {
                   {errors.cidade && <span className={styles.errorMessage}>{errors.cidade}</span>}
                 </div>
               </div>
-
-              <div className={styles.inputGroup}>
-                <label htmlFor="endereco" className={styles.label}>Endereço *</label>
-                <input
-                  id="endereco"
-                  name="endereco"
-                  type="text"
-                  value={formData.endereco}
-                  onChange={handleInputChange}
-                  className={`${styles.input} ${errors.endereco ? styles.inputError : ''}`}
-                  placeholder="Digite o endereço completo"
-                />
-                {errors.endereco && <span className={styles.errorMessage}>{errors.endereco}</span>}
-              </div>
             </div>
 
             <div className={styles.section}>
@@ -513,10 +557,11 @@ function CreateEvent() {
             </div>
 
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Categorias (Opcional)</h2>
+              <h2 className={styles.sectionTitle}>Categorias *</h2>
               <p className={styles.sectionDescription}>
-                Defina categorias por faixa etária e sexo para o evento
+                Defina categorias por faixa etária e sexo para o evento (obrigatório)
               </p>
+              {errors.categorias && <span className={styles.errorMessage}>{errors.categorias}</span>}
               
               {categorias.map((categoria, index) => (
                 <div key={index} className={styles.categoriaItem}>
@@ -526,6 +571,8 @@ function CreateEvent() {
                       type="button"
                       onClick={() => removeCategoria(index)}
                       className={styles.removeButton}
+                      disabled={categorias.length === 1}
+                      title={categorias.length === 1 ? "Pelo menos uma categoria é obrigatória" : "Remover categoria"}
                     >
                       Remover
                     </button>
