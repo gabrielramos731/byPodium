@@ -6,6 +6,7 @@ import CancelEventModal from '../components/cancelEventModal/CancelEventModal';
 import mainImage from '../assets/NO-PHOTO.png';
 import { useEvent } from '../utils/hooks/useEvent';
 import { cancelEventInscription } from '../utils/api/apiTaskManager';
+import { formatDateToBR, formatDatePeriod, isDatePast } from '../utils/dateUtils';
 import styles from './EventView.module.css';
 
 function EventView() {
@@ -64,25 +65,13 @@ function EventView() {
 
   const formatDate = (dateString, timeString) => {
     if (!dateString) return "Data não definida";
-    try {
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('pt-BR');
-      const formattedTime = timeString || "00:00";
-      return `${formattedDate} - ${formattedTime}`;
-    } catch {
-      return dateString;
-    }
+    const formattedDate = formatDateToBR(dateString);
+    const formattedTime = timeString || "00:00";
+    return `${formattedDate} - ${formattedTime}`;
   };
 
   const formatRegistrationPeriod = (start, end) => {
-    if (!start || !end) return "Consulte o organizador";
-    try {
-      const startDate = new Date(start).toLocaleDateString('pt-BR');
-      const endDate = new Date(end).toLocaleDateString('pt-BR');
-      return `${startDate} até ${endDate}`;
-    } catch {
-      return "Consulte o organizador";
-    }
+    return formatDatePeriod(start, end);
   };
 
   const getStatusClass = (statusText) => {
@@ -101,12 +90,7 @@ function EventView() {
 
   //função para verificar se o evento já encerrou
   const isEventFinished = () => {
-    if (!event.dataFim) return false;
-    const today = new Date();
-    const eventEndDate = new Date(event.dataFim);
-    today.setHours(0, 0, 0, 0);
-    eventEndDate.setHours(0, 0, 0, 0);
-    return eventEndDate < today;
+    return isDatePast(event.dataFim);
   };
 
   const handleButtonClick = () => {
@@ -201,11 +185,6 @@ function EventView() {
           <div className={styles.eventHeader}>
             <div className={styles.eventTitleSection}>
               <h1 className={styles.eventTitle}>{event.nome || "Nome do evento"}</h1>
-              {isEventFinished() && (
-                <div className={styles.eventFinishedWarning}>
-                  ⚠️ Este evento já foi encerrado
-                </div>
-              )}
               <p className={styles.eventPrice}>
                 {event.valorInsc ? `R$${parseFloat(event.valorInsc).toFixed(2)}` : "Gratuito"}
               </p>

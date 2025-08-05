@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import { getUserProfile, getEventRegistrationInfo, createEventRegistration, getEventById } from '../utils/api/apiTaskManager';
+import { formatDateToBR } from '../utils/dateUtils';
 import styles from './EventRegistration.module.css';
 
 function EventRegistration() {
@@ -138,9 +139,7 @@ function EventRegistration() {
                   <div className={styles.infoGroup}>
                     <label>Data de Nascimento</label>
                     <div className={styles.infoValue}>
-                      {userProfile?.data_nascimento ? 
-                        new Date(userProfile.data_nascimento).toLocaleDateString('pt-BR') : '-'
-                      }
+                      {userProfile?.data_nascimento ? formatDateToBR(userProfile.data_nascimento) : '-'}
                     </div>
                   </div>
                   <div className={styles.infoGroup}>

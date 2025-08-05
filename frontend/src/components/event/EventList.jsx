@@ -1,4 +1,5 @@
 import Event from "./Event";
+import { formatDateToBR } from '../../utils/dateUtils';
 import styles from "./EventList.module.css";
 
 function EventList({ events, title, type = "open" }) {
@@ -25,7 +26,7 @@ function EventList({ events, title, type = "open" }) {
               id={event.id}
               title={event.nome || "Nome do evento"}
               location={event.localidade ? `${event.localidade.cidade} - ${event.localidade.uf}` : "Local não informado"}
-              date={new Date(event.dataIni).toLocaleDateString('pt-BR') + " - " + event.horarioIni}
+              date={formatDateToBR(event.dataIni) + " - " + event.horarioIni}
               statusText={getStatusText(event.isInscricaoAberta)}
               isInscricaoAberta={event.isInscricaoAberta}
               image={event.photo_url}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import Event from '../components/event/Event';
+import { formatDateToBR } from '../utils/dateUtils';
 import styles from './MyProfile.module.css';
 import { getUserProfile }  from '../utils/api/apiTaskManager';
 
@@ -42,8 +43,7 @@ const MyProfile = () => {
                 setUserData({
                     nome: profileData.nome || '',
                     cpf: profileData.cpf || '',
-                    dataNascimento: profileData.data_nascimento ? 
-                        new Date(profileData.data_nascimento).toLocaleDateString('pt-BR') : '',
+                    dataNascimento: profileData.data_nascimento ? formatDateToBR(profileData.data_nascimento) : '',
                     email: profileData.email || '',
                     logradouro: profileData.rua || '',
                     numero: profileData.numero || '',
@@ -256,7 +256,7 @@ const MyProfile = () => {
                                                                 `${evento.localidade.cidade} - ${evento.localidade.uf}` : 
                                                                 "Local não informado"
                                                             }
-                                                            date={new Date(evento.dataIni).toLocaleDateString('pt-BR')}
+                                                            date={formatDateToBR(evento.dataIni)}
                                                             statusText={evento.isInscricaoAberta === true ? 'Evento Disponível' : 'Evento Indisponível'}
                                                             isInscricaoAberta={evento.isInscricaoAberta}
                                                             image={evento.imagem}
