@@ -99,7 +99,7 @@ function EventView() {
     return styles.statusDefault;
   };
 
-  // Função para verificar se o evento já encerrou
+  //função para verificar se o evento já encerrou
   const isEventFinished = () => {
     if (!event.dataFim) return false;
     const today = new Date();
