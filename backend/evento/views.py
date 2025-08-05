@@ -242,6 +242,8 @@ class GerenciarEvento(generics.GenericAPIView):
         
     def patch(self, request, pk):
         """Edita parcialmente um evento existente"""
+        from datetime import date
+        
         evento_obj = evento.objects.get(pk=pk)
         current_participante = get_current_participante(request)
 
@@ -251,6 +253,13 @@ class GerenciarEvento(generics.GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
                 )
         
+        # Verificar se o evento já encerrou
+        if evento_obj.dataFim < date.today():
+            return Response(
+                {'error': 'Não é possível editar um evento que já foi encerrado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         serializer = self.get_serializer(evento_obj, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -259,6 +268,8 @@ class GerenciarEvento(generics.GenericAPIView):
         
     def delete(self, request, pk):
         """Cancela/deleta um evento"""
+        from datetime import date
+        
         evento_obj = evento.objects.get(pk=pk)
         current_participante = get_current_participante(request)
 
@@ -267,6 +278,13 @@ class GerenciarEvento(generics.GenericAPIView):
                     {'error': 'Você não tem permissão para cancelar este evento.'},
                     status=status.HTTP_403_FORBIDDEN
                 )
+        
+        # Verificar se o evento já encerrou
+        if evento_obj.dataFim < date.today():
+            return Response(
+                {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
          
         evento_obj.delete()
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)

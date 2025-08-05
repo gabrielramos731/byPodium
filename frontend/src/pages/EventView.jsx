@@ -99,6 +99,16 @@ function EventView() {
     return styles.statusDefault;
   };
 
+  // Função para verificar se o evento já encerrou
+  const isEventFinished = () => {
+    if (!event.dataFim) return false;
+    const today = new Date();
+    const eventEndDate = new Date(event.dataFim);
+    today.setHours(0, 0, 0, 0);
+    eventEndDate.setHours(0, 0, 0, 0);
+    return eventEndDate < today;
+  };
+
   const handleButtonClick = () => {
     if (event.isInscrito) {
       setShowCancelModal(true);
@@ -157,10 +167,18 @@ function EventView() {
   };
 
   const handleEditEvent = () => {
+    if (isEventFinished()) {
+      alert('Não é possível editar um evento que já foi encerrado.');
+      return;
+    }
     navigate(`/evento/${id}/editar`);
   };
 
   const handleCancelEvent = () => {
+    if (isEventFinished()) {
+      alert('Não é possível cancelar um evento que já foi encerrado.');
+      return;
+    }
     setShowCancelEventModal(true);
   };
 
@@ -183,6 +201,11 @@ function EventView() {
           <div className={styles.eventHeader}>
             <div className={styles.eventTitleSection}>
               <h1 className={styles.eventTitle}>{event.nome || "Nome do evento"}</h1>
+              {isEventFinished() && (
+                <div className={styles.eventFinishedWarning}>
+                  ⚠️ Este evento já foi encerrado
+                </div>
+              )}
               <p className={styles.eventPrice}>
                 {event.valorInsc ? `R$${parseFloat(event.valorInsc).toFixed(2)}` : "Gratuito"}
               </p>
@@ -239,14 +262,18 @@ function EventView() {
           {event.isOrganizador && (
             <div className={styles.organizerActions}>
               <button 
-                className={styles.editEventButton}
+                className={`${styles.editEventButton} ${isEventFinished() ? styles.disabledButton : ''}`}
                 onClick={handleEditEvent}
+                disabled={isEventFinished()}
+                title={isEventFinished() ? 'Não é possível editar um evento que já foi encerrado' : 'Editar Evento'}
               >
                 Editar Evento
               </button>
               <button 
-                className={styles.cancelEventButton}
+                className={`${styles.cancelEventButton} ${isEventFinished() ? styles.disabledButton : ''}`}
                 onClick={handleCancelEvent}
+                disabled={isEventFinished()}
+                title={isEventFinished() ? 'Não é possível cancelar um evento que já foi encerrado' : 'Cancelar Evento'}
               >
                 Cancelar Evento
               </button>
