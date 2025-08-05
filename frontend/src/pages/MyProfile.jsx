@@ -18,7 +18,6 @@ const MyProfile = () => {
         cpf: '',
         dataNascimento: '',
         email: '',
-        senha: '',
         logradouro: '',
         numero: '',
         bairro: '',
@@ -46,7 +45,6 @@ const MyProfile = () => {
                     dataNascimento: profileData.data_nascimento ? 
                         new Date(profileData.data_nascimento).toLocaleDateString('pt-BR') : '',
                     email: profileData.email || '',
-                    senha: '••••••••••••••••••••',
                     logradouro: profileData.rua || '',
                     numero: profileData.numero || '',
                     bairro: profileData.bairro || '',
@@ -190,15 +188,6 @@ const MyProfile = () => {
                                         type="email" 
                                         value={userData.email}
                                         onChange={(e) => setUserData({...userData, email: e.target.value})}
-                                        className={styles.input}
-                                    />
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <label className={styles.label}>Senha</label>
-                                    <input 
-                                        type="password" 
-                                        value={userData.senha}
-                                        onChange={(e) => setUserData({...userData, senha: e.target.value})}
                                         className={styles.input}
                                     />
                                 </div>
