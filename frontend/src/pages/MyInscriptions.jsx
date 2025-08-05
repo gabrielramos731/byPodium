@@ -45,7 +45,7 @@ function MyInscriptions() {
 
   const separateEventsByDate = (inscriptionsList) => {
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas a data
+    currentDate.setHours(0, 0, 0, 0);
 
     const active = [];
     const past = [];
@@ -61,10 +61,8 @@ function MyInscriptions() {
       }
     });
 
-    // Ordena eventos ativos por data (mais próximos primeiro)
     active.sort((a, b) => new Date(a.evento.dataIni) - new Date(b.evento.dataIni));
     
-    // Ordena eventos passados por data (mais recentes primeiro)
     past.sort((a, b) => new Date(b.evento.dataIni) - new Date(a.evento.dataIni));
 
     setActiveEvents(active);
@@ -268,17 +266,10 @@ return (
       {inscriptions.length === 0 ? (
         <section className={styles.eventsSection}>
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>📅</div>
             <h2 className={styles.emptyTitle}>Você não possui nenhum evento no histórico</h2>
             <p className={styles.emptyText}>
               Quando você se inscrever em eventos, eles aparecerão aqui.
             </p>
-            <button 
-              onClick={() => navigate('/')}
-              className={styles.browseEventsButton}
-            >
-              Explorar Eventos
-            </button>
           </div>
         </section>
       ) : (

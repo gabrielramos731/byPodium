@@ -78,7 +78,6 @@ function EditEvent() {
       }));
     }
 
-    // Limpar erro do campo quando usuario digita
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -150,7 +149,6 @@ function EditEvent() {
     
     Object.keys(formData).forEach(key => {
       if (key === 'imagem') {
-        // Para imagem, apenas incluir se foi selecionada uma nova
         if (formData[key]) {
           changedFields[key] = formData[key];
         }
@@ -181,12 +179,10 @@ function EditEvent() {
     setSubmitting(true);
     
     try {
-      // Preparar dados para envio (mapeando para os nomes corretos do backend)
       const eventData = new FormData();
       
       Object.keys(changedFields).forEach(key => {
         if (changedFields[key] !== '' && changedFields[key] !== null) {
-          // Mapear nomes dos campos para o backend
           let backendKey = key;
           if (key === 'data_inicio') backendKey = 'dataIni';
           else if (key === 'data_fim') backendKey = 'dataFim';
@@ -241,7 +237,7 @@ function EditEvent() {
         <div className={styles.content}>
           <h1 className={styles.title}>Editar Evento</h1>
           
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} encType="multipart/form-data">
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Informações Básicas</h2>
               

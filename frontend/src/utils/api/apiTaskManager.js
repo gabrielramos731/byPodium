@@ -129,7 +129,15 @@ async function getCidades(estado = null) {
 // Funções para gerenciamento de eventos
 async function createEvent(eventData) {
   try {
-    const response = await api.post("/eventos/criar/", eventData);
+    // Se eventData é FormData, remover Content-Type para o navegador definir automaticamente
+    const config = {};
+    if (eventData instanceof FormData) {
+      config.headers = {
+        'Content-Type': undefined
+      };
+    }
+    
+    const response = await api.post("/eventos/criar/", eventData, config);
     return response.data;
   } catch (error) {
     console.error("Erro ao criar evento:", error);
@@ -139,7 +147,15 @@ async function createEvent(eventData) {
 
 async function updateEvent(eventId, eventData) {
   try {
-    const response = await api.patch(`/eventos/gerenciar/${eventId}/`, eventData);
+    // Se eventData é FormData, remover Content-Type para o navegador definir automaticamente
+    const config = {};
+    if (eventData instanceof FormData) {
+      config.headers = {
+        'Content-Type': undefined
+      };
+    }
+    
+    const response = await api.patch(`/eventos/gerenciar/${eventId}/`, eventData, config);
     return response.data;
   } catch (error) {
     console.error("Erro ao atualizar evento:", error);
@@ -149,7 +165,7 @@ async function updateEvent(eventId, eventData) {
 
 async function cancelEvent(eventId, justificativa) {
   try {
-    const response = await api.delete(`/eventos/gerenciar/${eventId}/`, {
+    await api.delete(`/eventos/gerenciar/${eventId}/`, {
       data: { justificativa }
     });
     return { success: true, message: 'Evento cancelado com sucesso' };

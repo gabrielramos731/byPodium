@@ -59,7 +59,6 @@ function CreateEvent() {
     }
   };
 
-  // Funções para gerenciar categorias
   const addCategoria = () => {
     setCategorias([...categorias, {
       nome: '',
@@ -68,7 +67,6 @@ function CreateEvent() {
       idadeMax: ''
     }]);
     
-    // Limpar erro de categorias
     if (errors.categorias) {
       setErrors(prev => ({
         ...prev,
@@ -78,7 +76,6 @@ function CreateEvent() {
   };
 
   const removeCategoria = (index) => {
-    // Não permite remover se há apenas uma categoria
     if (categorias.length > 1) {
       setCategorias(categorias.filter((_, i) => i !== index));
     }
@@ -90,7 +87,6 @@ function CreateEvent() {
     );
     setCategorias(updatedCategorias);
     
-    // Limpar erro de categorias quando usuário estiver preenchendo
     if (errors.categorias) {
       setErrors(prev => ({
         ...prev,
@@ -99,7 +95,6 @@ function CreateEvent() {
     }
   };
 
-  // Funções para gerenciar kits
   const addKit = () => {
     setKits([...kits, {
       nome: '',
@@ -166,7 +161,6 @@ function CreateEvent() {
       }));
     }
 
-    // Limpar erro do campo quando usuario digita
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -174,12 +168,11 @@ function CreateEvent() {
       }));
     }
 
-    // Carregar cidades quando estado for selecionado
     if (name === 'uf' && value) {
       loadCidades(value);
       setFormData(prev => ({
         ...prev,
-        cidade: '' // Limpar cidade selecionada
+        cidade: ''
       }));
     }
   };
@@ -247,7 +240,6 @@ function CreateEvent() {
       newErrors.limite_participantes = 'Limite deve ser maior que zero';
     }
 
-    // Validação de categorias - obrigatório
     if (categorias.length === 0) {
       newErrors.categorias = 'Pelo menos uma categoria deve ser adicionada';
     } else {
@@ -274,7 +266,6 @@ function CreateEvent() {
     setLoading(true);
     
     try {
-      // Preparar dados para envio
       const eventData = {
         nome: formData.nome,
         descricao: formData.descricao,
@@ -289,7 +280,6 @@ function CreateEvent() {
         cidade: formData.cidade
       };
 
-      // Adicionar categorias se existirem
       if (categorias.length > 0) {
         eventData.categorias = categorias.filter(cat => 
           cat.nome && cat.sexo && cat.idadeMin !== '' && cat.idadeMax !== ''
@@ -301,7 +291,6 @@ function CreateEvent() {
         }));
       }
 
-      // Adicionar kits se existirem
       if (kits.length > 0) {
         eventData.kits = kits.filter(kit => 
           kit.nome && kit.precoExtra !== ''
@@ -312,7 +301,6 @@ function CreateEvent() {
         }));
       }
 
-      // Se há imagem, usar FormData
       let finalEventData;
       if (formData.imagem) {
         finalEventData = new FormData();
@@ -357,7 +345,7 @@ function CreateEvent() {
         <div className={styles.content}>
           <h1 className={styles.title}>Criar Novo Evento</h1>
           
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} encType="multipart/form-data">
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Informações Básicas</h2>
               

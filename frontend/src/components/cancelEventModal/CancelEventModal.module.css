@@ -238,7 +238,6 @@
   box-shadow: none;
 }
 
-/* Responsividade */
 @media (max-width: 576px) {
   .overlay {
     padding: 0.5rem;
