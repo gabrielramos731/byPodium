@@ -206,7 +206,7 @@ function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="nome" className={styles.label}>
-              Nome completo *
+              Nome completo
             </label>
             <input
               type="text"
@@ -225,7 +225,7 @@ function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="username" className={styles.label}>
-              Nome de usuário *
+              Nome de usuário
             </label>
             <input
               type="text"
@@ -244,7 +244,7 @@ function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="email" className={styles.label}>
-              Email *
+              Email
             </label>
             <input
               type="email"
@@ -433,7 +433,7 @@ function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="password" className={styles.label}>
-              Senha *
+              Senha
             </label>
             <input
               type="password"
@@ -452,7 +452,7 @@ function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="confirmPassword" className={styles.label}>
-              Confirmar senha *
+              Confirmar senha
             </label>
             <input
               type="password"
