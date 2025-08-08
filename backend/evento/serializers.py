@@ -31,8 +31,27 @@ class localidadeSerializer(serializers.ModelSerializer):
         model = localidade
         fields = '__all__'
 
+class itemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = item
+        fields = ('nome', 'tamanho')
+
+class categoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = categoria
+        fields = ('nome', 'sexo', 'idadeMin', 'idadeMax')
+
+class kitSerializer(serializers.ModelSerializer):
+    itens = itemSerializer(many=True, write_only=True)
+    
+    class Meta:
+        model = kit
+        fields = ('nome', 'precoExtra', 'itens')
+
 class eventoSerializer(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
+    kits = kitSerializer(many=True, write_only=True, required=False)
+    categorias = categoriaSerializer(many=True, write_only=True, required=False)
     organizador_email = serializers.SerializerMethodField()
     isInscrito = serializers.SerializerMethodField()
     isInscricaoAberta = serializers.SerializerMethodField()
@@ -41,7 +60,7 @@ class eventoSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = evento
-        fields = ('nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'valorInsc', 'localidade','organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
+        fields = ('id', 'nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'localidade', 'kits', 'categorias', 'organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -63,15 +82,34 @@ class eventoSerializer(serializers.ModelSerializer):
     def get_isOrganizador(self, obj):
         current_participante = get_current_participante_from_context(self.context)
         return obj.organizador.participante == current_participante
+    
+    def create(self, validated_data):
+        kits_data = validated_data.pop('kits', [])
+        categorias_data = validated_data.pop('categorias', [])
+        evento_obj = super().create(validated_data)
+        
+        for categoria_data in categorias_data:
+            categoria.objects.create(evento=evento_obj, **categoria_data)
+        
+        for kit_data in kits_data:
+            itens_data = kit_data.pop('itens', [])
+            kit_obj = kit.objects.create(evento=evento_obj, **kit_data)
+            
+            for item_data in itens_data:
+                item_obj = item.objects.create(**item_data)
+                kit_obj.itens.add(item_obj)
+        
+        return evento_obj
 
 class eventoSerializerList(serializers.ModelSerializer):
     localidade = localidadeSerializer(read_only=True)
     photo_url = serializers.SerializerMethodField()
+    imagem = serializers.ImageField(read_only=True)
     isInscricaoAberta = serializers.SerializerMethodField()
     isEncerrado = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url','isInscricaoAberta', 'isEncerrado') 
+        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url', 'imagem', 'isInscricaoAberta', 'isEncerrado') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')

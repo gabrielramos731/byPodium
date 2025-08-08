@@ -7,7 +7,6 @@
   --white: #F8F2ED;
 }
 
-/* Hero Banner - igual à página inicial */
 .heroBanner {
   position: relative;
   width: 100%;
@@ -37,10 +36,8 @@
   align-items: center;
 }
 
-/* Seções de eventos - igual à página inicial */
 .eventsSection {
   padding: 3rem 2rem;
-  padding-top: 0;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -72,7 +69,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Loading e Error states - igual à página inicial */
 .loading,
 .error {
   text-align: center;
@@ -109,7 +105,6 @@
   box-shadow: 0 8px 20px rgba(211, 164, 68, 0.3);
 }
 
-/* Estado vazio */
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
@@ -159,7 +154,6 @@
   box-shadow: 0 8px 20px rgba(211, 164, 68, 0.3);
 }
 
-/* Card de inscrição - seguindo padrão dos eventos */
 .inscriptionCard {
   background: #1a1a1a;
   border-radius: 12px;
@@ -174,7 +168,6 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
-/* Cabeçalho do card */
 .cardHeader {
   display: flex;
   justify-content: space-between;
@@ -193,7 +186,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Status badges */
 .status {
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
@@ -229,7 +221,6 @@
   border: 1px solid rgba(108, 117, 125, 0.3);
 }
 
-/* Conteúdo do card */
 .cardContent {
   padding: 0 1.5rem 1.5rem;
 }
@@ -261,7 +252,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Rodapé do card */
 .cardFooter {
   padding: 1rem 1.5rem;
   background-color: rgba(255, 255, 255, 0.02);
@@ -281,7 +271,6 @@
   color: var(--yellow0);
 }
 
-/* Responsividade - igual à página inicial */
 @media (max-width: 768px) {
   .heroBanner {
     height: 40vh;

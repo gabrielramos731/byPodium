@@ -5,6 +5,7 @@ import mainLogo from '../assets/logo-main.svg';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import { getUserInscriptions } from '../utils/api/apiTaskManager';
+import { formatDateToBR, createLocalDate, compareDates } from '../utils/dateUtils';
 import styles from './MyInscriptions.module.css';
 
 function MyInscriptions() {
@@ -45,27 +46,27 @@ function MyInscriptions() {
 
   const separateEventsByDate = (inscriptionsList) => {
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas a data
+    currentDate.setHours(0, 0, 0, 0);
 
     const active = [];
     const past = [];
 
     inscriptionsList.forEach(inscription => {
-      const eventDate = new Date(inscription.evento.dataIni);
-      eventDate.setHours(0, 0, 0, 0);
-
-      if (eventDate >= currentDate) {
-        active.push(inscription);
-      } else {
-        past.push(inscription);
+      const eventDate = createLocalDate(inscription.evento.dataIni);
+      if (eventDate) {
+        eventDate.setHours(0, 0, 0, 0);
+        
+        if (eventDate >= currentDate) {
+          active.push(inscription);
+        } else {
+          past.push(inscription);
+        }
       }
     });
 
-    // Ordena eventos ativos por data (mais próximos primeiro)
-    active.sort((a, b) => new Date(a.evento.dataIni) - new Date(b.evento.dataIni));
-    
-    // Ordena eventos passados por data (mais recentes primeiro)
-    past.sort((a, b) => new Date(b.evento.dataIni) - new Date(a.evento.dataIni));
+    // Usar a função de comparação das utilitárias
+    active.sort((a, b) => compareDates(a.evento.dataIni, b.evento.dataIni));
+    past.sort((a, b) => compareDates(b.evento.dataIni, a.evento.dataIni));
 
     setActiveEvents(active);
     setPastEvents(past);
@@ -98,7 +99,7 @@ function MyInscriptions() {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
+    return formatDateToBR(dateString);
   };
 
   const formatTime = (timeString) => {
@@ -268,17 +269,10 @@ return (
       {inscriptions.length === 0 ? (
         <section className={styles.eventsSection}>
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>📅</div>
             <h2 className={styles.emptyTitle}>Você não possui nenhum evento no histórico</h2>
             <p className={styles.emptyText}>
               Quando você se inscrever em eventos, eles aparecerão aqui.
             </p>
-            <button 
-              onClick={() => navigate('/')}
-              className={styles.browseEventsButton}
-            >
-              Explorar Eventos
-            </button>
           </div>
         </section>
       ) : (

@@ -11,7 +11,8 @@ function Navigation() {
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userId");
@@ -41,11 +42,11 @@ function Navigation() {
         )}
         <div className={styles.authSection}>
           {isLoggedIn ? (
-            <button onClick={handleLogout} className={styles.authButton}>
+            <a href="#" onClick={handleLogout} className={styles.navLink}>
               Sair
-            </button>
+            </a>
           ) : (
-            <button onClick={handleLogin} className={styles.authButton}>
+            <button onClick={handleLogin} className={styles.loginButton}>
               Fazer Login
             </button>
           )}

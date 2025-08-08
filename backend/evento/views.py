@@ -1,8 +1,10 @@
+import json
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
-from usuarios.models import participante
+from usuarios.models import participante, organizador
+from localidades.models import localidade
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
@@ -43,7 +45,7 @@ class ListInscricoes(generics.ListAPIView):
     participante, evento, categoria e kit selecionados.
     """
     serializer_class = inscricaoSerializer
-    permission_classes = [permissions.AllowAny]  # Temporário para desenvolvimento
+    permission_classes = [permissions.AllowAny]  
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -53,6 +55,7 @@ class ListInscricoes(generics.ListAPIView):
 class CriarInscricao(generics.GenericAPIView):
     """GET: Categorias e kits do evento. POST: Cria inscrição"""
     serializer_class = InscricaoCreateSerializer
+    queryset = inscricao.objects.all()
     permission_classes = [permissions.AllowAny]
     
     def get(self, request, pk):
@@ -161,4 +164,129 @@ class CancelarInscricao(generics.DestroyAPIView):
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
     permission_classes = [permissions.AllowAny]
+
+class CriarEvento(generics.CreateAPIView):
+    """Cria evento"""
+    serializer_class = eventoSerializer
+    queryset = evento.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     
+    def get_serializer(self, *args, **kwargs):
+        """Override para processar dados JSON em FormData"""
+        
+        if hasattr(self.request, 'data'):
+            data = self.request.data.copy()
+            
+            # Processar categorias se vier como string JSON
+            if 'categorias' in data and isinstance(data['categorias'], str):
+                try:
+                    data['categorias'] = json.loads(data['categorias'])
+                except (json.JSONDecodeError, TypeError):
+                    pass
+            
+            # Processar kits se vier como string JSON  
+            if 'kits' in data and isinstance(data['kits'], str):
+                try:
+                    data['kits'] = json.loads(data['kits'])
+                except (json.JSONDecodeError, TypeError):
+                    pass
+            
+            kwargs['data'] = data
+        
+        return super().get_serializer(*args, **kwargs)
+    
+    def perform_create(self, serializer):
+        current_participante = get_current_participante(self.request)
+
+        try:
+            organizador_obj = current_participante.organizadores
+        except organizador.DoesNotExist:
+            organizador_obj = organizador.objects.create(
+                participante=current_participante,
+                valor=0.00
+            )
+        
+        uf = self.request.data.get('uf')
+        cidade = self.request.data.get('cidade')
+        
+        if uf and cidade:
+            try:
+                localidade_obj = localidade.objects.get(uf=uf.upper(), cidade=cidade)
+            except localidade.DoesNotExist:
+                localidade_obj = localidade.objects.get(pk=1)
+        else:
+            localidade_obj = localidade.objects.get(pk=1)
+        
+        serializer.save(organizador=organizador_obj, localidade=localidade_obj)
+
+
+class GerenciarEvento(generics.GenericAPIView):
+    """GET: Dados para edição. PATCH: Edita evento. DELETE: Cancela evento"""
+    serializer_class = eventoSerializer
+    queryset = evento.objects.all() 
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        """Retorna dados do evento para edição"""
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+        
+        if evento_obj.organizador.participante != current_participante:
+            return Response(
+                {'error': 'Você não tem permissão para editar este evento.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = self.get_serializer(evento_obj)
+        return Response(serializer.data)
+        
+    def patch(self, request, pk):
+        """Edita parcialmente um evento existente"""
+        from datetime import date
+        
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+
+        if evento_obj.organizador.participante != current_participante:
+            return Response(
+                {'error': 'Você não tem permissão para editar este evento.'},
+                status=status.HTTP_403_FORBIDDEN
+                )
+        
+        # Verificar se o evento já encerrou
+        if evento_obj.dataFim < date.today():
+            return Response(
+                {'error': 'Não é possível editar um evento que já foi encerrado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = self.get_serializer(evento_obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def delete(self, request, pk):
+        """Cancela/deleta um evento"""
+        from datetime import date
+        
+        evento_obj = evento.objects.get(pk=pk)
+        current_participante = get_current_participante(request)
+
+        if evento_obj.organizador.participante != current_participante:
+                return Response(
+                    {'error': 'Você não tem permissão para cancelar este evento.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        
+        # Verificar se o evento já encerrou
+        if evento_obj.dataFim < date.today():
+            return Response(
+                {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+         
+        evento_obj.delete()
+        return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
+
+

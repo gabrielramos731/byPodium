@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import Event from '../components/event/Event';
+import { formatDateToBR } from '../utils/dateUtils';
 import styles from './MyProfile.module.css';
 import { getUserProfile }  from '../utils/api/apiTaskManager';
 
 const MyProfile = () => {
+    const navigate = useNavigate();
     const [inscricoes, setInscricoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,7 +19,6 @@ const MyProfile = () => {
         cpf: '',
         dataNascimento: '',
         email: '',
-        senha: '',
         logradouro: '',
         numero: '',
         bairro: '',
@@ -41,10 +43,8 @@ const MyProfile = () => {
                 setUserData({
                     nome: profileData.nome || '',
                     cpf: profileData.cpf || '',
-                    dataNascimento: profileData.data_nascimento ? 
-                        new Date(profileData.data_nascimento).toLocaleDateString('pt-BR') : '',
+                    dataNascimento: profileData.data_nascimento ? formatDateToBR(profileData.data_nascimento) : '',
                     email: profileData.email || '',
-                    senha: '••••••••••••••••••••',
                     logradouro: profileData.rua || '',
                     numero: profileData.numero || '',
                     bairro: profileData.bairro || '',
@@ -191,15 +191,6 @@ const MyProfile = () => {
                                         className={styles.input}
                                     />
                                 </div>
-                                <div className={styles.inputGroup}>
-                                    <label className={styles.label}>Senha</label>
-                                    <input 
-                                        type="password" 
-                                        value={userData.senha}
-                                        onChange={(e) => setUserData({...userData, senha: e.target.value})}
-                                        className={styles.input}
-                                    />
-                                </div>
                             </div>
                             
                             <div className={styles.profileCard}>
@@ -219,7 +210,15 @@ const MyProfile = () => {
                 </section>
 
                 <section className={styles.eventsSection}>
-                    <h1 className={styles.pageTitle}>Meus eventos</h1>
+                    <div className={styles.eventsSectionHeader}>
+                        <h1 className={styles.pageTitle}>Meus eventos</h1>
+                        <button 
+                            className={styles.createEventButton}
+                            onClick={() => navigate('/evento/criar')}
+                        >
+                            + Criar Evento
+                        </button>
+                    </div>
                     
                     {loading && <div className={styles.loadingMessage}>Carregando...</div>}
                     {error && <p className={styles.error}>{error}</p>}
@@ -257,7 +256,7 @@ const MyProfile = () => {
                                                                 `${evento.localidade.cidade} - ${evento.localidade.uf}` : 
                                                                 "Local não informado"
                                                             }
-                                                            date={new Date(evento.dataIni).toLocaleDateString('pt-BR')}
+                                                            date={formatDateToBR(evento.dataIni)}
                                                             statusText={evento.isInscricaoAberta === true ? 'Evento Disponível' : 'Evento Indisponível'}
                                                             isInscricaoAberta={evento.isInscricaoAberta}
                                                             image={evento.imagem}

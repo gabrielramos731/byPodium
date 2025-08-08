@@ -6,6 +6,8 @@ import EventView from './pages/EventView.jsx'
 import MyProfile from './pages/MyProfile.jsx';
 import MyInscriptions from './pages/MyInscriptions.jsx';
 import EventRegistration from './pages/EventRegistration.jsx';
+import CreateEvent from './pages/CreateEvent.jsx';
+import EditEvent from './pages/EditEvent.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
@@ -25,6 +27,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <EventRegistration/>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/evento/:id/editar",
+    element: (
+      <ProtectedRoute>
+        <EditEvent/>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/evento/criar",
+    element: (
+      <ProtectedRoute>
+        <CreateEvent/>
       </ProtectedRoute>
     ),
   },

@@ -33,7 +33,7 @@
   align-items: center;
 }
 
-.authButton {
+.loginButton {
   background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
   border: none;
   border-radius: 8px;
@@ -46,7 +46,7 @@
   font-family: "Poppins", sans-serif;
 }
 
-.authButton:hover {
+.loginButton:hover {
   background: linear-gradient(135deg, var(--yellow0), var(--yellow1));
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(217, 164, 68, 0.3);
@@ -68,7 +68,7 @@
     font-size: 1rem;
   }
 
-  .authButton {
+  .loginButton {
     font-size: 0.9rem;
     padding: 0.6rem 1.2rem;
   }
@@ -83,7 +83,7 @@
     font-size: 0.9rem;
   }
 
-  .authButton {
+  .loginButton {
     font-size: 0.8rem;
     padding: 0.5rem 1rem;
   }

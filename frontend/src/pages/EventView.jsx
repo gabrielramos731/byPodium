@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../components/footer/Footer';
 import Navigation from '../components/navigation/Navigation';
+import CancelEventModal from '../components/cancelEventModal/CancelEventModal';
 import mainImage from '../assets/NO-PHOTO.png';
 import { useEvent } from '../utils/hooks/useEvent';
 import { cancelEventInscription } from '../utils/api/apiTaskManager';
+import { formatDateToBR, formatDatePeriod, isDatePast } from '../utils/dateUtils';
 import styles from './EventView.module.css';
 
 function EventView() {
@@ -13,6 +15,7 @@ function EventView() {
   const { event, loading, error, refetch } = useEvent(id);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [showCancelEventModal, setShowCancelEventModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,25 +65,13 @@ function EventView() {
 
   const formatDate = (dateString, timeString) => {
     if (!dateString) return "Data não definida";
-    try {
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('pt-BR');
-      const formattedTime = timeString || "00:00";
-      return `${formattedDate} - ${formattedTime}`;
-    } catch {
-      return dateString;
-    }
+    const formattedDate = formatDateToBR(dateString);
+    const formattedTime = timeString || "00:00";
+    return `${formattedDate} - ${formattedTime}`;
   };
 
   const formatRegistrationPeriod = (start, end) => {
-    if (!start || !end) return "Consulte o organizador";
-    try {
-      const startDate = new Date(start).toLocaleDateString('pt-BR');
-      const endDate = new Date(end).toLocaleDateString('pt-BR');
-      return `${startDate} até ${endDate}`;
-    } catch {
-      return "Consulte o organizador";
-    }
+    return formatDatePeriod(start, end);
   };
 
   const getStatusClass = (statusText) => {
@@ -95,6 +86,11 @@ function EventView() {
     }
     
     return styles.statusDefault;
+  };
+
+  //função para verificar se o evento já encerrou
+  const isEventFinished = () => {
+    return isDatePast(event.dataFim);
   };
 
   const handleButtonClick = () => {
@@ -152,6 +148,27 @@ function EventView() {
 
   const handleCloseModal = () => {
     setShowCancelModal(false);
+  };
+
+  const handleEditEvent = () => {
+    if (isEventFinished()) {
+      alert('Não é possível editar um evento que já foi encerrado.');
+      return;
+    }
+    navigate(`/evento/${id}/editar`);
+  };
+
+  const handleCancelEvent = () => {
+    if (isEventFinished()) {
+      alert('Não é possível cancelar um evento que já foi encerrado.');
+      return;
+    }
+    setShowCancelEventModal(true);
+  };
+
+  const handleEventCanceled = () => {
+    // Redirecionar para a página inicial após cancelar o evento
+    navigate('/');
   };
 
   return (
@@ -224,14 +241,18 @@ function EventView() {
           {event.isOrganizador && (
             <div className={styles.organizerActions}>
               <button 
-                className={styles.editEventButton}
-                onClick={() => alert('Funcionalidade de Editar Evento em desenvolvimento')}
+                className={`${styles.editEventButton} ${isEventFinished() ? styles.disabledButton : ''}`}
+                onClick={handleEditEvent}
+                disabled={isEventFinished()}
+                title={isEventFinished() ? 'Não é possível editar um evento que já foi encerrado' : 'Editar Evento'}
               >
                 Editar Evento
               </button>
               <button 
-                className={styles.cancelEventButton}
-                onClick={() => alert('Funcionalidade de Cancelar Evento em desenvolvimento')}
+                className={`${styles.cancelEventButton} ${isEventFinished() ? styles.disabledButton : ''}`}
+                onClick={handleCancelEvent}
+                disabled={isEventFinished()}
+                title={isEventFinished() ? 'Não é possível cancelar um evento que já foi encerrado' : 'Cancelar Evento'}
               >
                 Cancelar Evento
               </button>
@@ -267,6 +288,14 @@ function EventView() {
           </div>
         </div>
       )}
+
+      <CancelEventModal
+        isOpen={showCancelEventModal}
+        onClose={() => setShowCancelEventModal(false)}
+        eventId={id}
+        eventName={event?.nome || "Evento"}
+        onEventCanceled={handleEventCanceled}
+      />
 
       <Footer />
     </div>
