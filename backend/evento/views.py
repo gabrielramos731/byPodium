@@ -45,7 +45,7 @@ class ListInscricoes(generics.ListAPIView):
     participante, evento, categoria e kit selecionados.
     """
     serializer_class = inscricaoSerializer
-    permission_classes = [permissions.AllowAny]  
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -56,7 +56,7 @@ class CriarInscricao(generics.GenericAPIView):
     """GET: Categorias e kits do evento. POST: Cria inscrição"""
     serializer_class = InscricaoCreateSerializer
     queryset = inscricao.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]  
     
     def get(self, request, pk):
         """Retorna dados para inscrição: Evento, categorias e kits e usuário"""
@@ -146,13 +146,13 @@ class DetalhesInscricao(generics.RetrieveAPIView):
     """Detalhes de uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
 
 class DetalhesParticipante(generics.ListAPIView):
     """Detalhes completos do participante"""
     serializer_class = DetalhesParticipanteSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -163,7 +163,7 @@ class CancelarInscricao(generics.DestroyAPIView):
     """Cancela uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated] 
 
 class CriarEvento(generics.CreateAPIView):
     """Cria evento"""
@@ -172,19 +172,16 @@ class CriarEvento(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_serializer(self, *args, **kwargs):
-        """Override para processar dados JSON em FormData"""
         
         if hasattr(self.request, 'data'):
             data = self.request.data.copy()
             
-            # Processar categorias se vier como string JSON
             if 'categorias' in data and isinstance(data['categorias'], str):
                 try:
                     data['categorias'] = json.loads(data['categorias'])
                 except (json.JSONDecodeError, TypeError):
                     pass
             
-            # Processar kits se vier como string JSON  
             if 'kits' in data and isinstance(data['kits'], str):
                 try:
                     data['kits'] = json.loads(data['kits'])
@@ -253,7 +250,6 @@ class GerenciarEvento(generics.GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
                 )
         
-        # Verificar se o evento já encerrou
         if evento_obj.dataFim < date.today():
             return Response(
                 {'error': 'Não é possível editar um evento que já foi encerrado.'},
@@ -279,7 +275,6 @@ class GerenciarEvento(generics.GenericAPIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
         
-        # Verificar se o evento já encerrou
         if evento_obj.dataFim < date.today():
             return Response(
                 {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
