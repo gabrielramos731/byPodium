@@ -280,8 +280,13 @@ class GerenciarEvento(generics.GenericAPIView):
                 {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-         
-        evento_obj.delete()
+
+        evento_obj.status = 'cancelado'
+        evento_obj.save()
+        
+        inscricoes_evento = inscricao.objects.filter(evento=evento_obj)
+        inscricoes_evento.update(status='cancelado')
+        
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
 
 

@@ -60,7 +60,7 @@ class eventoSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'localidade', 'kits', 'categorias', 'organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
+        fields = ('id', 'nome', 'descricao', 'valorInsc', 'horarioIni', 'dataIni', 'dataFim', 'dataIniInsc', 'dataFimInsc', 'limiteQuantInsc', 'status', 'localidade', 'kits', 'categorias', 'organizador_email','imagem', 'isInscrito', 'isInscricaoAberta','inscricaoEvento', 'isOrganizador')
 
     def get_organizador_email(self, obj):
         return obj.organizador.participante.email
@@ -109,7 +109,7 @@ class eventoSerializerList(serializers.ModelSerializer):
     isEncerrado = serializers.SerializerMethodField()
     class Meta():
         model = evento
-        fields = ('id', 'nome', 'dataIni', 'localidade', 'horarioIni', 'photo_url', 'imagem', 'isInscricaoAberta', 'isEncerrado') 
+        fields = ('id', 'nome', 'dataIni', 'status', 'localidade', 'horarioIni', 'photo_url', 'imagem', 'isInscricaoAberta', 'isEncerrado') 
 
     def get_photo_url(self, obj):
         request = self.context.get('request')
@@ -159,7 +159,6 @@ class InscricaoCreateSerializer(serializers.ModelSerializer):
         fields = ('categoria', 'kit')
     
     def create(self, validated_data):
-        # Usar participante do contexto atual
         current_participante = get_current_participante_from_context(self.context)
         
         inscricao_obj = inscricao.objects.create(
