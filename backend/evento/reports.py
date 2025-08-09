@@ -23,9 +23,9 @@ class EventReports:
                     'taxa_ocupacao': (inscricoes.count() / event.limiteQuantInsc * 100) if event.limiteQuantInsc > 0 else 0,
                 },
                 'status_inscricoes': {
-                    'confirmadas': inscricoes.filter(status='CONFIRMADA').count(),
-                    'pendentes': inscricoes.filter(status='PENDENTE').count(),
-                    'canceladas': inscricoes.filter(status='CANCELADA').count(),
+                    'confirmadas': inscricoes.filter(status='confirmada').count(),
+                    'pendentes': inscricoes.filter(status='pendente').count(),
+                    'canceladas': inscricoes.filter(status='cancelada').count(),
                 },
                 'kits': {
                     kit.nome: inscricoes.filter(kit=kit).count() 
