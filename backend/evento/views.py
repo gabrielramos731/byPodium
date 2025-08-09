@@ -11,6 +11,9 @@ from .serializers import (
     DetalhesParticipanteSerializer
 )
 from datetime import date
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from datetime import datetime
 
 def get_current_participante(request):
     """Retorna o participante atual ou fallback para pk=1"""
@@ -284,4 +287,78 @@ class GerenciarEvento(generics.GenericAPIView):
         evento_obj.delete()
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
 
+class GerarRelatorio(generics.GenericAPIView):
+    """
+    Classe para geração de relatórios do sistema
+    GET /eventos/<event_id>/report/: Gera relatório de um evento específico
+    GET /eventos/period-report/: Gera relatório por período
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_event_report(self, request, event_id):
+        """Gera relatório detalhado de um evento específico"""
+        try:
+            event = evento.objects.get(id=event_id)
+            current_participante = get_current_participante(request)
 
+            if event.organizador.participante != current_participante:
+                return Response(
+                    {'error': 'Você não tem permissão para gerar relatórios deste evento.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            from .reports import EventReports
+            report_type = request.query_params.get('type', 'summary')
+            
+            if report_type == 'summary':
+                report = EventReports.get_event_summary(event_id)
+            elif report_type == 'participants':
+                report = EventReports.get_participant_report(event_id)
+            else:
+                return Response({'error': 'Tipo de relatório inválido'}, status=400)
+            
+            if report is None:
+                return Response({'error': 'Evento não encontrado'}, status=404)
+            
+            return Response(report)
+            
+        except evento.DoesNotExist:
+            return Response({'error': 'Evento não encontrado'}, status=404)
+    
+    def get_period_report(self, request):
+        """
+        Gera relatório de eventos em um período específico
+        Parâmetros obrigatórios:
+        - data_inicio: YYYY-MM-DD
+        - data_fim: YYYY-MM-DD
+        """
+        from .reports import EventReports
+        try:
+            data_inicio = datetime.strptime(request.query_params.get('data_inicio'), '%Y-%m-%d').date()
+            data_fim = datetime.strptime(request.query_params.get('data_fim'), '%Y-%m-%d').date()
+        except (ValueError, TypeError):
+            return Response({
+                'error': 'Formato de data inválido. Use YYYY-MM-DD',
+                'exemplo': {
+                    'data_inicio': '2024-01-01',
+                    'data_fim': '2024-12-31'
+                }
+            }, status=400)
+        
+        if data_inicio > data_fim:
+            return Response({
+                'error': 'Data inicial não pode ser maior que a data final'
+            }, status=400)
+        
+        report = EventReports.get_events_by_period(data_inicio, data_fim)
+        return Response(report)
+
+    def get(self, request, event_id=None):
+        """
+        Roteador para os diferentes tipos de relatório
+        Se event_id for fornecido, gera relatório do evento
+        Caso contrário, gera relatório por período
+        """
+        if event_id is not None:
+            return self.get_event_report(request, event_id)
+        return self.get_period_report(request)
