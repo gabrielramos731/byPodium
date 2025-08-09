@@ -15,7 +15,13 @@ function Event({
   const navigate = useNavigate();
 
   const getStatusStyle = () => {
-    if (isInscricaoAberta === true) {
+    // Verificar se é evento cancelado primeiro
+    if (statusText && statusText.toLowerCase().includes('cancelado')) {
+      return {
+        backgroundColor: '#8b0000',
+        color: '#ff6b6b'
+      };
+    } else if (isInscricaoAberta === true) {
       return {
         backgroundColor: '#2d5016',
         color: '#90ee90'
