@@ -294,11 +294,22 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
         if pk:
             evento_obj = evento.objects.get(pk=pk)
             serializer = self.get_serializer(evento_obj)
-            return Response(serializer.data)
+            data = serializer.data
+            
+            data['organizador_email'] = evento_obj.organizador.participante.email
+            data['localidade_nome'] = {evento_obj.localidade.cidade}
+            data['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
         else:
             eventos_pendentes = evento.objects.filter(status='pendente')
             serializer = self.get_serializer(eventos_pendentes, many=True)
-            return Response(serializer.data)
+            data = serializer.data
+            
+            for i, evento_obj in enumerate(eventos_pendentes):
+                data[i]['organizador_email'] = evento_obj.organizador.participante.email
+                data[i]['localidade_nome'] = {evento_obj.localidade.cidade}
+                data[i]['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
     
     def patch(self, request, pk):
         try:
@@ -314,7 +325,6 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
             evento_obj.status = novo_status
             evento_obj.save()
             
-            # Usar serializer específico para update que não filtra por status
             serializer = EventoStatusUpdateSerializer(evento_obj)
             return Response(serializer.data, status=status.HTTP_200_OK)
             
