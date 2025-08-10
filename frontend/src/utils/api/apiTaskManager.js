@@ -209,9 +209,19 @@ async function getPendingEvents() {
   }
 }
 
-async function updateEventStatus(eventId, status) {
+async function updateEventStatus(eventId, status, confirmacao = false, feedback_admin = '') {
   try {
-    const response = await api.patch(`/eventos/pendentes/${eventId}/`, { status });
+    const payload = { 
+      status, 
+      confirmacao 
+    };
+    
+    // Adicionar feedback apenas para negações
+    if (status === 'negado' && feedback_admin.trim()) {
+      payload.feedback_admin = feedback_admin.trim();
+    }
+    
+    const response = await api.patch(`/eventos/pendentes/${eventId}/`, payload);
     return response.data;
   } catch (error) {
     console.error("Erro ao atualizar status do evento:", error);
