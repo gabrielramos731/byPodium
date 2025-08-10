@@ -31,6 +31,10 @@ class EventReports:
                     kit.nome: inscricoes.filter(kit=kit).count() 
                     for kit in event.kits.all()
                 },
+                'categorias': {
+                    cat.nome: inscricoes.filter(categoria=cat).count()
+                    for cat in event.categorias.all()
+                },
                 'data_geracao': datetime.now().strftime("%d/%m/%Y %H:%M")
             }
         except evento.DoesNotExist:
