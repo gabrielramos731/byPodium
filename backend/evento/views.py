@@ -1,5 +1,5 @@
 import json
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, serializers
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
@@ -8,7 +8,7 @@ from localidades.models import localidade
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
-    DetalhesParticipanteSerializer
+    DetalhesParticipanteSerializer, EventoPendenteSerializer, EventoStatusUpdateSerializer
 )
 from datetime import date
 
@@ -24,8 +24,8 @@ def get_current_participante(request):
 
 
 class ListEventos(generics.ListAPIView):
-    """Lista todos os eventos disponíveis"""
-    queryset = evento.objects.all()
+    """Lista eventos ativos (aprovados) disponíveis para visualização"""
+    queryset = evento.objects.filter(status='ativo')
     serializer_class = eventoSerializerList
     permission_classes = [permissions.AllowAny]
 
@@ -45,7 +45,7 @@ class ListInscricoes(generics.ListAPIView):
     participante, evento, categoria e kit selecionados.
     """
     serializer_class = inscricaoSerializer
-    permission_classes = [permissions.AllowAny]  
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -56,7 +56,7 @@ class CriarInscricao(generics.GenericAPIView):
     """GET: Categorias e kits do evento. POST: Cria inscrição"""
     serializer_class = InscricaoCreateSerializer
     queryset = inscricao.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]  
     
     def get(self, request, pk):
         """Retorna dados para inscrição: Evento, categorias e kits e usuário"""
@@ -146,13 +146,13 @@ class DetalhesInscricao(generics.RetrieveAPIView):
     """Detalhes de uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
 
 class DetalhesParticipante(generics.ListAPIView):
     """Detalhes completos do participante"""
     serializer_class = DetalhesParticipanteSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         current_participante = get_current_participante(self.request)
@@ -163,7 +163,7 @@ class CancelarInscricao(generics.DestroyAPIView):
     """Cancela uma inscrição específica"""
     queryset = inscricao.objects.all()
     serializer_class = InscricaoResponseSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated] 
 
 class CriarEvento(generics.CreateAPIView):
     """Cria evento"""
@@ -172,19 +172,16 @@ class CriarEvento(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_serializer(self, *args, **kwargs):
-        """Override para processar dados JSON em FormData"""
         
         if hasattr(self.request, 'data'):
             data = self.request.data.copy()
             
-            # Processar categorias se vier como string JSON
             if 'categorias' in data and isinstance(data['categorias'], str):
                 try:
                     data['categorias'] = json.loads(data['categorias'])
                 except (json.JSONDecodeError, TypeError):
                     pass
             
-            # Processar kits se vier como string JSON  
             if 'kits' in data and isinstance(data['kits'], str):
                 try:
                     data['kits'] = json.loads(data['kits'])
@@ -253,7 +250,6 @@ class GerenciarEvento(generics.GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
                 )
         
-        # Verificar se o evento já encerrou
         if evento_obj.dataFim < date.today():
             return Response(
                 {'error': 'Não é possível editar um evento que já foi encerrado.'},
@@ -272,21 +268,77 @@ class GerenciarEvento(generics.GenericAPIView):
         
         evento_obj = evento.objects.get(pk=pk)
         current_participante = get_current_participante(request)
-
-        if evento_obj.organizador.participante != current_participante:
-                return Response(
-                    {'error': 'Você não tem permissão para cancelar este evento.'},
-                    status=status.HTTP_403_FORBIDDEN
-                )
         
-        # Verificar se o evento já encerrou
         if evento_obj.dataFim < date.today():
             return Response(
                 {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-         
-        evento_obj.delete()
+
+        evento_obj.status = 'cancelado'
+        evento_obj.save()
+        
+        inscricoes_evento = inscricao.objects.filter(evento=evento_obj)
+        inscricoes_evento.update(status='cancelado')
+        
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
+
+
+class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
+    """GET: Lista eventos pendentes ou detalhes de um evento específico. PATCH: Atualiza status do evento (apenas admins)"""
+    serializer_class = EventoPendenteSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = evento.objects.all()
+    
+    def get(self, request, pk=None):
+        if pk:
+            evento_obj = evento.objects.get(pk=pk)
+            serializer = self.get_serializer(evento_obj)
+            data = serializer.data
+            
+            data['organizador_email'] = evento_obj.organizador.participante.email
+            data['localidade_nome'] = {evento_obj.localidade.cidade}
+            data['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
+        else:
+            eventos_pendentes = evento.objects.filter(status='pendente')
+            serializer = self.get_serializer(eventos_pendentes, many=True)
+            data = serializer.data
+            
+            for i, evento_obj in enumerate(eventos_pendentes):
+                data[i]['organizador_email'] = evento_obj.organizador.participante.email
+                data[i]['localidade_nome'] = {evento_obj.localidade.cidade}
+                data[i]['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
+    
+    def patch(self, request, pk):
+        try:
+            evento_obj = evento.objects.get(pk=pk)
+
+            novo_status = request.data.get('status')
+            if novo_status not in ['ativo', 'negado']:
+                return Response(
+                    {'error': 'Status deve ser "ativo" ou "negado"'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            evento_obj.status = novo_status
+            evento_obj.save()
+            
+            serializer = EventoStatusUpdateSerializer(evento_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        except evento.DoesNotExist:
+            return Response(
+                {'error': 'Evento não encontrado'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 
 

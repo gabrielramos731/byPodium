@@ -120,6 +120,12 @@
   color: #F8F2ED;
 }
 
+.statusCancelled {
+  background-color: #dc3545;
+  color: #ffffff;
+  border: 2px solid #dc3545;
+}
+
 .statusPending {
   background-color: #8b5a00;
   color: #ffa726;

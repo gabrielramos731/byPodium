@@ -257,7 +257,10 @@ const MyProfile = () => {
                                                                 "Local não informado"
                                                             }
                                                             date={formatDateToBR(evento.dataIni)}
-                                                            statusText={evento.isInscricaoAberta === true ? 'Evento Disponível' : 'Evento Indisponível'}
+                                                            statusText={
+                                                                evento.status === 'cancelado' ? 'Evento Cancelado' :
+                                                                evento.isInscricaoAberta === true ? 'Evento Disponível' : 'Evento Indisponível'
+                                                            }
                                                             isInscricaoAberta={evento.isInscricaoAberta}
                                                             image={evento.imagem}
                                                         />

@@ -363,7 +363,6 @@ function CreateEvent() {
 
       const response = await createEvent(finalEventData);
 
-      alert("Evento criado com sucesso!");
       navigate(`/evento/${response.id}`);
     } catch (error) {
       if (error.response?.data) {
@@ -375,7 +374,7 @@ function CreateEvent() {
         });
         setErrors(serverErrors);
       } else {
-        alert("Erro ao criar evento. Tente novamente.");
+        console.error('Erro ao criar evento:', error);
       }
     } finally {
       setLoading(false);
