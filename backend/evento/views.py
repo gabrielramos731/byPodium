@@ -1,5 +1,5 @@
 import json
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, serializers
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
@@ -8,7 +8,7 @@ from localidades.models import localidade
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
-    DetalhesParticipanteSerializer
+    DetalhesParticipanteSerializer, EventoPendenteSerializer
 )
 from datetime import date
 
@@ -24,8 +24,8 @@ def get_current_participante(request):
 
 
 class ListEventos(generics.ListAPIView):
-    """Lista todos os eventos disponíveis"""
-    queryset = evento.objects.all()
+    """Lista eventos ativos (aprovados) disponíveis para visualização"""
+    queryset = evento.objects.filter(status='ativo')
     serializer_class = eventoSerializerList
     permission_classes = [permissions.AllowAny]
 
@@ -268,12 +268,6 @@ class GerenciarEvento(generics.GenericAPIView):
         
         evento_obj = evento.objects.get(pk=pk)
         current_participante = get_current_participante(request)
-
-        if evento_obj.organizador.participante != current_participante:
-                return Response(
-                    {'error': 'Você não tem permissão para cancelar este evento.'},
-                    status=status.HTTP_403_FORBIDDEN
-                )
         
         if evento_obj.dataFim < date.today():
             return Response(
@@ -288,5 +282,38 @@ class GerenciarEvento(generics.GenericAPIView):
         inscricoes_evento.update(status='cancelado')
         
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
+
+
+class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
+    """GET: Lista eventos pendentes ou detalhes de um evento específico. PATCH: Atualiza status do evento (apenas admins)"""
+    serializer_class = EventoPendenteSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = evento.objects.all()
+    
+    def get(self, request, pk=None):
+        if pk:
+            evento_obj = evento.objects.get(pk=pk)
+            serializer = self.get_serializer(evento_obj)
+            return Response(serializer.data)
+        else:
+            eventos_pendentes = evento.objects.filter(status='pendente')
+            serializer = self.get_serializer(eventos_pendentes, many=True)
+            return Response(serializer.data)
+    
+    def patch(self, request, pk):
+        
+        evento_obj = evento.objects.get(pk=pk)
+
+        novo_status = request.data.get('status')
+        evento_obj.status = novo_status
+        evento_obj.save()
+        
+       
+        serializer = self.get_serializer(evento_obj)
+        response_data = serializer.data
+    
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
 
 

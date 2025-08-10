@@ -193,3 +193,16 @@ class DetalhesParticipanteSerializer(serializers.ModelSerializer):
         current_participante = get_current_participante_from_context(self.context)
         eventos = evento.objects.filter(organizador__participante=current_participante)
         return eventoSerializerList(eventos, many=True, context=self.context).data
+
+
+class EventoPendenteSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = evento
+        fields = '__all__'
+    
+    def to_representation(self, instance):
+        if instance.status != 'pendente':
+            return None
+        return super().to_representation(instance)
+
