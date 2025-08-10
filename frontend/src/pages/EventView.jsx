@@ -120,8 +120,6 @@ function EventView() {
       setShowCancelModal(false);
       await refetch();
       
-      alert('Inscrição cancelada com sucesso!');
-      
     } catch (error) {
       console.error('Erro detalhado ao cancelar inscrição:', {
         message: error.message,
@@ -134,7 +132,6 @@ function EventView() {
       if (error.response?.status === 204) {
         setShowCancelModal(false);
         await refetch();
-        alert('Inscrição cancelada com sucesso!');
         return;
       }
       
@@ -143,14 +140,13 @@ function EventView() {
         
         try {
           await refetch();
-          alert('Inscrição cancelada com sucesso!');
           return;
         } catch (refetchError) {
           console.error('Erro no refetch após status 500:', refetchError);
         }
       }
       
-      alert(`Erro ao cancelar inscrição: ${error.response?.data?.message || error.message || 'Erro desconhecido'}`);
+      console.error(`Erro ao cancelar inscrição: ${error.response?.data?.message || error.message || 'Erro desconhecido'}`);
     } finally {
       setCancelLoading(false);
     }
@@ -162,7 +158,6 @@ function EventView() {
 
   const handleEditEvent = () => {
     if (isEventFinished()) {
-      alert('Não é possível editar um evento que já foi encerrado.');
       return;
     }
     navigate(`/evento/${id}/editar`);
@@ -170,7 +165,6 @@ function EventView() {
 
   const handleCancelEvent = () => {
     if (isEventFinished()) {
-      alert('Não é possível cancelar um evento que já foi encerrado.');
       return;
     }
     setShowCancelEventModal(true);

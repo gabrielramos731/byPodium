@@ -53,7 +53,6 @@ function EditEvent() {
         
       } catch (error) {
         console.error('Erro ao carregar dados do evento:', error);
-        alert('Erro ao carregar dados do evento. Verifique suas permissões.');
         navigate('/');
       } finally {
         setLoading(false);
@@ -172,7 +171,6 @@ function EditEvent() {
     const changedFields = getChangedFields();
     
     if (Object.keys(changedFields).length === 0) {
-      alert('Nenhuma alteração foi feita.');
       return;
     }
 
@@ -198,7 +196,6 @@ function EditEvent() {
 
       await updateEvent(id, eventData);
       
-      alert('Evento atualizado com sucesso!');
       navigate(`/evento/${id}`);
       
     } catch (error) {
@@ -211,7 +208,7 @@ function EditEvent() {
         });
         setErrors(serverErrors);
       } else {
-        alert('Erro ao atualizar evento. Tente novamente.');
+        console.error('Erro ao atualizar evento:', error);
       }
     } finally {
       setSubmitting(false);

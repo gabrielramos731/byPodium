@@ -18,7 +18,6 @@ function CancelEventModal({ isOpen, onClose, eventId, eventName, onEventCanceled
 
     try {
       await cancelEvent(eventId, justificativa.trim());
-      alert('Evento cancelado com sucesso!');
       onEventCanceled();
       onClose();
     } catch (error) {

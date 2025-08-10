@@ -8,7 +8,7 @@ from localidades.models import localidade
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
-    DetalhesParticipanteSerializer, EventoPendenteSerializer
+    DetalhesParticipanteSerializer, EventoPendenteSerializer, EventoStatusUpdateSerializer
 )
 from datetime import date
 
@@ -301,18 +301,33 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
             return Response(serializer.data)
     
     def patch(self, request, pk):
-        
-        evento_obj = evento.objects.get(pk=pk)
+        try:
+            evento_obj = evento.objects.get(pk=pk)
 
-        novo_status = request.data.get('status')
-        evento_obj.status = novo_status
-        evento_obj.save()
-        
-       
-        serializer = self.get_serializer(evento_obj)
-        response_data = serializer.data
-    
-        return Response(response_data, status=status.HTTP_200_OK)
+            novo_status = request.data.get('status')
+            if novo_status not in ['ativo', 'negado']:
+                return Response(
+                    {'error': 'Status deve ser "ativo" ou "negado"'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            evento_obj.status = novo_status
+            evento_obj.save()
+            
+            # Usar serializer específico para update que não filtra por status
+            serializer = EventoStatusUpdateSerializer(evento_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        except evento.DoesNotExist:
+            return Response(
+                {'error': 'Evento não encontrado'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 

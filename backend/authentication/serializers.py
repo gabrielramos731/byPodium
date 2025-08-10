@@ -159,8 +159,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'date_joined', 'participante')
-        read_only_fields = ('id', 'date_joined')
+        fields = ('id', 'email', 'first_name', 'date_joined', 'participante', 'is_staff', 'is_superuser')
+        read_only_fields = ('id', 'date_joined', 'is_staff', 'is_superuser')
     
     def get_participante(self, obj):
         try:

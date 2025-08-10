@@ -206,3 +206,11 @@ class EventoPendenteSerializer(serializers.ModelSerializer):
             return None
         return super().to_representation(instance)
 
+
+class EventoStatusUpdateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = evento
+        fields = ['id', 'nome', 'status']
+        read_only_fields = ['id', 'nome']
+
