@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
+import ConfirmationModal from '../components/confirmationModal/ConfirmationModal';
 import { getPendingEvents, updateEventStatus } from '../utils/api/apiTaskManager';
 import { formatDateToBR } from '../utils/dateUtils';
 import mainImage from '../assets/main-image.jpg';
@@ -13,6 +14,16 @@ function PendingEvents() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingEvents, setUpdatingEvents] = useState(new Set());
+  
+  // Estados para o modal de confirmação
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    eventId: null,
+    status: null,
+    eventData: null,
+    type: 'default',
+    requiresFeedback: false
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,16 +58,78 @@ function PendingEvents() {
     }
 
     try {
+      // Primeira tentativa - verificar se precisa de confirmação/feedback
+      await updateEventStatus(eventId, newStatus, false);
+      
+      // Se chegou aqui, a operação foi bem-sucedida sem precisar de confirmação
+      setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+      
+    } catch (error) {
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        
+        if (errorData.requires_feedback) {
+          // Precisa de feedback para negação
+          const event = events.find(e => e.id === eventId);
+          setConfirmModal({
+            isOpen: true,
+            eventId: eventId,
+            status: newStatus,
+            eventData: {
+              nome: event.nome,
+              organizador: event.organizador_email,
+              status_atual: 'pendente',
+              status_novo: newStatus
+            },
+            type: 'reject',
+            requiresFeedback: true
+          });
+        } else if (errorData.requires_confirmation) {
+          // Precisa de confirmação
+          setConfirmModal({
+            isOpen: true,
+            eventId: eventId,
+            status: newStatus,
+            eventData: errorData.evento,
+            type: newStatus === 'ativo' ? 'approve' : 'reject',
+            requiresFeedback: false
+          });
+        }
+      } else {
+        console.error('Erro ao atualizar status:', error);
+        // Aqui você pode adicionar uma notificação de erro
+      }
+    }
+  };
+
+  const handleConfirmStatusUpdate = async (feedback = '') => {
+    const { eventId, status } = confirmModal;
+    
+    try {
       // Adicionar evento ao conjunto de eventos sendo atualizados
       setUpdatingEvents(prev => new Set(prev).add(eventId));
       
-      await updateEventStatus(eventId, newStatus);
+      // Segunda tentativa com confirmação e feedback (se aplicável)
+      const result = await updateEventStatus(eventId, status, true, feedback);
       
       // Remover o evento da lista após aprovação/negação
       setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
       
+      // Fechar modal
+      setConfirmModal({
+        isOpen: false,
+        eventId: null,
+        status: null,
+        eventData: null,
+        type: 'default',
+        requiresFeedback: false
+      });
+      
+      // Mostrar mensagem de sucesso (opcional)
+      console.log(result.message);
+      
     } catch (error) {
-      console.error('Erro ao atualizar status:', error);
+      console.error('Erro ao confirmar atualização de status:', error);
     } finally {
       // Remover evento do conjunto de eventos sendo atualizados
       setUpdatingEvents(prev => {
@@ -65,6 +138,17 @@ function PendingEvents() {
         return newSet;
       });
     }
+  };
+
+  const handleCloseModal = () => {
+    setConfirmModal({
+      isOpen: false,
+      eventId: null,
+      status: null,
+      eventData: null,
+      type: 'default',
+      requiresFeedback: false
+    });
   };
 
   const handleEventClick = (eventId) => {
@@ -186,6 +270,23 @@ function PendingEvents() {
       </main>
       
       <Footer />
+      
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmStatusUpdate}
+        title={confirmModal.type === 'approve' ? 'Confirmar Aprovação' : 'Confirmar Negação'}
+        message={
+          confirmModal.type === 'approve' 
+            ? 'Tem certeza que deseja aprovar este evento? Um email de confirmação será enviado ao organizador.'
+            : 'Tem certeza que deseja negar este evento? Um email com seu feedback será enviado ao organizador.'
+        }
+        eventData={confirmModal.eventData}
+        confirmText={confirmModal.type === 'approve' ? 'Aprovar Evento' : 'Negar Evento'}
+        cancelText="Cancelar"
+        type={confirmModal.type}
+        requiresFeedback={confirmModal.requiresFeedback}
+      />
     </div>
   );
 }

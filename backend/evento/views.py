@@ -5,6 +5,7 @@ from .models import evento, categoria, kit
 from inscricoes.models import inscricao
 from usuarios.models import participante, organizador
 from localidades.models import localidade
+from .email_service import EmailService
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
@@ -316,17 +317,76 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
             evento_obj = evento.objects.get(pk=pk)
 
             novo_status = request.data.get('status')
+            confirmacao = request.data.get('confirmacao')
+            feedback_admin = request.data.get('feedback_admin', '').strip()
+            
             if novo_status not in ['ativo', 'negado']:
                 return Response(
                     {'error': 'Status deve ser "ativo" ou "negado"'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
+            # Verificar se é negação e se feedback é obrigatório
+            if novo_status == 'negado' and not feedback_admin:
+                return Response(
+                    {
+                        'error': 'Feedback obrigatório',
+                        'message': 'Para negar um evento, é obrigatório fornecer um feedback explicando o motivo da negação.',
+                        'requires_feedback': True
+                    }, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar se a confirmação foi enviada
+            if not confirmacao:
+                confirmation_message = f'Tem certeza que deseja {"aprovar" if novo_status == "ativo" else "negar"} o evento "{evento_obj.nome}"?'
+                if novo_status == 'negado':
+                    confirmation_message += f'\n\nFeedback que será enviado: "{feedback_admin}"'
+                
+                return Response(
+                    {
+                        'error': 'Confirmação necessária',
+                        'message': confirmation_message,
+                        'evento': {
+                            'id': evento_obj.id,
+                            'nome': evento_obj.nome,
+                            'organizador': evento_obj.organizador.participante.nome,
+                            'status_atual': evento_obj.status,
+                            'status_novo': novo_status,
+                            'feedback_admin': feedback_admin if novo_status == 'negado' else None
+                        },
+                        'requires_confirmation': True
+                    }, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar se já foi processado
+            if evento_obj.status != 'pendente':
+                return Response(
+                    {'error': f'Este evento já foi {evento_obj.status}. Não é possível alterar novamente.'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Atualizar status do evento
             evento_obj.status = novo_status
             evento_obj.save()
             
+            # Enviar email baseado na ação
+            email_enviado = False
+            if novo_status == 'ativo':
+                email_enviado = EmailService.enviar_email_aprovacao(evento_obj)
+            elif novo_status == 'negado':
+                email_enviado = EmailService.enviar_email_negacao(evento_obj, feedback_admin)
+            
             serializer = EventoStatusUpdateSerializer(evento_obj)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response_data = serializer.data
+            response_data['message'] = f'Evento {"aprovado" if novo_status == "ativo" else "negado"} com sucesso!'
+            response_data['email_enviado'] = email_enviado
+            
+            if novo_status == 'negado':
+                response_data['feedback_enviado'] = feedback_admin
+            
+            return Response(response_data, status=status.HTTP_200_OK)
             
         except evento.DoesNotExist:
             return Response(
