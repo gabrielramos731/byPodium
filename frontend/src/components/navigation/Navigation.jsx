@@ -38,6 +38,9 @@ function Navigation() {
             <a href="/meu-perfil" className={styles.navLink}>
               Meu Perfil
             </a>
+            <a href="/relatorios" className={styles.navLink}>
+              Relatórios
+            </a>
           </>
         )}
         <div className={styles.authSection}>

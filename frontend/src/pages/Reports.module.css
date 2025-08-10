@@ -1,0 +1,491 @@
+/* Reports.module.css */
+.reportsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 3px solid #ffd700;
+}
+
+.header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.controls {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border: 2px solid #ffd700;
+}
+
+.reportTypeSelector {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.reportTypeSelector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.reportTypeSelector label:hover {
+  border-color: #ffd700;
+  background-color: #fffef7;
+}
+
+.reportTypeSelector input[type="radio"]:checked + label,
+.reportTypeSelector label:has(input[type="radio"]:checked) {
+  border-color: #ffd700;
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.eventSelector, .dateSelector {
+  margin-bottom: 20px;
+}
+
+.select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.subtypeSelector {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.subtypeSelector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.subtypeSelector label:hover {
+  border-color: #ffd700;
+  background-color: #fffef7;
+}
+
+.subtypeSelector input[type="radio"]:checked + span,
+.subtypeSelector label:has(input[type="radio"]:checked) {
+  border-color: #ffd700;
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.dateSelector {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dateInput {
+  flex: 1;
+  min-width: 200px;
+}
+
+.dateInput label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.datePicker {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.datePicker:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.generateButton {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  color: white;
+  border: 2px solid #ffd700;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 200px;
+}
+
+.generateButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.generateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #f44336;
+  margin-bottom: 20px;
+  font-weight: 500;
+  border: 2px solid #f44336;
+}
+
+.reportResults {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 2px solid #ffd700;
+}
+
+.reportHeader {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  color: white;
+  padding: 25px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  border-bottom: 3px solid #ffd700;
+}
+
+.reportHeader h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.exportButton {
+  background: #ffd700;
+  color: #1a1a1a;
+  border: 2px solid #ffd700;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.exportButton:hover {
+  background: #ffed4e;
+  transform: translateY(-1px);
+}
+
+.generatedAt {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  background: #f8f8f8;
+}
+
+.statCard {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  border: 2px solid #ffd700;
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+.statCard h3 {
+  margin: 0 0 15px 0;
+  color: #1a1a1a;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chartsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+  padding: 30px;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ffd700;
+}
+
+.chartCard h3 {
+  margin: 0 0 20px 0;
+  color: #1a1a1a;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.chartContainer {
+  height: 300px;
+  position: relative;
+}
+
+.tableCard {
+  padding: 30px;
+}
+
+.tableCard h3 {
+  margin: 0 0 20px 0;
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ffd700;
+}
+
+.participantsTable, .eventsTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.participantsTable th, .eventsTable th {
+  background: #1a1a1a;
+  color: white;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #ffd700;
+}
+
+.participantsTable td, .eventsTable td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.participantsTable tr:hover, .eventsTable tr:hover {
+  background-color: #fffef7;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.confirmada {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #4caf50;
+}
+
+.status.pendente {
+  background-color: #fff8e1;
+  color: #f57c00;
+  border: 1px solid #ffd700;
+}
+
+.status.cancelado {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #f44336;
+}
+
+.status.finalizado {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #6b7280;
+}
+
+.status.ativo {
+  background-color: #fff8e1;
+  color: #f57c00;
+  border: 1px solid #ffd700;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .reportsContainer {
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .controls {
+    padding: 20px;
+  }
+
+  .reportTypeSelector, .subtypeSelector {
+    flex-direction: column;
+  }
+
+  .dateSelector {
+    flex-direction: column;
+  }
+
+  .reportHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .reportHeader h2 {
+    font-size: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .chartsContainer {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .chartContainer {
+    height: 250px;
+  }
+
+  .tableCard {
+    padding: 20px;
+  }
+
+  .participantsTable th, .eventsTable th,
+  .participantsTable td, .eventsTable td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .controls {
+    padding: 15px;
+  }
+
+  .statValue {
+    font-size: 2rem;
+  }
+
+  .chartContainer {
+    height: 200px;
+  }
+
+  .participantsTable, .eventsTable {
+    font-size: 0.8rem;
+  }
+
+  .participantsTable th, .eventsTable th,
+  .participantsTable td, .eventsTable td {
+    padding: 6px;
+  }
+}

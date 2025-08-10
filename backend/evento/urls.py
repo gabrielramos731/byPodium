@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import ListEventos, DetailEvento, ListInscricoes, CriarInscricao, DetalhesInscricao, DetalhesParticipante, CriarEvento, GerenciarEvento, GerarRelatorio
+from .views import ListEventos, ListEventosOrganizador, DetailEvento, ListInscricoes, CriarInscricao, DetalhesInscricao, DetalhesParticipante, CriarEvento, GerenciarEvento, GerarRelatorio
 
 urlpatterns = [
     path('eventos/', ListEventos.as_view(), name='list-eventos'),
+    path('eventos/organizador/', ListEventosOrganizador.as_view(), name='list-eventos-organizador'),
     path('eventos/<int:pk>/', DetailEvento.as_view(), name='detail-evento'),
 
     path('inscricoes/', ListInscricoes.as_view(), name='list-inscricoes'),

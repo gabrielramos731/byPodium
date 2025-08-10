@@ -33,6 +33,20 @@ class ListEventos(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
 
+class ListEventosOrganizador(generics.ListAPIView):
+    """Lista eventos do organizador autenticado"""
+    serializer_class = eventoSerializerList
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        current_participante = get_current_participante(self.request)
+        try:
+            organizador_obj = current_participante.organizadores
+            return evento.objects.filter(organizador=organizador_obj)
+        except organizador.DoesNotExist:
+            return evento.objects.none()
+
+
 class DetailEvento(generics.RetrieveAPIView):
     """Detalhes completos de um evento específico"""
     queryset = evento.objects.all()
@@ -350,7 +364,23 @@ class GerarRelatorio(generics.GenericAPIView):
                 'error': 'Data inicial não pode ser maior que a data final'
             }, status=400)
         
-        report = EventReports.get_events_by_period(data_inicio, data_fim)
+        # Buscar apenas eventos do organizador autenticado
+        current_participante = get_current_participante(request)
+        try:
+            organizador_obj = current_participante.organizadores
+            report = EventReports.get_events_by_period(data_inicio, data_fim, organizador_obj)
+        except organizador.DoesNotExist:
+            # Se não for organizador, retorna relatório vazio
+            report = {
+                'periodo': {
+                    'inicio': data_inicio.strftime("%d/%m/%Y"),
+                    'fim': data_fim.strftime("%d/%m/%Y"),
+                },
+                'eventos': [],
+                'total_eventos': 0,
+                'data_geracao': datetime.now().strftime("%d/%m/%Y %H:%M")
+            }
+        
         return Response(report)
 
     def get(self, request, event_id=None):

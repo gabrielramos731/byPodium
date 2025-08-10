@@ -25,7 +25,7 @@ class EventReports:
                 'status_inscricoes': {
                     'confirmadas': inscricoes.filter(status='confirmada').count(),
                     'pendentes': inscricoes.filter(status='pendente').count(),
-                    'canceladas': inscricoes.filter(status='cancelada').count(),
+                    'canceladas': inscricoes.filter(status='cancelado').count(),
                 },
                 'kits': {
                     kit.nome: inscricoes.filter(kit=kit).count() 
@@ -41,14 +41,19 @@ class EventReports:
             return None
 
     @staticmethod
-    def get_events_by_period(data_inicio, data_fim):
+    def get_events_by_period(data_inicio, data_fim, organizador=None):
         if not data_inicio or not data_fim:
             return None
             
-        eventos = evento.objects.filter(
+        eventos_query = evento.objects.filter(
             dataIni__gte=data_inicio,
             dataIni__lte=data_fim
-        ).select_related('localidade') 
+        ).select_related('localidade')
+        
+        if organizador:
+            eventos_query = eventos_query.filter(organizador=organizador)
+        
+        eventos = eventos_query
         
         inscricoes_count = {
             e.id: inscricao.objects.filter(evento=e).count() 
@@ -84,7 +89,7 @@ class EventReports:
                     'email': insc.participante.email,
                     'kit': insc.kit.nome if insc.kit else 'Sem kit',
                     'status': insc.status,
-                    'data_inscricao': insc.data_inscricao.strftime("%d/%m/%Y")
+                    'data_inscricao': insc.dataInsc.strftime("%d/%m/%Y")
                 } for insc in inscricoes],
                 'total_participantes': inscricoes.count(),
                 'data_geracao': datetime.now().strftime("%d/%m/%Y %H:%M")
