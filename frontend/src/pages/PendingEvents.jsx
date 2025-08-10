@@ -140,7 +140,7 @@ function PendingEvents() {
                   
                   <div className={styles.eventDetails}>
                     <p className={styles.eventLocation}>
-                      <strong>Local:</strong> {event.localidade?.cidade || "Não informado"} - {event.localidade?.uf || ""}
+                      <strong>Local:</strong> {event.localidade_nome || "Não informado"} - {event.localidade_uf || ""}
                     </p>
                     <p className={styles.eventDate}>
                       <strong>Data:</strong> {formatDateToBR(event.dataIni)}
