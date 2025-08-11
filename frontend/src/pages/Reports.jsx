@@ -183,8 +183,8 @@ const Reports = () => {
             total > 0 ? ((pendentes / total) * 100).toFixed(1) : 0,
             total > 0 ? ((canceladas / total) * 100).toFixed(1) : 0
           ],
-          backgroundColor: ['#d9a444', '#f3e96d', '#0d0d0d'],
-          borderColor: ['#d9a444', '#f3e96d', '#0d0d0d'],
+          backgroundColor: ['#d9a444', '#f3e96d', '#8c6d34'],
+          borderColor: ['#d9a444', '#f3e96d', '#8c6d34'],
           borderWidth: 2
         }]
       };
@@ -201,8 +201,8 @@ const Reports = () => {
           data: categoriaValues.map(value => 
             categoriaTotal > 0 ? ((value / categoriaTotal) * 100).toFixed(1) : 0
           ),
-          backgroundColor: '#f3e96d',
-          borderColor: '#0d0d0d',
+          backgroundColor: '#d9a444',
+          borderColor: '#f3e96d',
           borderWidth: 2
         }]
       };
@@ -219,8 +219,8 @@ const Reports = () => {
           data: kitValues.map(value => 
             kitTotal > 0 ? ((value / kitTotal) * 100).toFixed(1) : 0
           ),
-          backgroundColor: '#0d0d0d',
-          borderColor: '#f3e96d',
+          backgroundColor: '#f3e96d',
+          borderColor: '#d9a444',
           borderWidth: 2
         }]
       };
@@ -235,13 +235,13 @@ const Reports = () => {
           {
             label: 'Inscrições Diárias',
             data: reportData.inscricoes_por_dia.inscricoes_diarias,
-            borderColor: '#FFD700',
-            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+            borderColor: '#d9a444',
+            backgroundColor: 'rgba(217, 164, 68, 0.1)',
             borderWidth: 3,
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#1A1A1A',
-            pointBorderColor: '#FFD700',
+            pointBackgroundColor: '#0d0d0d',
+            pointBorderColor: '#d9a444',
             pointBorderWidth: 2,
             pointRadius: 4
           }
@@ -263,8 +263,8 @@ const Reports = () => {
           data: eventValues.map(value => 
             eventTotal > 0 ? ((value / eventTotal) * 100).toFixed(1) : 0
           ),
-          backgroundColor: '#f3e96d',
-          borderColor: '#0d0d0d',
+          backgroundColor: '#d9a444',
+          borderColor: '#f3e96d',
           borderWidth: 2
         }]
       };
@@ -284,7 +284,7 @@ const Reports = () => {
       legend: {
         position: 'top',
         labels: {
-          color: '#eaeaea',
+          color: '#0d0d0d',
           font: {
             weight: 'bold'
           }
@@ -293,7 +293,7 @@ const Reports = () => {
       title: {
         display: true,
         text: 'Dados do Relatório',
-        color: '#eaeaea',
+        color: '#0d0d0d',
         font: {
           size: 16,
           weight: 'bold'
@@ -303,7 +303,7 @@ const Reports = () => {
     scales: {
       x: {
         ticks: {
-          color: '#eaeaea'
+          color: '#0d0d0d'
         },
         grid: {
           color: '#444'
@@ -313,7 +313,7 @@ const Reports = () => {
         min: 0,
         max: 100,
         ticks: {
-          color: '#eaeaea',
+          color: '#0d0d0d',
           callback: function(value) {
             return value + '%';
           }
@@ -333,7 +333,7 @@ const Reports = () => {
       legend: {
         position: 'top',
         labels: {
-          color: '#eaeaea',
+          color: '#0d0d0d',
           font: {
             weight: 'bold'
           }
@@ -342,7 +342,7 @@ const Reports = () => {
       title: {
         display: true,
         text: 'Evolução das Inscrições',
-        color: '#eaeaea',
+        color: '#0d0d0d',
         font: {
           size: 16,
           weight: 'bold'
@@ -352,7 +352,7 @@ const Reports = () => {
     scales: {
       x: {
         ticks: {
-          color: '#eaeaea'
+          color: '#0d0d0d'
         },
         grid: {
           color: '#444'
@@ -361,7 +361,7 @@ const Reports = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          color: '#eaeaea',
+          color: '#0d0d0d',
           stepSize: 1
         },
         grid: {
@@ -488,9 +488,11 @@ const Reports = () => {
               }
             </h2>
             <div className={styles.actions}>
-              <button onClick={exportToCSV} className={styles.exportButton}>
-                Exportar CSV
-              </button>
+              {(reportType === 'event' && selectedReportSubtype === 'participants') || reportType === 'period' ? (
+                <button onClick={exportToCSV} className={styles.exportButton}>
+                  Exportar CSV
+                </button>
+              ) : null}
               <span className={styles.generatedAt}>
                 Gerado em: {reportData.data_geracao}
               </span>
@@ -551,7 +553,7 @@ const Reports = () => {
                   <div className={styles.chartCard}>
                     <h3>Status das Inscrições</h3>
                     <div className={styles.chartContainer}>
-                      <Pie data={chartData.statusData} options={chartOptions} />
+                      <Bar data={chartData.statusData} options={chartOptions} />
                     </div>
                   </div>
                   

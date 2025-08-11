@@ -211,7 +211,7 @@
 
 .reportResults {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 3rem auto;
   background: #1a1a1a;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
