@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway de Pagamento - byPodium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gateway-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 90%;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .event-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .event-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: #667eea;
+            color: white;
+            max-width: 200px;
+        }
+
+        .payment-method input {
+            display: none;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-pay:hover {
+            background: #218838;
+        }
+
+        .btn-pay:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .security-info {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .navigation-bar {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="gateway-container">
+        <div class="navigation-bar">
+            <div class="logo">🏃‍♂️ byPodium</div>
+            <div class="nav-links">
+                <a href="http://localhost:5173/">🏠 Início</a>
+                <a href="http://localhost:5173/minhas-inscricoes">📋 Minhas Inscrições</a>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>🔒 Gateway de Pagamento Seguro</h1>
+            <p>Processamento simulado - byPodium Payment Gateway</p>
+        </div>
+
+        <div class="event-info">
+            <h3>Detalhes da Inscrição</h3>
+            <div class="info-row">
+                <span>Evento:</span>
+                <span>{{ evento.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span>Participante:</span>
+                <span>{{ participante.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span>Categoria:</span>
+                <span>{{ categoria.nome|default:"Geral" }}</span>
+            </div>
+            {% if kit %}
+            <div class="info-row">
+                <span>Kit:</span>
+                <span>{{ kit.nome }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span>Valor Base:</span>
+                <span>R$ {{ valor_base }}</span>
+            </div>
+            {% if valor_kit > 0 %}
+            <div class="info-row">
+                <span>Kit Extra:</span>
+                <span>R$ {{ valor_kit }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span>Total a Pagar:</span>
+                <span>R$ {{ valor_total }}</span>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form class="payment-form" id="paymentForm">
+            <div class="form-group">
+                <label>Método de Pagamento</label>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="pix">
+                        <input type="radio" name="metodo_pagamento" value="pix" id="pix" checked>
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 5px;">📱</div>
+                            <div>PIX</div>
+                            <small>Aprovação instantânea</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pixFields" style="display: block;">
+                <div class="form-group">
+                    <label for="pixKey">CPF/CNPJ para PIX</label>
+                    <input type="text" id="pixKey" placeholder="123.456.789-00">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-pay" id="payButton">
+                💰 Processar Pagamento - R$ {{ valor_total }}
+            </button>
+        </form>
+
+        <div class="loading" id="loadingDiv">
+            <div class="loading-spinner"></div>
+            <p>Processando seu pagamento...</p>
+            <p><small>Aguarde, não feche esta página</small></p>
+        </div>
+
+        <div class="security-info">
+            <strong>🔒 Ambiente Seguro e Simulado</strong><br>
+            Este é um gateway de pagamento simulado para fins educacionais. 
+            Nenhuma cobrança real será efetuada. Todos os dados inseridos são fictícios.
+        </div>
+    </div>
+
+    <script>
+        // PIX já está selecionado por padrão, não precisa de lógica de seleção
+
+        // Processar pagamento
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const pixKey = document.getElementById('pixKey').value;
+            
+            // Validação básica do PIX
+            if (!pixKey.trim()) {
+                showError('CPF/CNPJ é obrigatório para PIX');
+                return;
+            }
+
+            hideError();
+            showLoading();
+
+            // Simula chamada para o backend
+            fetch(`/gateway/process/{{ inscricao.id }}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    metodo_pagamento: 'pix'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showError('Erro de conexão. Tente novamente.');
+            });
+        });
+
+        function showLoading() {
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('payButton').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('paymentForm').style.display = 'block';
+            document.getElementById('loadingDiv').style.display = 'none';
+            document.getElementById('payButton').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

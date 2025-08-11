@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Aprovado - byPodium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .success-message {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .payment-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .detail-label {
+            color: #555;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .confirmation-number {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #004085;
+        }
+
+        .next-steps {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .next-steps h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .next-steps ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .next-steps li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        
+        <h1 class="success-title">Pagamento Aprovado!</h1>
+        
+        <p class="success-message">
+            Parabéns! Seu pagamento foi processado com sucesso e sua inscrição está confirmada.
+        </p>
+
+        <div class="confirmation-number">
+            Número de Confirmação: #{{ inscricao.id }}{{ pagamento.id }}
+        </div>
+
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">Evento:</span>
+                <span class="detail-value">{{ evento.nome }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Participante:</span>
+                <span class="detail-value">{{ participante.nome }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Método de Pagamento:</span>
+                <span class="detail-value">
+                    {% if pagamento.metodoPagamento == 'pix' %}
+                        📱 PIX
+                    {% elif pagamento.metodoPagamento == 'cartao' %}
+                        💳 Cartão de Crédito/Débito
+                    {% elif pagamento.metodoPagamento == 'boleto' %}
+                        🏦 Boleto Bancário
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Data do Pagamento:</span>
+                <span class="detail-value">{{ pagamento.dataPagamento|date:"d/m/Y" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">✅ CONFIRMADO</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Valor Pago:</span>
+                <span class="detail-value">R$ {{ pagamento.valor }}</span>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <a href="http://localhost:5173/" class="btn btn-primary">🏠 Voltar ao Início</a>
+            <a href="http://localhost:5173/minhas-inscricoes" class="btn btn-secondary">📋 Minhas Inscrições</a>
+        </div>
+
+        <div class="next-steps">
+            <h4>📝 Próximos Passos:</h4>
+            <ul>
+                <li>Você receberá um email de confirmação em breve</li>
+                <li>Guarde o número de confirmação para futuras consultas</li>
+                <li>Verifique os detalhes do evento na sua área de inscrições</li>
+                <li>Compareça no local e horário indicados</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirecionar após 30 segundos (opcional)
+        setTimeout(function() {
+            // window.location.href = '/';
+        }, 30000);
+
+        // Mostrar animação de sucesso
+        document.addEventListener('DOMContentLoaded', function() {
+            const icon = document.querySelector('.success-icon');
+            icon.style.transform = 'scale(0)';
+            icon.style.transition = 'transform 0.5s ease-out';
+            
+            setTimeout(function() {
+                icon.style.transform = 'scale(1)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

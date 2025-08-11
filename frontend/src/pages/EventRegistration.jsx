@@ -65,6 +65,14 @@ function EventRegistration() {
     }
   };
 
+  const calculateTotal = () => {
+    let total = parseFloat(eventData?.valorInsc || 0);
+    if (selectedKit && selectedKit.precoExtra) {
+      total += parseFloat(selectedKit.precoExtra);
+    }
+    return total.toFixed(2);
+  };
+
   const handleConfirmRegistration = async () => {
     try {
       setSubmitting(true);
@@ -74,12 +82,20 @@ function EventRegistration() {
         ...(selectedKit && { kit: selectedKit.id })
       };
 
-      await createEventRegistration(id, registrationData);
+      const response = await createEventRegistration(id, registrationData);
       
-      navigate(`/evento/${id}`);
+      // Se a resposta inclui URL de pagamento, redireciona para o gateway
+      if (response.payment_url && response.needs_payment) {
+        // Redireciona para o gateway de pagamento
+        window.location.href = `http://127.0.0.1:8000${response.payment_url}`;
+      } else {
+        // Fallback para o comportamento anterior
+        navigate(`/evento/${id}`);
+      }
       
     } catch (error) {
       console.error('Erro ao realizar inscrição:', error);
+      alert('Erro ao realizar inscrição. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
@@ -200,7 +216,26 @@ function EventRegistration() {
             {currentStep === 3 && (
               <div className={styles.stepContent}>
                 <div className={styles.paymentSimulation}>
-                  <h3>Pagamento finalizado</h3>
+                  <h3>📋 Confirmação da Inscrição</h3>
+                  <div className={styles.summaryContainer}>
+                    <div className={styles.summaryItem}>
+                      <strong>Evento:</strong> {eventData?.nome}
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <strong>Categoria:</strong> {selectedCategory?.nome}
+                    </div>
+                    {selectedKit && (
+                      <div className={styles.summaryItem}>
+                        <strong>Kit:</strong> {selectedKit.nome}
+                      </div>
+                    )}
+                    <div className={styles.summaryItem}>
+                      <strong>Valor Total:</strong> R$ {calculateTotal()}
+                    </div>
+                  </div>
+                  <p className={styles.paymentNote}>
+                    Ao confirmar, você será redirecionado para o gateway de pagamento seguro.
+                  </p>
                 </div>
               </div>
             )}
@@ -228,7 +263,7 @@ function EventRegistration() {
                   onClick={handleConfirmRegistration}
                   disabled={submitting}
                 >
-                  {submitting ? 'Finalizando...' : 'Confirmar Compra'}
+                  {submitting ? 'Processando...' : '💳 Prosseguir para Pagamento'}
                 </button>
               )}
             </div>

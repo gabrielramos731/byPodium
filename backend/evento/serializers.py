@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from rest_framework import serializers
 from .models import evento, categoria, kit, item
 from localidades.models import localidade
@@ -15,6 +15,13 @@ def get_current_participante_from_context(context):
             return participante.objects.get(pk=1)
     else:
         return participante.objects.get(pk=1)
+
+class SafeDateField(serializers.DateField):
+    """Campo de data que converte datetime para date se necessário"""
+    def to_representation(self, value):
+        if isinstance(value, datetime):
+            value = value.date()
+        return super().to_representation(value)
 
 class participanteSerializer(serializers.ModelSerializer):
     class Meta():
@@ -130,6 +137,7 @@ class inscricaoSerializer(serializers.ModelSerializer):
     evento = eventoSerializerList(read_only=True)
     categoria = serializers.SerializerMethodField()
     kit = serializers.SerializerMethodField()
+    dataInsc = SafeDateField(read_only=True)
     
     class Meta():
         model = inscricao

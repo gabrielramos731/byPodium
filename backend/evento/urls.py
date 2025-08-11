@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     ListEventos, DetailEvento, ListInscricoes, CriarInscricao, 
     DetalhesInscricao, DetalhesParticipante, CriarEvento, 
-    GerenciarEvento, GerenciarEventosPendentesAdmin
+    GerenciarEvento, GerenciarEventosPendentesAdmin, PaymentStatus
 )
 
 urlpatterns = [
@@ -19,5 +19,6 @@ urlpatterns = [
     path('eventos/pendentes/<int:pk>/', GerenciarEventosPendentesAdmin.as_view(), name='atualizar-status-evento'),
     
     path('perfil/', DetalhesParticipante.as_view(), name='detalhe-participante'),
+    path('payment/status/<int:inscricao_id>/', PaymentStatus.as_view(), name='payment-status'),
 ]
 
