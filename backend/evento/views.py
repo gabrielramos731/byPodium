@@ -305,11 +305,10 @@ class GerarRelatorio(generics.GenericAPIView):
     """
     Classe para geração de relatórios do sistema
     GET /eventos/<event_id>/report/: Gera relatório de um evento específico
-    GET /eventos/period-report/: Gera relatório por período
     """
     permission_classes = [permissions.IsAuthenticated]
     
-    def get_event_report(self, request, event_id):
+    def get(self, request, event_id):
         """Gera relatório detalhado de um evento específico"""
         try:
             event = evento.objects.get(id=event_id)
@@ -338,57 +337,3 @@ class GerarRelatorio(generics.GenericAPIView):
             
         except evento.DoesNotExist:
             return Response({'error': 'Evento não encontrado'}, status=404)
-    
-    def get_period_report(self, request):
-        """
-        Gera relatório de eventos em um período específico
-        Parâmetros obrigatórios:
-        - data_inicio: YYYY-MM-DD
-        - data_fim: YYYY-MM-DD
-        """
-        from .reports import EventReports
-        try:
-            data_inicio = datetime.strptime(request.query_params.get('data_inicio'), '%Y-%m-%d').date()
-            data_fim = datetime.strptime(request.query_params.get('data_fim'), '%Y-%m-%d').date()
-        except (ValueError, TypeError):
-            return Response({
-                'error': 'Formato de data inválido. Use YYYY-MM-DD',
-                'exemplo': {
-                    'data_inicio': '2024-01-01',
-                    'data_fim': '2024-12-31'
-                }
-            }, status=400)
-        
-        if data_inicio > data_fim:
-            return Response({
-                'error': 'Data inicial não pode ser maior que a data final'
-            }, status=400)
-        
-        # Buscar apenas eventos do organizador autenticado
-        current_participante = get_current_participante(request)
-        try:
-            organizador_obj = current_participante.organizadores
-            report = EventReports.get_events_by_period(data_inicio, data_fim, organizador_obj)
-        except organizador.DoesNotExist:
-            # Se não for organizador, retorna relatório vazio
-            report = {
-                'periodo': {
-                    'inicio': data_inicio.strftime("%d/%m/%Y"),
-                    'fim': data_fim.strftime("%d/%m/%Y"),
-                },
-                'eventos': [],
-                'total_eventos': 0,
-                'data_geracao': datetime.now().strftime("%d/%m/%Y %H:%M")
-            }
-        
-        return Response(report)
-
-    def get(self, request, event_id=None):
-        """
-        Roteador para os diferentes tipos de relatório
-        Se event_id for fornecido, gera relatório do evento
-        Caso contrário, gera relatório por período
-        """
-        if event_id is not None:
-            return self.get_event_report(request, event_id)
-        return self.get_period_report(request)

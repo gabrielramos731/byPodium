@@ -16,6 +16,5 @@ urlpatterns = [
     path('perfil/', DetalhesParticipante.as_view(), name='detalhe-participante'),
 
     path('eventos/<int:event_id>/report/', GerarRelatorio.as_view(), name='event-report'),
-    path('eventos/period-report/', GerarRelatorio.as_view(), name='period-report'),
 ]
 

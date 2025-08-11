@@ -80,42 +80,6 @@ class EventReports:
             return None
 
     @staticmethod
-    def get_events_by_period(data_inicio, data_fim, organizador=None):
-        if not data_inicio or not data_fim:
-            return None
-            
-        eventos_query = evento.objects.filter(
-            dataIni__gte=data_inicio,
-            dataIni__lte=data_fim
-        ).select_related('localidade')
-        
-        if organizador:
-            eventos_query = eventos_query.filter(organizador=organizador)
-        
-        eventos = eventos_query
-        
-        inscricoes_count = {
-            e.id: inscricao.objects.filter(evento=e).count() 
-            for e in eventos
-        }
-        
-        return {
-            'periodo': {
-                'inicio': data_inicio.strftime("%d/%m/%Y"),
-                'fim': data_fim.strftime("%d/%m/%Y"),
-            },
-            'eventos': [{
-                'nome': event.nome,
-                'data': event.dataIni.strftime("%d/%m/%Y"),
-                'total_inscritos': inscricoes_count[event.id],
-                'status': 'Finalizado' if event.dataIni < datetime.now().date() else 'Em andamento',
-                'local': f"{event.localidade.cidade}/{event.localidade.uf}" if hasattr(event, 'localidade') else "N/A"
-            } for event in eventos],
-            'total_eventos': eventos.count(),
-            'data_geracao': datetime.now().strftime("%d/%m/%Y %H:%M")
-        }
-
-    @staticmethod
     def get_participant_report(event_id):
         try:
             event = evento.objects.get(id=event_id)

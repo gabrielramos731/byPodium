@@ -4,8 +4,6 @@ import Navigation from '../components/navigation/Navigation';
 import Footer from '../components/footer/Footer';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import styles from './Reports.module.css';
 
 ChartJS.register(
@@ -21,14 +19,11 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const [reportType, setReportType] = useState('event');
   const [eventId, setEventId] = useState('');
   const [userEvents, setUserEvents] = useState([]);
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), 0, 1));
-  const [endDate, setEndDate] = useState(new Date());
   const [selectedReportSubtype, setSelectedReportSubtype] = useState('summary');
 
   useEffect(() => {
@@ -65,59 +60,19 @@ const Reports = () => {
     }
   };
 
-  const generatePeriodReport = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const startDateStr = startDate.toISOString().split('T')[0];
-      const endDateStr = endDate.toISOString().split('T')[0];
-      
-      const response = await api.get(`/eventos/period-report/?data_inicio=${startDateStr}&data_fim=${endDateStr}`);
-      setReportData(response.data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao gerar relatório');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGenerateReport = () => {
-    if (reportType === 'event') {
-      generateEventReport();
-    } else {
-      generatePeriodReport();
-    }
-  };
-
-  const handleReportTypeChange = (newReportType) => {
-    setReportType(newReportType);
-    setReportData(null); // Limpar dados do relatório anterior
-    setError(''); // Limpar erros
+    generateEventReport();
   };
 
   const handleSubtypeChange = async (newSubtype) => {
     setSelectedReportSubtype(newSubtype);
     
     // Se já temos dados de relatório carregados, regenerar automaticamente
-    if (reportType === 'event' && eventId && reportData) {
+    if (eventId && reportData) {
       try {
         setLoading(true);
         setError('');
         const response = await api.get(`/eventos/${eventId}/report/?type=${newSubtype}`);
-        setReportData(response.data);
-      } catch (err) {
-        setError(err.response?.data?.error || 'Erro ao gerar relatório');
-      } finally {
-        setLoading(false);
-      }
-    } else if (reportType === 'period' && reportData && startDate && endDate) {
-      // Regenerar relatório por período automaticamente
-      try {
-        setLoading(true);
-        setError('');
-        const startDateStr = startDate.toISOString().split('T')[0];
-        const endDateStr = endDate.toISOString().split('T')[0];
-        const response = await api.get(`/eventos/period-report/?data_inicio=${startDateStr}&data_fim=${endDateStr}`);
         setReportData(response.data);
       } catch (err) {
         setError(err.response?.data?.error || 'Erro ao gerar relatório');
@@ -133,7 +88,7 @@ const Reports = () => {
     let csvContent = '';
     let filename = '';
 
-    if (reportType === 'event' && selectedReportSubtype === 'participants') {
+    if (selectedReportSubtype === 'participants') {
       csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Nome,Email,Kit,Status,Data Inscrição\n";
       
@@ -142,15 +97,6 @@ const Reports = () => {
       });
       
       filename = `participantes_${reportData.evento}.csv`;
-    } else if (reportType === 'period') {
-      csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Nome do Evento,Data,Total Inscritos,Status,Local\n";
-      
-      reportData.eventos?.forEach(event => {
-        csvContent += `${event.nome},${event.data},${event.total_inscritos},${event.status},${event.local}\n`;
-      });
-      
-      filename = `relatorio_periodo_${reportData.periodo?.inicio}_${reportData.periodo?.fim}.csv`;
     }
 
     if (csvContent) {
@@ -167,7 +113,7 @@ const Reports = () => {
   const generateChartData = () => {
     if (!reportData) return null;
 
-    if (reportType === 'event' && selectedReportSubtype === 'summary') {
+    if (selectedReportSubtype === 'summary') {
       // Gráfico de barras para status das inscrições (em porcentagem)
       const confirmadas = reportData.status_inscricoes?.confirmadas || 0;
       const pendentes = reportData.status_inscricoes?.pendentes || 0;
@@ -249,27 +195,6 @@ const Reports = () => {
       } : null;
 
       return { statusData, categoriaData, kitData, inscricoesPorDiaData };
-    }
-
-    if (reportType === 'period') {
-      const eventLabels = reportData.eventos?.map(event => event.nome.substring(0, 20) + '...') || [];
-      const eventValues = reportData.eventos?.map(event => event.total_inscritos) || [];
-      const eventTotal = eventValues.reduce((sum, value) => sum + value, 0);
-      
-      const periodData = {
-        labels: eventLabels,
-        datasets: [{
-          label: 'Porcentagem de Inscrições por Evento (%)',
-          data: eventValues.map(value => 
-            eventTotal > 0 ? ((value / eventTotal) * 100).toFixed(1) : 0
-          ),
-          backgroundColor: '#d9a444',
-          borderColor: '#f3e96d',
-          borderWidth: 2
-        }]
-      };
-
-      return { periodData };
     }
 
     return null;
@@ -381,87 +306,41 @@ const Reports = () => {
       </div>
 
       <div className={styles.controls}>
-        <div className={styles.reportTypeSelector}>
-          <label>
-            <input
-              type="radio"
-              value="event"
-              checked={reportType === 'event'}
-              onChange={(e) => handleReportTypeChange(e.target.value)}
-            />
-            Relatório de Evento Específico
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="period"
-              checked={reportType === 'period'}
-              onChange={(e) => handleReportTypeChange(e.target.value)}
-            />
-            Relatório por Período
-          </label>
+        <div className={styles.eventSelector}>
+          <select
+            value={eventId}
+            onChange={(e) => setEventId(e.target.value)}
+            className={styles.select}
+          >
+            <option value="">Selecione um evento</option>
+            {userEvents.map(event => (
+              <option key={event.id} value={event.id}>
+                {event.nome} - {new Date(event.dataIni).toLocaleDateString('pt-BR')}
+              </option>
+            ))}
+          </select>
+
+          <div className={styles.subtypeSelector}>
+            <label>
+              <input
+                type="radio"
+                value="summary"
+                checked={selectedReportSubtype === 'summary'}
+                onChange={(e) => handleSubtypeChange(e.target.value)}
+              />
+              Resumo do Evento
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="participants"
+                checked={selectedReportSubtype === 'participants'}
+                onChange={(e) => handleSubtypeChange(e.target.value)}
+              />
+              Lista de Participantes
+            </label>
+          </div>
         </div>
-
-        {reportType === 'event' && (
-          <div className={styles.eventSelector}>
-            <select
-              value={eventId}
-              onChange={(e) => setEventId(e.target.value)}
-              className={styles.select}
-            >
-              <option value="">Selecione um evento</option>
-              {userEvents.map(event => (
-                <option key={event.id} value={event.id}>
-                  {event.nome} - {new Date(event.dataIni).toLocaleDateString('pt-BR')}
-                </option>
-              ))}
-            </select>
-
-            <div className={styles.subtypeSelector}>
-              <label>
-                <input
-                  type="radio"
-                  value="summary"
-                  checked={selectedReportSubtype === 'summary'}
-                  onChange={(e) => handleSubtypeChange(e.target.value)}
-                />
-                Resumo do Evento
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="participants"
-                  checked={selectedReportSubtype === 'participants'}
-                  onChange={(e) => handleSubtypeChange(e.target.value)}
-                />
-                Lista de Participantes
-              </label>
-            </div>
-          </div>
-        )}
-
-        {reportType === 'period' && (
-          <div className={styles.dateSelector}>
-            <div className={styles.dateInput}>
-              <label>Data Início:</label>
-              <DatePicker
-                selected={startDate}
-                onChange={setStartDate}
-                dateFormat="dd/MM/yyyy"
-                className={styles.datePicker}
-              />
-            </div>
-            <div className={styles.dateInput}>
-              <label>Data Fim:</label>
-              <DatePicker
-                selected={endDate}
-                onChange={setEndDate}
-                dateFormat="dd/MM/yyyy"
-                className={styles.datePicker}
-              />
-            </div>
-          </div>
-        )}
 
         <button
           onClick={handleGenerateReport}
@@ -482,13 +361,10 @@ const Reports = () => {
         <div className={styles.reportResults}>
           <div className={styles.reportHeader}>
             <h2>
-              {reportType === 'event' 
-                ? `Relatório: ${reportData.evento?.nome || reportData.evento}` 
-                : `Relatório do Período: ${reportData.periodo?.inicio} - ${reportData.periodo?.fim}`
-              }
+              Relatório: {reportData.evento?.nome || reportData.evento}
             </h2>
             <div className={styles.actions}>
-              {(reportType === 'event' && selectedReportSubtype === 'participants') || reportType === 'period' ? (
+              {selectedReportSubtype === 'participants' ? (
                 <button onClick={exportToCSV} className={styles.exportButton}>
                   Exportar CSV
                 </button>
@@ -500,7 +376,7 @@ const Reports = () => {
           </div>
 
           {/* Estatísticas Resumidas */}
-          {reportType === 'event' && selectedReportSubtype === 'summary' && (
+          {selectedReportSubtype === 'summary' && (
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
                 <h3>Total de Inscritos</h3>
@@ -521,25 +397,10 @@ const Reports = () => {
             </div>
           )}
 
-          {reportType === 'period' && (
-            <div className={styles.statsGrid}>
-              <div className={styles.statCard}>
-                <h3>Total de Eventos</h3>
-                <p className={styles.statValue}>{reportData.total_eventos || 0}</p>
-              </div>
-              <div className={styles.statCard}>
-                <h3>Total de Inscrições</h3>
-                <p className={styles.statValue}>
-                  {reportData.eventos?.reduce((sum, event) => sum + event.total_inscritos, 0) || 0}
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Gráficos */}
           {chartData && (
             <div className={styles.chartsContainer}>
-              {reportType === 'event' && selectedReportSubtype === 'summary' && (
+              {selectedReportSubtype === 'summary' && (
                 <>
                   {chartData.inscricoesPorDiaData && (
                     <div className={styles.chartCard}>
@@ -576,20 +437,11 @@ const Reports = () => {
                   )}
                 </>
               )}
-
-              {reportType === 'period' && chartData.periodData && (
-                <div className={styles.chartCard}>
-                  <h3>Inscrições por Evento</h3>
-                  <div className={styles.chartContainer}>
-                    <Bar data={chartData.periodData} options={chartOptions} />
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
           {/* Tabela de Participantes */}
-          {reportType === 'event' && selectedReportSubtype === 'participants' && reportData.participantes && (
+          {selectedReportSubtype === 'participants' && reportData.participantes && (
             <div className={styles.tableCard}>
               <h3>Lista de Participantes</h3>
               <div className={styles.tableContainer}>
@@ -615,41 +467,6 @@ const Reports = () => {
                           </span>
                         </td>
                         <td>{participant.data_inscricao}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Tabela de Eventos por Período */}
-          {reportType === 'period' && reportData.eventos && (
-            <div className={styles.tableCard}>
-              <h3>Eventos no Período</h3>
-              <div className={styles.tableContainer}>
-                <table className={styles.eventsTable}>
-                  <thead>
-                    <tr>
-                      <th>Nome do Evento</th>
-                      <th>Data</th>
-                      <th>Total de Inscritos</th>
-                      <th>Status</th>
-                      <th>Local</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reportData.eventos.map((event, index) => (
-                      <tr key={index}>
-                        <td>{event.nome}</td>
-                        <td>{event.data}</td>
-                        <td>{event.total_inscritos}</td>
-                        <td>
-                          <span className={`${styles.status} ${styles[event.status === 'Finalizado' ? 'finalizado' : 'ativo']}`}>
-                            {event.status}
-                          </span>
-                        </td>
-                        <td>{event.local}</td>
                       </tr>
                     ))}
                   </tbody>
