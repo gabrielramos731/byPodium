@@ -313,22 +313,20 @@
 }
 
 .chartCard {
-  background: #2a2a2a;
+  background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border: 1px solid #333;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ffd700;
 }
 
-.chartCard:hover {
-  border-color: var(--yellow1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+.chartCard:first-child {
+  grid-column: 1 / -1;
 }
 
 .chartCard h3 {
   margin: 0 0 20px 0;
-  color: #eaeaea;
+  color: #1a1a1a;
   font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
@@ -337,6 +335,10 @@
 .chartContainer {
   height: 300px;
   position: relative;
+}
+
+.chartCard:first-child .chartContainer {
+  height: 400px;
 }
 
 .tableCard {

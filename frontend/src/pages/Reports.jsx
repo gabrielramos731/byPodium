@@ -225,7 +225,30 @@ const Reports = () => {
         }]
       };
 
-      return { statusData, categoriaData, kitData };
+      // Gráfico de linhas para inscrições por dia
+      const inscricoesPorDiaData = reportData.inscricoes_por_dia ? {
+        labels: reportData.inscricoes_por_dia.datas.map(data => {
+          const date = new Date(data);
+          return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        }),
+        datasets: [
+          {
+            label: 'Inscrições Diárias',
+            data: reportData.inscricoes_por_dia.inscricoes_diarias,
+            borderColor: '#FFD700',
+            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#1A1A1A',
+            pointBorderColor: '#FFD700',
+            pointBorderWidth: 2,
+            pointRadius: 4
+          }
+        ]
+      } : null;
+
+      return { statusData, categoriaData, kitData, inscricoesPorDiaData };
     }
 
     if (reportType === 'period') {
@@ -294,6 +317,52 @@ const Reports = () => {
           callback: function(value) {
             return value + '%';
           }
+        },
+        grid: {
+          color: '#444'
+        }
+      }
+    }
+  };
+
+  // Opções específicas para o gráfico de inscrições por dia
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#eaeaea',
+          font: {
+            weight: 'bold'
+          }
+        }
+      },
+      title: {
+        display: true,
+        text: 'Evolução das Inscrições',
+        color: '#eaeaea',
+        font: {
+          size: 16,
+          weight: 'bold'
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#eaeaea'
+        },
+        grid: {
+          color: '#444'
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#eaeaea',
+          stepSize: 1
         },
         grid: {
           color: '#444'
@@ -470,10 +539,19 @@ const Reports = () => {
             <div className={styles.chartsContainer}>
               {reportType === 'event' && selectedReportSubtype === 'summary' && (
                 <>
+                  {chartData.inscricoesPorDiaData && (
+                    <div className={styles.chartCard}>
+                      <h3>Evolução das Inscrições</h3>
+                      <div className={styles.chartContainer}>
+                        <Line data={chartData.inscricoesPorDiaData} options={lineChartOptions} />
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className={styles.chartCard}>
                     <h3>Status das Inscrições</h3>
                     <div className={styles.chartContainer}>
-                      <Bar data={chartData.statusData} options={chartOptions} />
+                      <Pie data={chartData.statusData} options={chartOptions} />
                     </div>
                   </div>
                   
