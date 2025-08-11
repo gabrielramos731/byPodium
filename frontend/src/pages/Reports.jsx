@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api/Api';
-import getAllEvents from '../utils/api/apiTaskManager';
+import Navigation from '../components/navigation/Navigation';
+import Footer from '../components/footer/Footer';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
@@ -39,7 +40,7 @@ const Reports = () => {
       setLoading(true);
       const response = await api.get('/eventos/organizador/');
       setUserEvents(response.data);
-    } catch (err) {
+    } catch {
       setError('Erro ao carregar eventos do organizador');
     } finally {
       setLoading(false);
@@ -88,6 +89,44 @@ const Reports = () => {
     }
   };
 
+  const handleReportTypeChange = (newReportType) => {
+    setReportType(newReportType);
+    setReportData(null); // Limpar dados do relatório anterior
+    setError(''); // Limpar erros
+  };
+
+  const handleSubtypeChange = async (newSubtype) => {
+    setSelectedReportSubtype(newSubtype);
+    
+    // Se já temos dados de relatório carregados, regenerar automaticamente
+    if (reportType === 'event' && eventId && reportData) {
+      try {
+        setLoading(true);
+        setError('');
+        const response = await api.get(`/eventos/${eventId}/report/?type=${newSubtype}`);
+        setReportData(response.data);
+      } catch (err) {
+        setError(err.response?.data?.error || 'Erro ao gerar relatório');
+      } finally {
+        setLoading(false);
+      }
+    } else if (reportType === 'period' && reportData && startDate && endDate) {
+      // Regenerar relatório por período automaticamente
+      try {
+        setLoading(true);
+        setError('');
+        const startDateStr = startDate.toISOString().split('T')[0];
+        const endDateStr = endDate.toISOString().split('T')[0];
+        const response = await api.get(`/eventos/period-report/?data_inicio=${startDateStr}&data_fim=${endDateStr}`);
+        setReportData(response.data);
+      } catch (err) {
+        setError(err.response?.data?.error || 'Erro ao gerar relatório');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const exportToCSV = () => {
     if (!reportData) return;
 
@@ -129,47 +168,59 @@ const Reports = () => {
     if (!reportData) return null;
 
     if (reportType === 'event' && selectedReportSubtype === 'summary') {
-      // Gráfico de pizza para status das inscrições
+      // Gráfico de barras para status das inscrições (em porcentagem)
+      const confirmadas = reportData.status_inscricoes?.confirmadas || 0;
+      const pendentes = reportData.status_inscricoes?.pendentes || 0;
+      const canceladas = reportData.status_inscricoes?.canceladas || 0;
+      const total = confirmadas + pendentes + canceladas;
+      
       const statusData = {
         labels: ['Confirmadas', 'Pendentes', 'Canceladas'],
         datasets: [{
+          label: 'Porcentagem de Inscrições (%)',
           data: [
-            reportData.status_inscricoes?.confirmadas || 0,
-            reportData.status_inscricoes?.pendentes || 0,
-            reportData.status_inscricoes?.canceladas || 0
+            total > 0 ? ((confirmadas / total) * 100).toFixed(1) : 0,
+            total > 0 ? ((pendentes / total) * 100).toFixed(1) : 0,
+            total > 0 ? ((canceladas / total) * 100).toFixed(1) : 0
           ],
-          backgroundColor: ['#4CAF50', '#FFD700', '#1A1A1A'],
-          borderColor: ['#4CAF50', '#FFD700', '#1A1A1A'],
+          backgroundColor: ['#d9a444', '#f3e96d', '#0d0d0d'],
+          borderColor: ['#d9a444', '#f3e96d', '#0d0d0d'],
           borderWidth: 2
         }]
       };
 
-      // Gráfico de barras para categorias
+      // Gráfico de barras para categorias (em porcentagem)
       const categoriaLabels = Object.keys(reportData.categorias || {});
       const categoriaValues = Object.values(reportData.categorias || {});
+      const categoriaTotal = categoriaValues.reduce((sum, value) => sum + value, 0);
       
       const categoriaData = {
         labels: categoriaLabels,
         datasets: [{
-          label: 'Inscrições por Categoria',
-          data: categoriaValues,
-          backgroundColor: '#FFD700',
-          borderColor: '#1A1A1A',
+          label: 'Porcentagem de Inscrições por Categoria (%)',
+          data: categoriaValues.map(value => 
+            categoriaTotal > 0 ? ((value / categoriaTotal) * 100).toFixed(1) : 0
+          ),
+          backgroundColor: '#f3e96d',
+          borderColor: '#0d0d0d',
           borderWidth: 2
         }]
       };
 
-      // Gráfico de barras para kits
+      // Gráfico de barras para kits (em porcentagem)
       const kitLabels = Object.keys(reportData.kits || {});
       const kitValues = Object.values(reportData.kits || {});
+      const kitTotal = kitValues.reduce((sum, value) => sum + value, 0);
       
       const kitData = {
         labels: kitLabels,
         datasets: [{
-          label: 'Kits Selecionados',
-          data: kitValues,
-          backgroundColor: '#1A1A1A',
-          borderColor: '#FFD700',
+          label: 'Porcentagem de Kits Selecionados (%)',
+          data: kitValues.map(value => 
+            kitTotal > 0 ? ((value / kitTotal) * 100).toFixed(1) : 0
+          ),
+          backgroundColor: '#0d0d0d',
+          borderColor: '#f3e96d',
           borderWidth: 2
         }]
       };
@@ -180,14 +231,17 @@ const Reports = () => {
     if (reportType === 'period') {
       const eventLabels = reportData.eventos?.map(event => event.nome.substring(0, 20) + '...') || [];
       const eventValues = reportData.eventos?.map(event => event.total_inscritos) || [];
+      const eventTotal = eventValues.reduce((sum, value) => sum + value, 0);
       
       const periodData = {
         labels: eventLabels,
         datasets: [{
-          label: 'Total de Inscrições',
-          data: eventValues,
-          backgroundColor: '#FFD700',
-          borderColor: '#1A1A1A',
+          label: 'Porcentagem de Inscrições por Evento (%)',
+          data: eventValues.map(value => 
+            eventTotal > 0 ? ((value / eventTotal) * 100).toFixed(1) : 0
+          ),
+          backgroundColor: '#f3e96d',
+          borderColor: '#0d0d0d',
           borderWidth: 2
         }]
       };
@@ -207,7 +261,7 @@ const Reports = () => {
       legend: {
         position: 'top',
         labels: {
-          color: '#1A1A1A',
+          color: '#eaeaea',
           font: {
             weight: 'bold'
           }
@@ -216,7 +270,7 @@ const Reports = () => {
       title: {
         display: true,
         text: 'Dados do Relatório',
-        color: '#1A1A1A',
+        color: '#eaeaea',
         font: {
           size: 16,
           weight: 'bold'
@@ -226,18 +280,23 @@ const Reports = () => {
     scales: {
       x: {
         ticks: {
-          color: '#1A1A1A'
+          color: '#eaeaea'
         },
         grid: {
-          color: '#E0E0E0'
+          color: '#444'
         }
       },
       y: {
+        min: 0,
+        max: 100,
         ticks: {
-          color: '#1A1A1A'
+          color: '#eaeaea',
+          callback: function(value) {
+            return value + '%';
+          }
         },
         grid: {
-          color: '#E0E0E0'
+          color: '#444'
         }
       }
     }
@@ -245,6 +304,8 @@ const Reports = () => {
 
   return (
     <div className={styles.reportsContainer}>
+      <Navigation />
+      
       <div className={styles.header}>
         <h1>Relatórios de Eventos</h1>
         <p>Gere relatórios detalhados dos seus eventos</p>
@@ -257,7 +318,7 @@ const Reports = () => {
               type="radio"
               value="event"
               checked={reportType === 'event'}
-              onChange={(e) => setReportType(e.target.value)}
+              onChange={(e) => handleReportTypeChange(e.target.value)}
             />
             Relatório de Evento Específico
           </label>
@@ -266,7 +327,7 @@ const Reports = () => {
               type="radio"
               value="period"
               checked={reportType === 'period'}
-              onChange={(e) => setReportType(e.target.value)}
+              onChange={(e) => handleReportTypeChange(e.target.value)}
             />
             Relatório por Período
           </label>
@@ -293,7 +354,7 @@ const Reports = () => {
                   type="radio"
                   value="summary"
                   checked={selectedReportSubtype === 'summary'}
-                  onChange={(e) => setSelectedReportSubtype(e.target.value)}
+                  onChange={(e) => handleSubtypeChange(e.target.value)}
                 />
                 Resumo do Evento
               </label>
@@ -302,7 +363,7 @@ const Reports = () => {
                   type="radio"
                   value="participants"
                   checked={selectedReportSubtype === 'participants'}
-                  onChange={(e) => setSelectedReportSubtype(e.target.value)}
+                  onChange={(e) => handleSubtypeChange(e.target.value)}
                 />
                 Lista de Participantes
               </label>
@@ -412,7 +473,7 @@ const Reports = () => {
                   <div className={styles.chartCard}>
                     <h3>Status das Inscrições</h3>
                     <div className={styles.chartContainer}>
-                      <Pie data={chartData.statusData} options={chartOptions} />
+                      <Bar data={chartData.statusData} options={chartOptions} />
                     </div>
                   </div>
                   
@@ -518,6 +579,8 @@ const Reports = () => {
           )}
         </div>
       )}
+      
+      <Footer />
     </div>
   );
 };
