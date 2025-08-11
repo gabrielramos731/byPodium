@@ -12,7 +12,9 @@ export function useEvents() {
         setLoading(true);
         setError(null);
         const eventsData = await getAllEvents();
-        setEvents(eventsData);
+        // Filtrar eventos cancelados da homepage
+        const eventosAtivos = eventsData.filter(evento => evento.status !== 'cancelado');
+        setEvents(eventosAtivos);
       } catch (error) {
         setError("Erro ao carregar eventos");
         console.error("Erro ao buscar eventos:", error);
@@ -29,7 +31,9 @@ export function useEvents() {
       setLoading(true);
       setError(null);
       const eventsData = await getAllEvents();
-      setEvents(eventsData);
+      // Filtrar eventos cancelados da homepage
+      const eventosAtivos = eventsData.filter(evento => evento.status !== 'cancelado');
+      setEvents(eventosAtivos);
     } catch (error) {
       setError("Erro ao carregar eventos");
       console.error("Erro ao buscar eventos:", error);

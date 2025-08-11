@@ -1,14 +1,15 @@
 import json
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, serializers
 from rest_framework.response import Response
 from .models import evento, categoria, kit
 from inscricoes.models import inscricao
 from usuarios.models import participante, organizador
 from localidades.models import localidade
+from .email_service import EmailService
 from .serializers import (
     eventoSerializer, inscricaoSerializer, eventoSerializerList,
     InscricaoCreateSerializer, InscricaoResponseSerializer, 
-    DetalhesParticipanteSerializer
+    DetalhesParticipanteSerializer, EventoPendenteSerializer, EventoStatusUpdateSerializer
 )
 from datetime import date
 from rest_framework.decorators import api_view, permission_classes
@@ -27,8 +28,8 @@ def get_current_participante(request):
 
 
 class ListEventos(generics.ListAPIView):
-    """Lista todos os eventos disponíveis"""
-    queryset = evento.objects.all()
+    """Lista eventos ativos (aprovados) disponíveis para visualização"""
+    queryset = evento.objects.filter(status='ativo')
     serializer_class = eventoSerializerList
     permission_classes = [permissions.AllowAny]
 
@@ -285,20 +286,19 @@ class GerenciarEvento(generics.GenericAPIView):
         
         evento_obj = evento.objects.get(pk=pk)
         current_participante = get_current_participante(request)
-
-        if evento_obj.organizador.participante != current_participante:
-                return Response(
-                    {'error': 'Você não tem permissão para cancelar este evento.'},
-                    status=status.HTTP_403_FORBIDDEN
-                )
         
         if evento_obj.dataFim < date.today():
             return Response(
                 {'error': 'Não é possível cancelar um evento que já foi encerrado.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-         
-        evento_obj.delete()
+
+        evento_obj.status = 'cancelado'
+        evento_obj.save()
+        
+        inscricoes_evento = inscricao.objects.filter(evento=evento_obj)
+        inscricoes_evento.update(status='cancelado')
+        
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
 
 class GerarRelatorio(generics.GenericAPIView):
@@ -337,3 +337,118 @@ class GerarRelatorio(generics.GenericAPIView):
             
         except evento.DoesNotExist:
             return Response({'error': 'Evento não encontrado'}, status=404)
+
+
+class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
+    """GET: Lista eventos pendentes ou detalhes de um evento específico. PATCH: Atualiza status do evento (apenas admins)"""
+    serializer_class = EventoPendenteSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = evento.objects.all()
+    
+    def get(self, request, pk=None):
+        if pk:
+            evento_obj = evento.objects.get(pk=pk)
+            serializer = self.get_serializer(evento_obj)
+            data = serializer.data
+            
+            data['organizador_email'] = evento_obj.organizador.participante.email
+            data['localidade_nome'] = {evento_obj.localidade.cidade}
+            data['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
+        else:
+            eventos_pendentes = evento.objects.filter(status='pendente')
+            serializer = self.get_serializer(eventos_pendentes, many=True)
+            data = serializer.data
+            
+            for i, evento_obj in enumerate(eventos_pendentes):
+                data[i]['organizador_email'] = evento_obj.organizador.participante.email
+                data[i]['localidade_nome'] = {evento_obj.localidade.cidade}
+                data[i]['localidade_uf'] = evento_obj.localidade.uf
+            return Response(data)
+    
+    def patch(self, request, pk):
+        try:
+            evento_obj = evento.objects.get(pk=pk)
+
+            novo_status = request.data.get('status')
+            confirmacao = request.data.get('confirmacao')
+            feedback_admin = request.data.get('feedback_admin', '').strip()
+            
+            if novo_status not in ['ativo', 'negado']:
+                return Response(
+                    {'error': 'Status deve ser "ativo" ou "negado"'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar se é negação e se feedback é obrigatório
+            if novo_status == 'negado' and not feedback_admin:
+                return Response(
+                    {
+                        'error': 'Feedback obrigatório',
+                        'message': 'Para negar um evento, é obrigatório fornecer um feedback explicando o motivo da negação.',
+                        'requires_feedback': True
+                    }, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar se a confirmação foi enviada
+            if not confirmacao:
+                confirmation_message = f'Tem certeza que deseja {"aprovar" if novo_status == "ativo" else "negar"} o evento "{evento_obj.nome}"?'
+                if novo_status == 'negado':
+                    confirmation_message += f'\n\nFeedback que será enviado: "{feedback_admin}"'
+                
+                return Response(
+                    {
+                        'error': 'Confirmação necessária',
+                        'message': confirmation_message,
+                        'evento': {
+                            'id': evento_obj.id,
+                            'nome': evento_obj.nome,
+                            'organizador': evento_obj.organizador.participante.nome,
+                            'status_atual': evento_obj.status,
+                            'status_novo': novo_status,
+                            'feedback_admin': feedback_admin if novo_status == 'negado' else None
+                        },
+                        'requires_confirmation': True
+                    }, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar se já foi processado
+            if evento_obj.status != 'pendente':
+                return Response(
+                    {'error': f'Este evento já foi {evento_obj.status}. Não é possível alterar novamente.'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Atualizar status do evento
+            evento_obj.status = novo_status
+            evento_obj.save()
+            
+            # Enviar email baseado na ação
+            email_enviado = False
+            if novo_status == 'ativo':
+                email_enviado = EmailService.enviar_email_aprovacao(evento_obj)
+            elif novo_status == 'negado':
+                email_enviado = EmailService.enviar_email_negacao(evento_obj, feedback_admin)
+            
+            serializer = EventoStatusUpdateSerializer(evento_obj)
+            response_data = serializer.data
+            response_data['message'] = f'Evento {"aprovado" if novo_status == "ativo" else "negado"} com sucesso!'
+            response_data['email_enviado'] = email_enviado
+            
+            if novo_status == 'negado':
+                response_data['feedback_enviado'] = feedback_admin
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except evento.DoesNotExist:
+            return Response(
+                {'error': 'Evento não encontrado'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

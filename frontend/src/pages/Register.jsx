@@ -139,7 +139,6 @@ function Register() {
       
       await registerUser(registrationData);
       
-      alert('Usuário cadastrado com sucesso!');
       navigate('/login');
       
     } catch (error) {

@@ -9,6 +9,7 @@ import EventRegistration from './pages/EventRegistration.jsx';
 import CreateEvent from './pages/CreateEvent.jsx';
 import EditEvent from './pages/EditEvent.jsx';
 import Reports from './pages/Reports.jsx';
+import PendingEvents from './pages/PendingEvents.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
@@ -68,6 +69,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Reports />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/eventos-pendentes",
+    element: (
+      <ProtectedRoute>
+        <PendingEvents />
       </ProtectedRoute>
     ),
   },

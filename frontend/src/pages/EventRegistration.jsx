@@ -40,7 +40,6 @@ function EventRegistration() {
         
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
-        alert('Erro ao carregar informações. Tente novamente.');
         navigate(`/evento/${id}`);
       } finally {
         setLoading(false);
@@ -77,12 +76,10 @@ function EventRegistration() {
 
       await createEventRegistration(id, registrationData);
       
-      alert('Inscrição realizada com sucesso!');
       navigate(`/evento/${id}`);
       
     } catch (error) {
       console.error('Erro ao realizar inscrição:', error);
-      alert('Erro ao realizar inscrição. Tente novamente.');
     } finally {
       setSubmitting(false);
     }

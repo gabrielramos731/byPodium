@@ -77,6 +77,11 @@ function EventView() {
   const getStatusClass = (statusText) => {
     const status = statusText?.toLowerCase() || '';
     
+    // Verificar se o evento foi cancelado primeiro
+    if (isEventCancelled()) {
+      return styles.statusCancelled;
+    }
+    
     if (status.includes('abertas') || status.includes('aberto')) {
       return styles.statusOpen;
     } else if (status.includes('encerradas') || status.includes('encerrado')) {
@@ -91,6 +96,11 @@ function EventView() {
   //função para verificar se o evento já encerrou
   const isEventFinished = () => {
     return isDatePast(event.dataFim);
+  };
+
+  //função para verificar se o evento foi cancelado
+  const isEventCancelled = () => {
+    return event.status === 'cancelado';
   };
 
   const handleButtonClick = () => {
@@ -110,8 +120,6 @@ function EventView() {
       setShowCancelModal(false);
       await refetch();
       
-      alert('Inscrição cancelada com sucesso!');
-      
     } catch (error) {
       console.error('Erro detalhado ao cancelar inscrição:', {
         message: error.message,
@@ -124,7 +132,6 @@ function EventView() {
       if (error.response?.status === 204) {
         setShowCancelModal(false);
         await refetch();
-        alert('Inscrição cancelada com sucesso!');
         return;
       }
       
@@ -133,14 +140,13 @@ function EventView() {
         
         try {
           await refetch();
-          alert('Inscrição cancelada com sucesso!');
           return;
         } catch (refetchError) {
           console.error('Erro no refetch após status 500:', refetchError);
         }
       }
       
-      alert(`Erro ao cancelar inscrição: ${error.response?.data?.message || error.message || 'Erro desconhecido'}`);
+      console.error(`Erro ao cancelar inscrição: ${error.response?.data?.message || error.message || 'Erro desconhecido'}`);
     } finally {
       setCancelLoading(false);
     }
@@ -152,7 +158,6 @@ function EventView() {
 
   const handleEditEvent = () => {
     if (isEventFinished()) {
-      alert('Não é possível editar um evento que já foi encerrado.');
       return;
     }
     navigate(`/evento/${id}/editar`);
@@ -160,7 +165,6 @@ function EventView() {
 
   const handleCancelEvent = () => {
     if (isEventFinished()) {
-      alert('Não é possível cancelar um evento que já foi encerrado.');
       return;
     }
     setShowCancelEventModal(true);
@@ -191,7 +195,7 @@ function EventView() {
             </div>
             <div className={styles.eventDetails}>
               <span className={`${styles.eventStatus} ${getStatusClass(event.inscricaoEvento)}`}>
-                {event.inscricaoEvento}
+                {isEventCancelled() ? 'Evento Cancelado' : event.inscricaoEvento}
               </span>
               <p className={styles.eventLocation}>
                 {event.localidade?.cidade ? `${event.localidade.cidade} - ${event.localidade.uf}` : "Local não definido"}
@@ -224,21 +228,23 @@ function EventView() {
             </p>
           </div>
 
-          <button 
-            className={`${styles.registerButton} ${event.isInscrito ? styles.cancelButton : ''} ${!event.isInscricaoAberta ? styles.disabledButton : ''}`}
-            onClick={handleButtonClick}
-            disabled={!event.isInscricaoAberta}
-            style={!event.isInscricaoAberta ? {
-              backgroundColor: '#ccc',
-              color: '#666',
-              cursor: 'not-allowed',
-              opacity: 0.6
-            } : {}}
-          >
-            {event.isInscrito ? 'Cancelar Inscrição' : 'Inscreva-se'}
-          </button>
+          {!isEventCancelled() && (
+            <button 
+              className={`${styles.registerButton} ${event.isInscrito ? styles.cancelButton : ''} ${!event.isInscricaoAberta ? styles.disabledButton : ''}`}
+              onClick={handleButtonClick}
+              disabled={!event.isInscricaoAberta}
+              style={!event.isInscricaoAberta ? {
+                backgroundColor: '#ccc',
+                color: '#666',
+                cursor: 'not-allowed',
+                opacity: 0.6
+              } : {}}
+            >
+              {event.isInscrito ? 'Cancelar Inscrição' : 'Inscreva-se'}
+            </button>
+          )}
 
-          {event.isOrganizador && (
+          {event.isOrganizador && !isEventCancelled() && (
             <div className={styles.organizerActions}>
               <button 
                 className={`${styles.editEventButton} ${isEventFinished() ? styles.disabledButton : ''}`}

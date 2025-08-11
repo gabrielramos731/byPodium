@@ -40,6 +40,17 @@ async function getUserProfile(){
   }
 }
 
+// Função específica para verificar se o usuário é admin
+async function getUserAuthProfile(){
+  try{
+    const response = await api.get("/auth/profile/");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar perfil de autenticação:", error);
+    throw error;
+  }
+}
+
 async function cancelEventInscription(eventId) {
   try {
     const response = await api.delete(`/eventos/${eventId}/criar`);
@@ -187,8 +198,40 @@ async function getEventToManage(eventId) {
 
 export default getAllEvents;
 export { getEventById };
+// Funções para administradores - eventos pendentes
+async function getPendingEvents() {
+  try {
+    const response = await api.get("/eventos/pendentes/");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar eventos pendentes:", error);
+    throw error;
+  }
+}
+
+async function updateEventStatus(eventId, status, confirmacao = false, feedback_admin = '') {
+  try {
+    const payload = { 
+      status, 
+      confirmacao 
+    };
+    
+    // Adicionar feedback apenas para negações
+    if (status === 'negado' && feedback_admin.trim()) {
+      payload.feedback_admin = feedback_admin.trim();
+    }
+    
+    const response = await api.patch(`/eventos/pendentes/${eventId}/`, payload);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar status do evento:", error);
+    throw error;
+  }
+}
+
 export { getUserInscriptions };
 export { getUserProfile };
+export { getUserAuthProfile };
 export { cancelEventInscription };
 export { getEventRegistrationInfo };
 export { createEventRegistration };
@@ -198,5 +241,7 @@ export { getEstados };
 export { getCidades };
 export { createEvent };
 export { updateEvent };
+export { getPendingEvents };
+export { updateEventStatus };
 export { cancelEvent };
 export { getEventToManage };

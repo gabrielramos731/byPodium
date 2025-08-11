@@ -15,6 +15,7 @@ function MyInscriptions() {
   const [error, setError] = useState('');
   const [activeEvents, setActiveEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
+  const [cancelledEvents, setCancelledEvents] = useState([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -50,8 +51,15 @@ function MyInscriptions() {
 
     const active = [];
     const past = [];
+    const cancelled = [];
 
     inscriptionsList.forEach(inscription => {
+      // Verificar se o evento foi cancelado
+      if (inscription.evento.status === 'cancelado' || inscription.status === 'cancelado') {
+        cancelled.push(inscription);
+        return;
+      }
+
       const eventDate = createLocalDate(inscription.evento.dataIni);
       if (eventDate) {
         eventDate.setHours(0, 0, 0, 0);
@@ -67,9 +75,11 @@ function MyInscriptions() {
     // Usar a função de comparação das utilitárias
     active.sort((a, b) => compareDates(a.evento.dataIni, b.evento.dataIni));
     past.sort((a, b) => compareDates(b.evento.dataIni, a.evento.dataIni));
+    cancelled.sort((a, b) => compareDates(b.evento.dataIni, a.evento.dataIni));
 
     setActiveEvents(active);
     setPastEvents(past);
+    setCancelledEvents(cancelled);
   };
 
   const fetchInscriptions = async () => {
@@ -133,67 +143,71 @@ function MyInscriptions() {
     }
   };
 
-  const renderEventCard = (inscription) => (
-    <div 
-      key={inscription.id} 
-      className={styles.inscriptionCard}
-      onClick={() => handleEventClick(inscription.evento.id)}
-    >
-      <div className={styles.cardHeader}>
-        <h3 className={styles.eventName}>{inscription.evento.nome}</h3>
-        <span className={`${styles.status} ${getStatusColor(inscription.status)}`}>
-          {getStatusText(inscription.status)}
-        </span>
-      </div>
+  const renderEventCard = (inscription) => {
+    const isCancelled = inscription.evento.status === 'cancelado' || inscription.status === 'cancelado';
+    
+    return (
+      <div 
+        key={inscription.id} 
+        className={styles.inscriptionCard}
+        onClick={() => handleEventClick(inscription.evento.id)}
+      >
+        <div className={styles.cardHeader}>
+          <h3 className={styles.eventName}>{inscription.evento.nome}</h3>
+          <span className={`${styles.status} ${isCancelled ? styles.statusCancelled : getStatusColor(inscription.status)}`}>
+            {isCancelled ? 'Evento Cancelado' : getStatusText(inscription.status)}
+          </span>
+        </div>
 
-      <div className={styles.cardContent}>
-        <div className={styles.eventInfo}>
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>Local:</span>
-            <span className={styles.infoValue}>
-              {(inscription.evento.localidade?.cidade && inscription.evento.localidade?.uf)
-                ? `${inscription.evento.localidade.cidade} - ${inscription.evento.localidade.uf}`
-                : 'Local não informado'}
-            </span>
-          </div>
+        <div className={styles.cardContent}>
+          <div className={styles.eventInfo}>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Local:</span>
+              <span className={styles.infoValue}>
+                {(inscription.evento.localidade?.cidade && inscription.evento.localidade?.uf)
+                  ? `${inscription.evento.localidade.cidade} - ${inscription.evento.localidade.uf}`
+                  : 'Local não informado'}
+              </span>
+            </div>
 
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>Data:</span>
-            <span className={styles.infoValue}>
-              {formatDate(inscription.evento.dataIni)}
-            </span>
-          </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Data:</span>
+              <span className={styles.infoValue}>
+                {formatDate(inscription.evento.dataIni)}
+              </span>
+            </div>
 
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>Horário:</span>
-            <span className={styles.infoValue}>
-              {formatTime(inscription.evento.horarioIni)}
-            </span>
-          </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Horário:</span>
+              <span className={styles.infoValue}>
+                {formatTime(inscription.evento.horarioIni)}
+              </span>
+            </div>
 
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>Kit:</span>
-            <span className={styles.infoValue}>
-              {inscription.kit?.nome || 'Kit não informado'}
-            </span>
-          </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Kit:</span>
+              <span className={styles.infoValue}>
+                {inscription.kit?.nome || 'Kit não informado'}
+              </span>
+            </div>
 
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>Categoria:</span>
-            <span className={styles.infoValue}>
-              {inscription.categoria?.nome || 'Categoria não informada'}
-            </span>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>Categoria:</span>
+              <span className={styles.infoValue}>
+                {inscription.categoria?.nome || 'Categoria não informada'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={styles.cardFooter}>
-        <span className={styles.viewDetails}>
-          Clique para ver detalhes →
-        </span>
+        <div className={styles.cardFooter}>
+          <span className={styles.viewDetails}>
+            Clique para ver detalhes →
+          </span>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderEventsSection = (title, events, emptyMessage) => {
     return (
@@ -287,6 +301,12 @@ return (
             "Histórico de Eventos", 
             pastEvents, 
             "Você ainda não participou de nenhum evento."
+          )}
+          
+          {renderEventsSection(
+            "Eventos Cancelados", 
+            cancelledEvents, 
+            "Você não possui eventos cancelados."
           )}
         </>
       )}
