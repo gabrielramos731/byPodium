@@ -84,12 +84,10 @@ function EventRegistration() {
 
       const response = await createEventRegistration(id, registrationData);
       
-      // Se a resposta inclui URL de pagamento, redireciona para o gateway
+      
       if (response.payment_url && response.needs_payment) {
-        // Redireciona para o gateway de pagamento
         window.location.href = `http://127.0.0.1:8000${response.payment_url}`;
       } else {
-        // Fallback para o comportamento anterior
         navigate(`/evento/${id}`);
       }
       
@@ -246,9 +244,6 @@ function EventRegistration() {
                       <strong>R$ {calculateTotal()}</strong>
                     </div>
                   </div>
-                  <p className={styles.paymentNote}>
-                    Ao confirmar, você será redirecionado para o gateway de pagamento seguro.
-                  </p>
                 </div>
               </div>
             )}

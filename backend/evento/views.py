@@ -149,7 +149,6 @@ class CriarInscricao(generics.GenericAPIView):
         inscricao_obj = serializer.save()
         response_serializer = InscricaoResponseSerializer(inscricao_obj)
         
-        # Retorna dados da inscrição com link para pagamento
         response_data = response_serializer.data
         response_data['payment_url'] = f"/gateway/payment/{inscricao_obj.id}/"
         response_data['needs_payment'] = True
@@ -386,7 +385,6 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Verificar se é negação e se feedback é obrigatório
             if novo_status == 'negado' and not feedback_admin:
                 return Response(
                     {
@@ -397,7 +395,6 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Verificar se a confirmação foi enviada
             if not confirmacao:
                 confirmation_message = f'Tem certeza que deseja {"aprovar" if novo_status == "ativo" else "negar"} o evento "{evento_obj.nome}"?'
                 if novo_status == 'negado':
@@ -420,18 +417,15 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Verificar se já foi processado
             if evento_obj.status != 'pendente':
                 return Response(
                     {'error': f'Este evento já foi {evento_obj.status}. Não é possível alterar novamente.'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Atualizar status do evento
             evento_obj.status = novo_status
             evento_obj.save()
             
-            # Enviar email baseado na ação
             email_enviado = False
             if novo_status == 'ativo':
                 email_enviado = EmailService.enviar_email_aprovacao(evento_obj)
@@ -474,7 +468,6 @@ class PaymentStatus(generics.GenericAPIView):
             inscricao_obj = inscricao.objects.get(id=inscricao_id)
             current_participante = get_current_participante(request)
             
-            # Verifica se o usuário tem permissão para ver esta inscrição
             if inscricao_obj.participante != current_participante:
                 return Response(
                     {'error': 'Você não tem permissão para visualizar esta inscrição.'},
@@ -483,7 +476,6 @@ class PaymentStatus(generics.GenericAPIView):
             
             try:
                 pagamento_obj = pagamento.objects.get(inscricao=inscricao_obj)
-                # Converte datetime para date se necessário
                 payment_date = pagamento_obj.dataPagamento
                 if hasattr(payment_date, 'date'):
                     payment_date = payment_date.date()

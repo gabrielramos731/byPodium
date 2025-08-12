@@ -37,7 +37,6 @@ const PaymentFlow = () => {
     };
 
     const handlePaymentRedirect = () => {
-        // Redireciona para o gateway de pagamento
         window.location.href = paymentStatus.payment_url;
     };
 

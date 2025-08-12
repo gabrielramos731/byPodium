@@ -12,7 +12,6 @@ export function useEvents() {
         setLoading(true);
         setError(null);
         const eventsData = await getAllEvents();
-        // Filtrar eventos cancelados da homepage
         const eventosAtivos = eventsData.filter(evento => evento.status !== 'cancelado');
         setEvents(eventosAtivos);
       } catch (error) {
@@ -31,7 +30,6 @@ export function useEvents() {
       setLoading(true);
       setError(null);
       const eventsData = await getAllEvents();
-      // Filtrar eventos cancelados da homepage
       const eventosAtivos = eventsData.filter(evento => evento.status !== 'cancelado');
       setEvents(eventosAtivos);
     } catch (error) {

@@ -1,4 +1,3 @@
-/* PaymentFlow.css */
 .payment-flow-container {
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -231,7 +230,6 @@
     font-size: 16px;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .payment-flow-container {
         padding: 10px;

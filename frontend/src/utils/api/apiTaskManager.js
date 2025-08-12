@@ -40,7 +40,6 @@ async function getUserProfile(){
   }
 }
 
-// Função específica para verificar se o usuário é admin
 async function getUserAuthProfile(){
   try{
     const response = await api.get("/auth/profile/");
@@ -119,7 +118,7 @@ async function registerUser(userData) {
 async function getEstados() {
   try {
     const response = await api.get("/auth/estados/");
-    return response.data.estados; // Retornar apenas o array de estados
+    return response.data.estados;
   } catch (error) {
     console.error("Erro ao buscar estados:", error);
     throw error;
@@ -130,17 +129,15 @@ async function getCidades(estado = null) {
   try {
     const url = estado ? `/auth/cidades/?estado=${estado}` : "/auth/cidades/";
     const response = await api.get(url);
-    return response.data.cidades; // Retornar apenas o array de cidades
+    return response.data.cidades;
   } catch (error) {
     console.error("Erro ao buscar cidades:", error);
     throw error;
   }
 }
 
-// Funções para gerenciamento de eventos
 async function createEvent(eventData) {
   try {
-    // Se eventData é FormData, remover Content-Type para o navegador definir automaticamente
     const config = {};
     if (eventData instanceof FormData) {
       config.headers = {
@@ -158,7 +155,6 @@ async function createEvent(eventData) {
 
 async function updateEvent(eventId, eventData) {
   try {
-    // Se eventData é FormData, remover Content-Type para o navegador definir automaticamente
     const config = {};
     if (eventData instanceof FormData) {
       config.headers = {
@@ -198,7 +194,7 @@ async function getEventToManage(eventId) {
 
 export default getAllEvents;
 export { getEventById };
-// Funções para administradores - eventos pendentes
+
 async function getPendingEvents() {
   try {
     const response = await api.get("/eventos/pendentes/");
@@ -216,7 +212,6 @@ async function updateEventStatus(eventId, status, confirmacao = false, feedback_
       confirmacao 
     };
     
-    // Adicionar feedback apenas para negações
     if (status === 'negado' && feedback_admin.trim()) {
       payload.feedback_admin = feedback_admin.trim();
     }
@@ -247,7 +242,6 @@ export { cancelEvent };
 export { getEventToManage };
 export { getPaymentStatus };
 
-// Funções de pagamento
 async function getPaymentStatus(inscricaoId) {
   try {
     const response = await api.get(`/payment/status/${inscricaoId}/`);

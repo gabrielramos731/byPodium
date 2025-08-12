@@ -12,7 +12,6 @@ function Navigation() {
     const token = localStorage.getItem("authToken");
     setIsLoggedIn(!!token);
     
-    // Verificar se o usuário é admin
     if (token) {
       checkAdminStatus();
     }

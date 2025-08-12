@@ -84,16 +84,15 @@ function CreateEvent() {
       }));
     }
 
-    // Limpar erro de categoria mínima quando nova categoria é adicionada
     setCategoriaMinError(false);
   };
 
   const removeCategoria = (index) => {
     if (categorias.length > 1) {
       setCategorias(categorias.filter((_, i) => i !== index));
-      setCategoriaMinError(false); // Limpar erro quando categoria é removida com sucesso
+      setCategoriaMinError(false);
     } else {
-      setCategoriaMinError(true); // Mostrar erro quando tenta remover a única categoria
+      setCategoriaMinError(true);
     }
   };
 
