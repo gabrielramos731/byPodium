@@ -55,6 +55,9 @@ function Navigation() {
             <a href="/meu-perfil" className={styles.navLink}>
               Meu Perfil
             </a>
+            <a href="/relatorios" className={styles.navLink}>
+              Relatórios
+            </a>
             {isAdmin && (
               <a href="/eventos-pendentes" className={styles.navLink}>
                 Eventos Pendentes

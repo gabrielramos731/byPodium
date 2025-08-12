@@ -12,6 +12,9 @@ from .serializers import (
     DetalhesParticipanteSerializer, EventoPendenteSerializer, EventoStatusUpdateSerializer
 )
 from datetime import date
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from datetime import datetime
 
 def get_current_participante(request):
     """Retorna o participante atual ou fallback para pk=1"""
@@ -29,6 +32,20 @@ class ListEventos(generics.ListAPIView):
     queryset = evento.objects.filter(status='ativo')
     serializer_class = eventoSerializerList
     permission_classes = [permissions.AllowAny]
+
+
+class ListEventosOrganizador(generics.ListAPIView):
+    """Lista eventos do organizador autenticado"""
+    serializer_class = eventoSerializerList
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        current_participante = get_current_participante(self.request)
+        try:
+            organizador_obj = current_participante.organizadores
+            return evento.objects.filter(organizador=organizador_obj)
+        except organizador.DoesNotExist:
+            return evento.objects.none()
 
 
 class DetailEvento(generics.RetrieveAPIView):
@@ -289,6 +306,43 @@ class GerenciarEvento(generics.GenericAPIView):
         inscricoes_evento.update(status='cancelado')
         
         return Response({'message': 'Evento cancelado com sucesso.'}, status=status.HTTP_200_OK)
+
+class GerarRelatorio(generics.GenericAPIView):
+    """
+    Classe para geração de relatórios do sistema
+    GET /eventos/<event_id>/report/: Gera relatório de um evento específico
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, event_id):
+        """Gera relatório detalhado de um evento específico"""
+        try:
+            event = evento.objects.get(id=event_id)
+            current_participante = get_current_participante(request)
+
+            if event.organizador.participante != current_participante:
+                return Response(
+                    {'error': 'Você não tem permissão para gerar relatórios deste evento.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            from .reports import EventReports
+            report_type = request.query_params.get('type', 'summary')
+            
+            if report_type == 'summary':
+                report = EventReports.get_event_summary(event_id)
+            elif report_type == 'participants':
+                report = EventReports.get_participant_report(event_id)
+            else:
+                return Response({'error': 'Tipo de relatório inválido'}, status=400)
+            
+            if report is None:
+                return Response({'error': 'Evento não encontrado'}, status=404)
+            
+            return Response(report)
+            
+        except evento.DoesNotExist:
+            return Response({'error': 'Evento não encontrado'}, status=404)
 
 
 class GerenciarEventosPendentesAdmin(generics.GenericAPIView):

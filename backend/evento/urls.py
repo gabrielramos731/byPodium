@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import (
-    ListEventos, DetailEvento, ListInscricoes, CriarInscricao, 
+    ListEventos, ListEventosOrganizador, DetailEvento, ListInscricoes, CriarInscricao, 
     DetalhesInscricao, DetalhesParticipante, CriarEvento, 
-    GerenciarEvento, GerenciarEventosPendentesAdmin, PaymentStatus
+    GerenciarEvento, GerenciarEventosPendentesAdmin, GerarRelatorio, PaymentStatus
 )
 
 urlpatterns = [
     path('eventos/', ListEventos.as_view(), name='list-eventos'),
+    path('eventos/organizador/', ListEventosOrganizador.as_view(), name='list-eventos-organizador'),
     path('eventos/<int:pk>/', DetailEvento.as_view(), name='detail-evento'),
 
     path('inscricoes/', ListInscricoes.as_view(), name='list-inscricoes'),
@@ -19,6 +20,8 @@ urlpatterns = [
     path('eventos/pendentes/<int:pk>/', GerenciarEventosPendentesAdmin.as_view(), name='atualizar-status-evento'),
     
     path('perfil/', DetalhesParticipante.as_view(), name='detalhe-participante'),
+
+    path('eventos/<int:event_id>/report/', GerarRelatorio.as_view(), name='event-report'),
     path('payment/status/<int:inscricao_id>/', PaymentStatus.as_view(), name='payment-status'),
 ]
 

@@ -8,6 +8,7 @@ import MyInscriptions from './pages/MyInscriptions.jsx';
 import EventRegistration from './pages/EventRegistration.jsx';
 import CreateEvent from './pages/CreateEvent.jsx';
 import EditEvent from './pages/EditEvent.jsx';
+import Reports from './pages/Reports.jsx';
 import PendingEvents from './pages/PendingEvents.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -60,6 +61,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <MyInscriptions />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/relatorios",
+    element: (
+      <ProtectedRoute>
+        <Reports />
       </ProtectedRoute>
     ),
   },
