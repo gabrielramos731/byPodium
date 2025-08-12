@@ -358,7 +358,7 @@
 
         <div class="header">
             <h1>Gateway de Pagamento Seguro</h1>
-            <p>Processamento simulado - byPodium Payment Gateway</p>
+            <p>byPodium Payment Gateway</p>
         </div>
 
         <div class="event-info">
@@ -407,7 +407,6 @@
                         <input type="radio" name="metodo_pagamento" value="pix" id="pix" checked>
                         <div>
                             <div style="font-size: 24px; margin-bottom: 5px;">PIX</div>
-                            <div>PIX</div>
                             <small>Aprovação instantânea</small>
                         </div>
                     </div>
@@ -416,14 +415,14 @@
 
             <div id="pixFields" style="display: block;">
                 <div class="form-group">
-                    <label for="pixKey">CPF/CNPJ para PIX</label>
+                    <label for="pixKey">CPF para PIX</label>
                     <input type="text" id="pixKey" placeholder="123.456.789-00" maxlength="14">
                     <div class="cpf-feedback" id="cpfFeedback"></div>
                 </div>
             </div>
 
             <button type="button" class="btn-generate-qr" id="generateQRButton">
-                Gerar QR Code PIX - R$ {{ valor_total }}
+                Gerar QR Code - R$ {{ valor_total }}
             </button>
 
             <div class="qr-container" id="qrContainer">
@@ -471,13 +470,9 @@
     </div>
 
     <script>
-        // PIX já está selecionado por padrão, não precisa de lógica de seleção
-
-        // Máscara e validação de CPF
         document.getElementById('pixKey').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
             
-            // Aplica máscara de CPF
             if (value.length <= 11) {
                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
@@ -492,10 +487,8 @@
             const input = document.getElementById('pixKey');
             const feedback = document.getElementById('cpfFeedback');
             
-            // Remove formatação para contar apenas dígitos
             const digits = cpf.replace(/\D/g, '');
             
-            // Remove classes anteriores
             input.classList.remove('error');
             feedback.classList.remove('error', 'success');
             
@@ -519,17 +512,14 @@
             }
         }
 
-        // Gerar QR Code PIX
         document.getElementById('generateQRButton').addEventListener('click', function() {
             const pixKey = document.getElementById('pixKey').value;
             
-            // Validação do CPF
             if (!pixKey.trim()) {
                 showError('CPF/CNPJ é obrigatório para gerar o PIX');
                 return;
             }
 
-            // Verifica se tem exatamente 11 dígitos
             const digits = pixKey.replace(/\D/g, '');
             if (digits.length !== 11) {
                 showError('CPF deve ter exatamente 11 dígitos para gerar o PIX');
@@ -541,29 +531,22 @@
         });
 
         function generatePixQRCode() {
-            // Simula geração de código PIX
             const pixCode = generatePixCode();
             
-            // Mostra o container do QR Code
             document.getElementById('qrContainer').style.display = 'block';
             document.getElementById('generateQRButton').style.display = 'none';
-            
-            // Gera QR Code usando uma API pública
+
             const qrCodeDiv = document.getElementById('qrCodeDiv');
             qrCodeDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}" alt="QR Code PIX" style="max-width: 200px;">`;
             
-            // Exibe o código PIX
             document.getElementById('pixCode').textContent = pixCode;
             
-            // Mostra o botão de confirmar pagamento
             document.getElementById('payButton').style.display = 'block';
             
-            // Scroll para o QR Code
             document.getElementById('qrContainer').scrollIntoView({ behavior: 'smooth' });
         }
 
         function generatePixCode() {
-            // Simula um código PIX real (simplificado)
             const timestamp = Date.now();
             const randomPart = Math.random().toString(36).substring(2, 15);
             return `00020126580014BR.GOV.BCB.PIX0136${randomPart}520400005303986540{{ valor_total }}5802BR5925byPodium Pagamentos Ltda6009SAO PAULO62070503***6304${timestamp.toString().slice(-4)}`;

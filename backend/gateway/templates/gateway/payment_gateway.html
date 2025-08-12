@@ -103,6 +103,33 @@
             border-color: #667eea;
         }
 
+        .form-group input.error {
+            border-color: #e74c3c;
+            background-color: #fdf2f2;
+        }
+
+        .cpf-feedback {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .cpf-feedback.error {
+            color: #e74c3c;
+            background-color: #fdf2f2;
+            border: 1px solid #e74c3c;
+            display: block;
+        }
+
+        .cpf-feedback.success {
+            color: #27ae60;
+            background-color: #eafaf1;
+            border: 1px solid #27ae60;
+            display: block;
+        }
+
         .payment-methods {
             display: flex;
             justify-content: center;
@@ -143,6 +170,101 @@
         .btn-pay:disabled {
             background: #6c757d;
             cursor: not-allowed;
+        }
+
+        .btn-generate-qr {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn-generate-qr:hover {
+            background: #5a67d8;
+        }
+
+        .btn-generate-qr:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .qr-container {
+            display: none;
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .pix-code {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .copy-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .copy-button:hover {
+            background: #218838;
+        }
+
+        .copy-success {
+            color: #28a745;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .pix-instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .pix-instructions h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .pix-instructions ol {
+            color: #856404;
+            margin-left: 20px;
         }
 
         .loading {
@@ -227,15 +349,15 @@
 <body>
     <div class="gateway-container">
         <div class="navigation-bar">
-            <div class="logo">🏃‍♂️ byPodium</div>
+            <div class="logo">byPodium</div>
             <div class="nav-links">
-                <a href="http://localhost:5173/">🏠 Início</a>
-                <a href="http://localhost:5173/minhas-inscricoes">📋 Minhas Inscrições</a>
+                <a href="http://localhost:5173/">Início</a>
+                <a href="http://localhost:5173/minhas-inscricoes">Minhas Inscrições</a>
             </div>
         </div>
 
         <div class="header">
-            <h1>🔒 Gateway de Pagamento Seguro</h1>
+            <h1>Gateway de Pagamento Seguro</h1>
             <p>Processamento simulado - byPodium Payment Gateway</p>
         </div>
 
@@ -284,7 +406,7 @@
                     <div class="payment-method selected" data-method="pix">
                         <input type="radio" name="metodo_pagamento" value="pix" id="pix" checked>
                         <div>
-                            <div style="font-size: 24px; margin-bottom: 5px;">📱</div>
+                            <div style="font-size: 24px; margin-bottom: 5px;">PIX</div>
                             <div>PIX</div>
                             <small>Aprovação instantânea</small>
                         </div>
@@ -295,13 +417,44 @@
             <div id="pixFields" style="display: block;">
                 <div class="form-group">
                     <label for="pixKey">CPF/CNPJ para PIX</label>
-                    <input type="text" id="pixKey" placeholder="123.456.789-00">
+                    <input type="text" id="pixKey" placeholder="123.456.789-00" maxlength="14">
+                    <div class="cpf-feedback" id="cpfFeedback"></div>
                 </div>
             </div>
 
-            <button type="submit" class="btn-pay" id="payButton">
-                💰 Processar Pagamento - R$ {{ valor_total }}
+            <button type="button" class="btn-generate-qr" id="generateQRButton">
+                Gerar QR Code PIX - R$ {{ valor_total }}
             </button>
+
+            <div class="qr-container" id="qrContainer">
+                <h3>PIX Gerado com Sucesso!</h3>
+                
+                <div class="qr-code" id="qrCodeDiv">
+                    <!-- QR Code será gerado aqui -->
+                </div>
+                
+                <div class="pix-code">
+                    <strong>Código PIX (Copia e Cola):</strong><br>
+                    <span id="pixCode"></span>
+                    <button class="copy-button" onclick="copyPixCode()">Copiar Código</button>
+                    <div class="copy-success" id="copySuccess">Código copiado!</div>
+                </div>
+
+                <div class="pix-instructions">
+                    <h4>Como pagar:</h4>
+                    <ol>
+                        <li>Abra o app do seu banco</li>
+                        <li>Escolha a opção PIX</li>
+                        <li>Escaneie o QR Code ou cole o código acima</li>
+                        <li>Confirme o pagamento no seu banco</li>
+                        <li>Clique em "Confirmar Pagamento" abaixo</li>
+                    </ol>
+                </div>
+
+                <button type="submit" class="btn-pay" id="payButton" style="display: none;">
+                    Confirmar Pagamento - R$ {{ valor_total }}
+                </button>
+            </div>
         </form>
 
         <div class="loading" id="loadingDiv">
@@ -311,7 +464,7 @@
         </div>
 
         <div class="security-info">
-            <strong>🔒 Ambiente Seguro e Simulado</strong><br>
+            <strong>Ambiente Seguro e Simulado</strong><br>
             Este é um gateway de pagamento simulado para fins educacionais. 
             Nenhuma cobrança real será efetuada. Todos os dados inseridos são fictícios.
         </div>
@@ -320,18 +473,131 @@
     <script>
         // PIX já está selecionado por padrão, não precisa de lógica de seleção
 
-        // Processar pagamento
-        document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Máscara e validação de CPF
+        document.getElementById('pixKey').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
             
+            // Aplica máscara de CPF
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            
+            e.target.value = value;
+            validateCPF(value);
+        });
+
+        function validateCPF(cpf) {
+            const input = document.getElementById('pixKey');
+            const feedback = document.getElementById('cpfFeedback');
+            
+            // Remove formatação para contar apenas dígitos
+            const digits = cpf.replace(/\D/g, '');
+            
+            // Remove classes anteriores
+            input.classList.remove('error');
+            feedback.classList.remove('error', 'success');
+            
+            if (digits.length === 0) {
+                feedback.style.display = 'none';
+                return false;
+            } else if (digits.length < 11) {
+                input.classList.add('error');
+                feedback.classList.add('error');
+                feedback.textContent = `CPF deve ter 11 dígitos (${digits.length}/11)`;
+                return false;
+            } else if (digits.length === 11) {
+                feedback.classList.add('success');
+                feedback.textContent = 'CPF com 11 dígitos inserido corretamente';
+                return true;
+            } else {
+                input.classList.add('error');
+                feedback.classList.add('error');
+                feedback.textContent = 'CPF não pode ter mais de 11 dígitos';
+                return false;
+            }
+        }
+
+        // Gerar QR Code PIX
+        document.getElementById('generateQRButton').addEventListener('click', function() {
             const pixKey = document.getElementById('pixKey').value;
             
-            // Validação básica do PIX
+            // Validação do CPF
             if (!pixKey.trim()) {
-                showError('CPF/CNPJ é obrigatório para PIX');
+                showError('CPF/CNPJ é obrigatório para gerar o PIX');
                 return;
             }
 
+            // Verifica se tem exatamente 11 dígitos
+            const digits = pixKey.replace(/\D/g, '');
+            if (digits.length !== 11) {
+                showError('CPF deve ter exatamente 11 dígitos para gerar o PIX');
+                return;
+            }
+
+            hideError();
+            generatePixQRCode();
+        });
+
+        function generatePixQRCode() {
+            // Simula geração de código PIX
+            const pixCode = generatePixCode();
+            
+            // Mostra o container do QR Code
+            document.getElementById('qrContainer').style.display = 'block';
+            document.getElementById('generateQRButton').style.display = 'none';
+            
+            // Gera QR Code usando uma API pública
+            const qrCodeDiv = document.getElementById('qrCodeDiv');
+            qrCodeDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}" alt="QR Code PIX" style="max-width: 200px;">`;
+            
+            // Exibe o código PIX
+            document.getElementById('pixCode').textContent = pixCode;
+            
+            // Mostra o botão de confirmar pagamento
+            document.getElementById('payButton').style.display = 'block';
+            
+            // Scroll para o QR Code
+            document.getElementById('qrContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generatePixCode() {
+            // Simula um código PIX real (simplificado)
+            const timestamp = Date.now();
+            const randomPart = Math.random().toString(36).substring(2, 15);
+            return `00020126580014BR.GOV.BCB.PIX0136${randomPart}520400005303986540{{ valor_total }}5802BR5925byPodium Pagamentos Ltda6009SAO PAULO62070503***6304${timestamp.toString().slice(-4)}`;
+        }
+
+        function copyPixCode() {
+            const pixCode = document.getElementById('pixCode').textContent;
+            navigator.clipboard.writeText(pixCode).then(function() {
+                const successMsg = document.getElementById('copySuccess');
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            }).catch(function() {
+                // Fallback para navegadores antigos
+                const textArea = document.createElement('textarea');
+                textArea.value = pixCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const successMsg = document.getElementById('copySuccess');
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        // Processar pagamento PIX
+        document.getElementById('payButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            
             hideError();
             showLoading();
 

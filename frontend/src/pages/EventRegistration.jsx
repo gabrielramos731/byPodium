@@ -216,7 +216,7 @@ function EventRegistration() {
             {currentStep === 3 && (
               <div className={styles.stepContent}>
                 <div className={styles.paymentSimulation}>
-                  <h3>📋 Confirmação da Inscrição</h3>
+                  <h3>Confirmação da Inscrição</h3>
                   <div className={styles.summaryContainer}>
                     <div className={styles.summaryItem}>
                       <strong>Evento:</strong> {eventData?.nome}
@@ -224,13 +224,26 @@ function EventRegistration() {
                     <div className={styles.summaryItem}>
                       <strong>Categoria:</strong> {selectedCategory?.nome}
                     </div>
-                    {selectedKit && (
+                    <div className={styles.summaryItem}>
+                      <strong>Valor da Inscrição:</strong> R$ {parseFloat(eventData?.valorInsc || 0).toFixed(2)}
+                    </div>
+                    {selectedKit ? (
+                      <>
+                        <div className={styles.summaryItem}>
+                          <strong>Kit Escolhido:</strong> {selectedKit.nome}
+                        </div>
+                        <div className={styles.summaryItem}>
+                          <strong>Valor do Kit:</strong> R$ {parseFloat(selectedKit.precoExtra || 0).toFixed(2)}
+                        </div>
+                      </>
+                    ) : (
                       <div className={styles.summaryItem}>
-                        <strong>Kit:</strong> {selectedKit.nome}
+                        <strong>Kit:</strong> Nenhum kit selecionado (R$ 0,00)
                       </div>
                     )}
-                    <div className={styles.summaryItem}>
-                      <strong>Valor Total:</strong> R$ {calculateTotal()}
+                    <div className={styles.summaryTotal}>
+                      <strong>Valor Total:</strong> 
+                      <strong>R$ {calculateTotal()}</strong>
                     </div>
                   </div>
                   <p className={styles.paymentNote}>
@@ -263,7 +276,7 @@ function EventRegistration() {
                   onClick={handleConfirmRegistration}
                   disabled={submitting}
                 >
-                  {submitting ? 'Processando...' : '💳 Prosseguir para Pagamento'}
+                  {submitting ? 'Processando...' : 'Prosseguir para Pagamento'}
                 </button>
               )}
             </div>

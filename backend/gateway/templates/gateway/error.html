@@ -132,7 +132,7 @@
 </head>
 <body>
     <div class="error-container">
-        <div class="error-icon">❌</div>
+        <div class="error-icon">✗</div>
         
         <h1 class="error-title">Pagamento Não Processado</h1>
         
@@ -141,7 +141,7 @@
         </p>
 
         <div class="error-details">
-            <h4>⚠️ Detalhes do Erro:</h4>
+            <h4>Detalhes do Erro:</h4>
             <p><strong>Mensagem:</strong> {{ error_message|default:"Falha na comunicação com o processador de pagamentos" }}</p>
             {% if inscricao %}
             <p><strong>Evento:</strong> {{ evento.nome }}</p>
@@ -154,11 +154,11 @@
             {% if inscricao %}
             <a href="/gateway/payment/{{ inscricao.id }}/" class="btn btn-primary">🔄 Tentar Novamente</a>
             {% endif %}
-            <a href="http://localhost:5173/" class="btn btn-secondary">🏠 Voltar ao Início</a>
+            <a href="http://localhost:5173/" class="btn btn-secondary">Voltar ao Início</a>
         </div>
 
         <div class="help-info">
-            <h4>💡 O que posso fazer?</h4>
+            <h4>O que posso fazer?</h4>
             <ul>
                 <li>Verifique sua conexão com a internet</li>
                 <li>Tente usar um método de pagamento diferente</li>
@@ -170,14 +170,12 @@
 
         <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 6px;">
             <small style="color: #856404;">
-                <strong>📞 Suporte:</strong> Este é um ambiente simulado. 
-                Em caso real, entre em contato com support@bypodium.com
+                <strong>Suporte:</strong> Entre em contato com support@bypodium.com
             </small>
         </div>
     </div>
 
     <script>
-        // Animação de entrada
         document.addEventListener('DOMContentLoaded', function() {
             const icon = document.querySelector('.error-icon');
             icon.style.transform = 'scale(0)';
