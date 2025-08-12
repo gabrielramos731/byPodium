@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - byPodium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black-color: #0d0d0d;
+            --background-black: #262626;
+            --yellow0: #f3e96d;
+            --yellow1: #d9a444;
+            --yellow3: #8c6d34;
+            --white: #F8F2ED;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-black);
+            color: #eaeaea;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .gateway-container {
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            max-width: 700px;
+            width: 100%;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--yellow1);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .event-info {
+            background: rgba(217, 164, 68, 0.1);
+            border: 1px solid rgba(217, 164, 68, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .event-info h3 {
+            color: var(--yellow1);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--yellow1);
+            border-top: 1px solid rgba(217, 164, 68, 0.3);
+            padding-top: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .info-label {
+            color: #ccc;
+        }
+
+        .info-value {
+            color: #eaeaea;
+            font-weight: 500;
+        }
+
+        .payment-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #eaeaea;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #eaeaea;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--yellow1);
+            box-shadow: 0 0 0 3px rgba(217, 164, 68, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-method {
+            position: relative;
+        }
+
+        .payment-method input[type="radio"] {
+            display: none;
+        }
+
+        .payment-method label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #eaeaea;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .payment-method label:hover {
+            border-color: var(--yellow1);
+            background: rgba(217, 164, 68, 0.1);
+        }
+
+        .payment-method input[type="radio"]:checked + label {
+            border-color: var(--yellow1);
+            background: rgba(217, 164, 68, 0.2);
+            color: var(--yellow1);
+        }
+
+        .method-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+            color: var(--black-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .payment-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 164, 68, 0.3);
+        }
+
+        .payment-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin-right: 0.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-notice {
+            background: rgba(140, 109, 52, 0.1);
+            border: 1px solid rgba(140, 109, 52, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #ccc;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .security-notice .icon {
+            color: var(--yellow3);
+            margin-right: 0.5rem;
+        }
+
+        .payment-fields {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            color: #eaeaea;
+        }
+
+        .modal h3 {
+            color: var(--yellow1);
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .modal p {
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--yellow1), var(--yellow0));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .gateway-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .card-row {
+                grid-template-columns: 1fr;
+            }
+
+            .event-info {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gateway-container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+
+            .payment-button {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gateway-container">
+        <div class="header">
+            <h1>🔐 Pagamento Seguro</h1>
+            <p>byPodium Payment Gateway</p>
+        </div>
+
+        <div class="event-info">
+            <h3>📅 Detalhes da Inscrição</h3>
+            <div class="info-row">
+                <span class="info-label">Evento:</span>
+                <span class="info-value">{{ evento.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Participante:</span>
+                <span class="info-value">{{ participante.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Categoria:</span>
+                <span class="info-value">{{ categoria.nome }}</span>
+            </div>
+            {% if kit %}
+            <div class="info-row">
+                <span class="info-label">Kit:</span>
+                <span class="info-value">{{ kit.nome }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span class="info-label">Valor da Inscrição:</span>
+                <span class="info-value">R$ {{ valor_base }}</span>
+            </div>
+            {% if valor_kit > 0 %}
+            <div class="info-row">
+                <span class="info-label">Valor do Kit:</span>
+                <span class="info-value">R$ {{ valor_kit }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span class="info-label">💰 Total a Pagar:</span>
+                <span class="info-value">R$ {{ valor_total }}</span>
+            </div>
+        </div>
+
+        <form id="payment-form" class="payment-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>💳 Método de Pagamento:</label>
+                <div class="payment-methods">
+                    <div class="payment-method">
+                        <input type="radio" id="pix" name="metodo_pagamento" value="pix" checked>
+                        <label for="pix">
+                            <span class="method-icon">📱</span>
+                            PIX
+                        </label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="cartao" name="metodo_pagamento" value="cartao">
+                        <label for="cartao">
+                            <span class="method-icon">💳</span>
+                            Cartão
+                        </label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="boleto" name="metodo_pagamento" value="boleto">
+                        <label for="boleto">
+                            <span class="method-icon">🧾</span>
+                            Boleto
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos específicos do PIX -->
+            <div id="pix-fields" class="payment-fields">
+                <div class="form-group">
+                    <label for="pix-email">📧 E-mail para receber o PIX:</label>
+                    <input type="email" id="pix-email" name="pix_email" placeholder="seu@email.com" value="{{ participante.email }}">
+                </div>
+            </div>
+
+            <!-- Campos específicos do Cartão -->
+            <div id="cartao-fields" class="payment-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="card-number">💳 Número do Cartão:</label>
+                    <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                
+                <div class="card-row">
+                    <div class="form-group">
+                        <label for="card-name">👤 Nome no Cartão:</label>
+                        <input type="text" id="card-name" name="card_name" placeholder="Nome como no cartão">
+                    </div>
+                    <div class="form-group">
+                        <label for="card-expiry">📅 Validade:</label>
+                        <input type="text" id="card-expiry" name="card_expiry" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="card-cvv">🔒 CVV:</label>
+                        <input type="text" id="card-cvv" name="card_cvv" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos específicos do Boleto -->
+            <div id="boleto-fields" class="payment-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="boleto-cpf">📄 CPF para o Boleto:</label>
+                    <input type="text" id="boleto-cpf" name="boleto_cpf" placeholder="000.000.000-00" maxlength="14" value="{{ participante.cpf }}">
+                </div>
+            </div>
+
+            <button type="submit" class="payment-button" id="pay-button">
+                <span class="loading-spinner">⏳</span>
+                <span class="button-text">💰 Processar Pagamento - R$ {{ valor_total }}</span>
+            </button>
+        </form>
+
+        <div class="security-notice">
+            <span class="icon">🔒</span>
+            Este é um gateway de pagamento simulado para fins educacionais. 
+            Nenhuma transação real será processada.
+        </div>
+    </div>
+
+    <!-- Modal de Processamento -->
+    <div id="processing-modal" class="modal">
+        <div class="modal-content">
+            <h3>Processando Pagamento...</h3>
+            <p>Aguarde enquanto processamos seu pagamento de forma segura.</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p id="processing-status">Conectando com o processador de pagamentos...</p>
+        </div>
+    </div>
+
+    <script>
+        // Alternar campos baseado no método de pagamento
+        document.querySelectorAll('input[name="metodo_pagamento"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Esconder todos os campos
+                document.querySelectorAll('.payment-fields').forEach(field => {
+                    field.style.display = 'none';
+                });
+                
+                // Mostrar campos do método selecionado
+                const selectedMethod = this.value;
+                const fieldsToShow = document.getElementById(selectedMethod + '-fields');
+                if (fieldsToShow) {
+                    fieldsToShow.style.display = 'block';
+                }
+            });
+        });
+
+        // Formatação de campos
+        document.getElementById('card-number')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            e.target.value = value;
+        });
+
+        document.getElementById('card-expiry')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        document.getElementById('boleto-cpf')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            e.target.value = value;
+        });
+
+        // Envio do formulário
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const payButton = document.getElementById('pay-button');
+            const spinner = document.querySelector('.loading-spinner');
+            const buttonText = document.querySelector('.button-text');
+            const modal = document.getElementById('processing-modal');
+            const progressBar = document.getElementById('progress-fill');
+            const statusText = document.getElementById('processing-status');
+            
+            // Desabilitar botão e mostrar loading
+            payButton.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            // Mostrar modal
+            modal.style.display = 'block';
+            
+            // Simular progresso
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+                
+                if (progress > 30) statusText.textContent = 'Validando dados...';
+                if (progress > 60) statusText.textContent = 'Processando transação...';
+                if (progress > 80) statusText.textContent = 'Finalizando...';
+            }, 200);
+            
+            // Obter dados do formulário
+            const formData = new FormData(this);
+            const metodoPagamento = formData.get('metodo_pagamento');
+            
+            // Enviar para o backend
+            fetch(`/gateway/process/{{ inscricao.id }}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    metodo_pagamento: metodoPagamento
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        window.location.href = data.redirect_url;
+                    }
+                }, 1000);
+            })
+            .catch(error => {
+                clearInterval(progressInterval);
+                console.error('Erro:', error);
+                
+                payButton.disabled = false;
+                spinner.style.display = 'none';
+                modal.style.display = 'none';
+                
+                alert('Erro ao processar pagamento. Tente novamente.');
+            });
+        });
+    </script>
+</body>
+</html>
