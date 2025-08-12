@@ -148,7 +148,13 @@ class CriarInscricao(generics.GenericAPIView):
         
         inscricao_obj = serializer.save()
         response_serializer = InscricaoResponseSerializer(inscricao_obj)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        
+        # Retorna dados da inscrição com link para pagamento
+        response_data = response_serializer.data
+        response_data['payment_url'] = f"/gateway/payment/{inscricao_obj.id}/"
+        response_data['needs_payment'] = True
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
     
     def delete(self, request, pk): 
         current_participante = get_current_participante(request)
@@ -452,3 +458,60 @@ class GerenciarEventosPendentesAdmin(generics.GenericAPIView):
                 {'error': str(e)}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class PaymentStatus(generics.GenericAPIView):
+    """
+    Verifica o status do pagamento de uma inscrição
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, inscricao_id):
+        """Retorna o status do pagamento da inscrição"""
+        try:
+            from inscricoes.models import inscricao, pagamento
+            
+            inscricao_obj = inscricao.objects.get(id=inscricao_id)
+            current_participante = get_current_participante(request)
+            
+            # Verifica se o usuário tem permissão para ver esta inscrição
+            if inscricao_obj.participante != current_participante:
+                return Response(
+                    {'error': 'Você não tem permissão para visualizar esta inscrição.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            try:
+                pagamento_obj = pagamento.objects.get(inscricao=inscricao_obj)
+                # Converte datetime para date se necessário
+                payment_date = pagamento_obj.dataPagamento
+                if hasattr(payment_date, 'date'):
+                    payment_date = payment_date.date()
+                
+                payment_data = {
+                    'has_payment': True,
+                    'payment_status': pagamento_obj.status,
+                    'payment_method': pagamento_obj.metodoPagamento,
+                    'payment_amount': str(pagamento_obj.valor),
+                    'payment_date': payment_date.strftime('%d/%m/%Y'),
+                    'inscription_status': inscricao_obj.status,
+                }
+            except pagamento.DoesNotExist:
+                payment_data = {
+                    'has_payment': False,
+                    'payment_status': 'pendente',
+                    'inscription_status': inscricao_obj.status,
+                    'payment_url': f"/gateway/payment/{inscricao_obj.id}/",
+                }
+            
+            return Response(payment_data)
+            
+        except inscricao.DoesNotExist:
+            return Response(
+                {'error': 'Inscrição não encontrada'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+
+

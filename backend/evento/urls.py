@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     ListEventos, ListEventosOrganizador, DetailEvento, ListInscricoes, CriarInscricao, 
     DetalhesInscricao, DetalhesParticipante, CriarEvento, 
-    GerenciarEvento, GerenciarEventosPendentesAdmin, GerarRelatorio
+    GerenciarEvento, GerenciarEventosPendentesAdmin, GerarRelatorio, PaymentStatus
 )
 
 urlpatterns = [
@@ -22,5 +22,6 @@ urlpatterns = [
     path('perfil/', DetalhesParticipante.as_view(), name='detalhe-participante'),
 
     path('eventos/<int:event_id>/report/', GerarRelatorio.as_view(), name='event-report'),
+    path('payment/status/<int:inscricao_id>/', PaymentStatus.as_view(), name='payment-status'),
 ]
 

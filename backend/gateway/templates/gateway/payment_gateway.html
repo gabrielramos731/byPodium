@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - byPodium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black-color: #0d0d0d;
+            --background-black: #262626;
+            --yellow0: #f3e96d;
+            --yellow1: #d9a444;
+            --yellow3: #8c6d34;
+            --white: #F8F2ED;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-black);
+            color: #eaeaea;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .gateway-container {
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            max-width: 700px;
+            width: 100%;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--yellow1);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .event-info {
+            background: rgba(217, 164, 68, 0.1);
+            border: 1px solid rgba(217, 164, 68, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .event-info h3 {
+            color: var(--yellow1);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--yellow1);
+            border-top: 1px solid rgba(217, 164, 68, 0.3);
+            padding-top: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .info-label {
+            color: #ccc;
+        }
+
+        .info-value {
+            color: #eaeaea;
+            font-weight: 500;
+        }
+
+        .payment-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #eaeaea;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #eaeaea;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--yellow1);
+            box-shadow: 0 0 0 3px rgba(217, 164, 68, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-method {
+            position: relative;
+        }
+
+        .payment-method input[type="radio"] {
+            display: none;
+        }
+
+        .payment-method label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #eaeaea;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .payment-method label:hover {
+            border-color: var(--yellow1);
+            background: rgba(217, 164, 68, 0.1);
+        }
+
+        .payment-method input[type="radio"]:checked + label {
+            border-color: var(--yellow1);
+            background: rgba(217, 164, 68, 0.2);
+            color: var(--yellow1);
+        }
+
+        .payment-method .method-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+            color: var(--black-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .payment-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 164, 68, 0.3);
+        }
+
+        .payment-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin-right: 0.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-notice {
+            background: rgba(140, 109, 52, 0.1);
+            border: 1px solid rgba(140, 109, 52, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #ccc;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .security-notice .icon {
+            color: var(--yellow3);
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .gateway-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .card-row {
+                grid-template-columns: 1fr;
+            }
+
+            .event-info {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gateway-container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+
+            .payment-button {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+
+        .form-group input.error {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #eaeaea;
+        }
+
+        .cpf-feedback {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .cpf-feedback.error {
+            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid #e74c3c;
+            display: block;
+        }
+
+        .cpf-feedback.success {
+            color: var(--yellow1);
+            background-color: rgba(217, 164, 68, 0.1);
+            border: 1px solid var(--yellow1);
+            display: block;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid var(--yellow1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: rgba(217, 164, 68, 0.2);
+            color: var(--yellow1);
+            max-width: 200px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .payment-method input {
+            display: none;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+            color: var(--black-color);
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 164, 68, 0.3);
+        }
+
+        .btn-pay:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-generate-qr {
+            width: 100%;
+            background: linear-gradient(135deg, var(--yellow1), var(--yellow0));
+            color: var(--black-color);
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-generate-qr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 164, 68, 0.3);
+        }
+
+        .btn-generate-qr:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .qr-container {
+            display: none;
+            background: rgba(217, 164, 68, 0.1);
+            border: 2px solid var(--yellow1);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            color: #eaeaea;
+        }
+
+        .qr-code {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .pix-code {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            position: relative;
+            color: #eaeaea;
+        }
+
+        .copy-button {
+            background: var(--yellow1);
+            color: var(--black-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--yellow0);
+            transform: translateY(-1px);
+        }
+
+        .copy-success {
+            color: var(--yellow1);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .pix-instructions {
+            background: rgba(140, 109, 52, 0.1);
+            border: 1px solid var(--yellow3);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .pix-instructions h4 {
+            color: var(--yellow1);
+            margin-bottom: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .pix-instructions ol {
+            color: #eaeaea;
+            margin-left: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #333;
+            border-top: 4px solid var(--yellow1);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #e74c3c;
+        }
+
+        .security-info {
+            background: rgba(140, 109, 52, 0.1);
+            border-left: 4px solid var(--yellow3);
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ccc;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .navigation-bar {
+            background: rgba(217, 164, 68, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid rgba(217, 164, 68, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--yellow1);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .nav-links a:hover {
+            background: var(--yellow1);
+            color: var(--black-color);
+        }
+
+        .logo {
+            font-weight: bold;
+            color: var(--yellow1);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="gateway-container">
+        <div class="navigation-bar">
+            <div class="logo">byPodium</div>
+            <div class="nav-links">
+                <a href="http://localhost:5173/">Início</a>
+                <a href="http://localhost:5173/minhas-inscricoes">Minhas Inscrições</a>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>Gateway de Pagamento Seguro</h1>
+            <p>Processamento simulado - byPodium Payment Gateway</p>
+        </div>
+
+        <div class="event-info">
+            <h3>Detalhes da Inscrição</h3>
+            <div class="info-row">
+                <span>Evento:</span>
+                <span>{{ evento.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span>Participante:</span>
+                <span>{{ participante.nome }}</span>
+            </div>
+            <div class="info-row">
+                <span>Categoria:</span>
+                <span>{{ categoria.nome|default:"Geral" }}</span>
+            </div>
+            {% if kit %}
+            <div class="info-row">
+                <span>Kit:</span>
+                <span>{{ kit.nome }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span>Valor Base:</span>
+                <span>R$ {{ valor_base }}</span>
+            </div>
+            {% if valor_kit > 0 %}
+            <div class="info-row">
+                <span>Kit Extra:</span>
+                <span>R$ {{ valor_kit }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span>Total a Pagar:</span>
+                <span>R$ {{ valor_total }}</span>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form class="payment-form" id="paymentForm">
+            <div class="form-group">
+                <label>Método de Pagamento</label>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="pix">
+                        <input type="radio" name="metodo_pagamento" value="pix" id="pix" checked>
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 5px;">PIX</div>
+                            <div>PIX</div>
+                            <small>Aprovação instantânea</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pixFields" style="display: block;">
+                <div class="form-group">
+                    <label for="pixKey">CPF/CNPJ para PIX</label>
+                    <input type="text" id="pixKey" placeholder="123.456.789-00" maxlength="14">
+                    <div class="cpf-feedback" id="cpfFeedback"></div>
+                </div>
+            </div>
+
+            <button type="button" class="btn-generate-qr" id="generateQRButton">
+                Gerar QR Code PIX - R$ {{ valor_total }}
+            </button>
+
+            <div class="qr-container" id="qrContainer">
+                <h3 style="color: var(--yellow1); margin-bottom: 1rem; font-family: 'Poppins', sans-serif;">PIX Gerado com Sucesso!</h3>
+                
+                <div class="qr-code" id="qrCodeDiv">
+                    <!-- QR Code será gerado aqui -->
+                </div>
+                
+                <div class="pix-code">
+                    <strong style="color: var(--yellow1);">Código PIX (Copia e Cola):</strong><br>
+                    <span id="pixCode"></span>
+                    <button class="copy-button" onclick="copyPixCode()">Copiar Código</button>
+                    <div class="copy-success" id="copySuccess">Código copiado!</div>
+                </div>
+
+                <div class="pix-instructions">
+                    <h4>Como pagar:</h4>
+                    <ol>
+                        <li>Abra o app do seu banco</li>
+                        <li>Escolha a opção PIX</li>
+                        <li>Escaneie o QR Code ou cole o código acima</li>
+                        <li>Confirme o pagamento no seu banco</li>
+                        <li>Clique em "Confirmar Pagamento" abaixo</li>
+                    </ol>
+                </div>
+
+                <button type="submit" class="btn-pay" id="payButton" style="display: none;">
+                    Confirmar Pagamento - R$ {{ valor_total }}
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loadingDiv">
+            <div class="loading-spinner"></div>
+            <p>Processando seu pagamento...</p>
+            <p><small>Aguarde, não feche esta página</small></p>
+        </div>
+
+        <div class="security-info">
+            <strong>Ambiente Seguro e Simulado</strong><br>
+            Este é um gateway de pagamento simulado para fins educacionais. 
+            Nenhuma cobrança real será efetuada. Todos os dados inseridos são fictícios.
+        </div>
+    </div>
+
+    <script>
+        // PIX já está selecionado por padrão, não precisa de lógica de seleção
+
+        // Máscara e validação de CPF
+        document.getElementById('pixKey').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            
+            // Aplica máscara de CPF
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            
+            e.target.value = value;
+            validateCPF(value);
+        });
+
+        function validateCPF(cpf) {
+            const input = document.getElementById('pixKey');
+            const feedback = document.getElementById('cpfFeedback');
+            
+            // Remove formatação para contar apenas dígitos
+            const digits = cpf.replace(/\D/g, '');
+            
+            // Remove classes anteriores
+            input.classList.remove('error');
+            feedback.classList.remove('error', 'success');
+            
+            if (digits.length === 0) {
+                feedback.style.display = 'none';
+                return false;
+            } else if (digits.length < 11) {
+                input.classList.add('error');
+                feedback.classList.add('error');
+                feedback.textContent = `CPF deve ter 11 dígitos (${digits.length}/11)`;
+                return false;
+            } else if (digits.length === 11) {
+                feedback.classList.add('success');
+                feedback.textContent = 'CPF com 11 dígitos inserido corretamente';
+                return true;
+            } else {
+                input.classList.add('error');
+                feedback.classList.add('error');
+                feedback.textContent = 'CPF não pode ter mais de 11 dígitos';
+                return false;
+            }
+        }
+
+        // Gerar QR Code PIX
+        document.getElementById('generateQRButton').addEventListener('click', function() {
+            const pixKey = document.getElementById('pixKey').value;
+            
+            // Validação do CPF
+            if (!pixKey.trim()) {
+                showError('CPF/CNPJ é obrigatório para gerar o PIX');
+                return;
+            }
+
+            // Verifica se tem exatamente 11 dígitos
+            const digits = pixKey.replace(/\D/g, '');
+            if (digits.length !== 11) {
+                showError('CPF deve ter exatamente 11 dígitos para gerar o PIX');
+                return;
+            }
+
+            hideError();
+            generatePixQRCode();
+        });
+
+        function generatePixQRCode() {
+            // Simula geração de código PIX
+            const pixCode = generatePixCode();
+            
+            // Mostra o container do QR Code
+            document.getElementById('qrContainer').style.display = 'block';
+            document.getElementById('generateQRButton').style.display = 'none';
+            
+            // Gera QR Code usando uma API pública
+            const qrCodeDiv = document.getElementById('qrCodeDiv');
+            qrCodeDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}" alt="QR Code PIX" style="max-width: 200px;">`;
+            
+            // Exibe o código PIX
+            document.getElementById('pixCode').textContent = pixCode;
+            
+            // Mostra o botão de confirmar pagamento
+            document.getElementById('payButton').style.display = 'block';
+            
+            // Scroll para o QR Code
+            document.getElementById('qrContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generatePixCode() {
+            // Simula um código PIX real (simplificado)
+            const timestamp = Date.now();
+            const randomPart = Math.random().toString(36).substring(2, 15);
+            return `00020126580014BR.GOV.BCB.PIX0136${randomPart}520400005303986540{{ valor_total }}5802BR5925byPodium Pagamentos Ltda6009SAO PAULO62070503***6304${timestamp.toString().slice(-4)}`;
+        }
+
+        function copyPixCode() {
+            const pixCode = document.getElementById('pixCode').textContent;
+            navigator.clipboard.writeText(pixCode).then(function() {
+                const successMsg = document.getElementById('copySuccess');
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            }).catch(function() {
+                // Fallback para navegadores antigos
+                const textArea = document.createElement('textarea');
+                textArea.value = pixCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const successMsg = document.getElementById('copySuccess');
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        // Processar pagamento PIX
+        document.getElementById('payButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            hideError();
+            showLoading();
+
+            // Simula chamada para o backend
+            fetch(`/gateway/process/{{ inscricao.id }}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    metodo_pagamento: 'pix'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showError('Erro de conexão. Tente novamente.');
+            });
+        });
+
+        function showLoading() {
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('payButton').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('paymentForm').style.display = 'block';
+            document.getElementById('loadingDiv').style.display = 'none';
+            document.getElementById('payButton').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -240,3 +240,55 @@
     margin-bottom: 1.5rem;
   }
 }
+
+/* Novos estilos para o step de confirmação */
+.summaryContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  border: 1px solid #ddd;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summaryItem:last-child {
+  border-bottom: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #4CAF50;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 2px solid #28a745;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #28a745;
+  background: #f8f9fa;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.paymentNote {
+  background: #e7f3ff;
+  border-left: 4px solid #667eea;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  color: #004085;
+  font-style: italic;
+}

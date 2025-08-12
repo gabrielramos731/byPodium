@@ -245,3 +245,15 @@ export { getPendingEvents };
 export { updateEventStatus };
 export { cancelEvent };
 export { getEventToManage };
+export { getPaymentStatus };
+
+// Funções de pagamento
+async function getPaymentStatus(inscricaoId) {
+  try {
+    const response = await api.get(`/payment/status/${inscricaoId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao verificar status do pagamento:", error);
+    throw error;
+  }
+}

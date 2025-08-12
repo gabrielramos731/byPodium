@@ -14,26 +14,16 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Carregar variáveis do arquivo .env
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-2_+11x(i^=0+%(qwbl^_ae3#w18*8lj)d17kofv^0q$wn@*8qq'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,6 +38,7 @@ INSTALLED_APPS = [
     'usuarios.apps.UsuariosConfig',
     'inscricoes.apps.InscricoesConfig',
     'localidades.apps.LocalidadesConfig',
+    'gateway.apps.GatewayConfig',
     'authentication.apps.AuthenticationConfig',
     
     #third party

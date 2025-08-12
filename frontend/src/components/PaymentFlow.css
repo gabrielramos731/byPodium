@@ -1,0 +1,265 @@
+/* PaymentFlow.css */
+.payment-flow-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.payment-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.payment-card h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+.status-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.status-icon.success {
+    color: #4CAF50;
+}
+
+.status-icon.pending {
+    color: #ff9800;
+}
+
+.payment-completed h3,
+.payment-pending h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.payment-pending p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.payment-details,
+.payment-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.detail-row span:first-child {
+    color: #555;
+    font-weight: 500;
+}
+
+.detail-row span:last-child {
+    color: #333;
+    font-weight: 600;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.status.pago,
+.status.confirmada {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.btn-payment {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 200px;
+}
+
+.btn-payment:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #5a6fd8;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.payment-help {
+    background: #e7f3ff;
+    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: left;
+    margin-top: 30px;
+}
+
+.payment-help h4 {
+    color: #004085;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.payment-help ul {
+    color: #004085;
+    margin-left: 20px;
+}
+
+.payment-help li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.error-message {
+    background: white;
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+.error-message h2 {
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+
+.error-message p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .payment-flow-container {
+        padding: 10px;
+    }
+    
+    .payment-card {
+        padding: 30px 20px;
+    }
+    
+    .payment-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-payment,
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .detail-row span:first-child {
+        font-weight: bold;
+        color: #333;
+    }
+}
